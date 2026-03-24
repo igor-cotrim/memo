@@ -52,6 +52,7 @@ export class SubmitReviewUseCase {
       repetitions: card.repetitions,
       easeFactor: card.easeFactor,
       interval: card.interval,
+      timezoneOffset: review.timezoneOffset,
     });
 
     const updatedCard = await this.cardRepo.update(review.cardId, {

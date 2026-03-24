@@ -89,6 +89,7 @@ export type ReviewQuality = 1 | 2 | 3 | 4;
 export interface ReviewResult {
   cardId: string;
   quality: ReviewQuality;
+  timezoneOffset?: number;
 }
 
 export interface ReviewSession {

@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import type { Flashcard, ReviewQuality } from "@flashcard-app/shared-types";
-import * as api from "../services/api";
 import { useLocale } from "../hooks/useLocale";
+import * as api from "../services/api";
 
 export default function ReviewPage() {
   const { deckId } = useParams<{ deckId: string }>();
@@ -42,7 +42,11 @@ export default function ReviewPage() {
 
     setSubmitting(true);
     try {
-      await api.submitReview({ cardId: card.id, quality });
+      await api.submitReview({
+        cardId: card.id,
+        quality,
+        timezoneOffset: new Date().getTimezoneOffset(),
+      });
       setCompleted((c) => c + 1);
       setIsFlipped(false);
 

@@ -122,10 +122,13 @@ describe("SM-2 Algorithm", () => {
         easeFactor: 2.5,
         interval: 6,
         now: fixedNow,
+        timezoneOffset: 0,
       });
 
       const expected = new Date(fixedNow);
       expected.setDate(expected.getDate() + result.interval);
+      // It sets to hours 0,0,0,0
+      expected.setUTCHours(0, 0, 0, 0);
       expect(result.nextReviewAt).toBe(expected.toISOString());
     });
 
@@ -136,11 +139,49 @@ describe("SM-2 Algorithm", () => {
         easeFactor: 2.5,
         interval: 30,
         now: fixedNow,
+        timezoneOffset: 0,
       });
 
       const expected = new Date(fixedNow);
       expected.setDate(expected.getDate() + 1);
+      expected.setUTCHours(0, 0, 0, 0);
       expect(result.nextReviewAt).toBe(expected.toISOString());
+    });
+
+    it("should handle custom timezone offset (UTC-3 at 9 PM rollover)", () => {
+      // 9 PM local in UTC-3 is midnight UTC next day
+      // 2024-01-24T21:00:00.000 (local) = 2024-01-25T00:00:00.000Z
+      const rolloverTimeUTC = new Date("2024-01-25T00:00:00.000Z");
+      const result = calculateSM2({
+        quality: 4,
+        repetitions: 0, // -> interval 1
+        easeFactor: 2.5,
+        interval: 0,
+        now: rolloverTimeUTC,
+        timezoneOffset: 180, // UTC-3 (Brazil): 180 minutes offset
+      });
+
+      // The next day local is Jan 25th. Start of day is 2024-01-25T00:00:00 local.
+      // Which corresponds to 2024-01-25T03:00:00.000Z
+      expect(result.nextReviewAt).toBe("2024-01-25T03:00:00.000Z");
+    });
+
+    it("should handle custom timezone offset (UTC+2 at 1 AM)", () => {
+      // 1 AM local in UTC+2 is 11 PM UTC the previous day
+      // 2024-01-25T01:00:00.000 (local) = 2024-01-24T23:00:00.000Z
+      const rolloverTimeUTC = new Date("2024-01-24T23:00:00.000Z");
+      const result = calculateSM2({
+        quality: 4,
+        repetitions: 0, // -> interval 1
+        easeFactor: 2.5,
+        interval: 0,
+        now: rolloverTimeUTC,
+        timezoneOffset: -120, // UTC+2: -120 minutes offset
+      });
+
+      // The next day local is Jan 26th. Start of day is 2024-01-26T00:00:00 local.
+      // Which corresponds to 2024-01-25T22:00:00.000Z
+      expect(result.nextReviewAt).toBe("2024-01-25T22:00:00.000Z");
     });
   });
 

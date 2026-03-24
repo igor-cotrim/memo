@@ -6,6 +6,7 @@ export interface SM2Input {
   easeFactor: number;
   interval: number;
   now?: Date;
+  timezoneOffset?: number;
 }
 
 export interface SM2Result {
@@ -33,6 +34,7 @@ export function calculateSM2(input: SM2Input): SM2Result {
     easeFactor,
     interval,
     now = new Date(),
+    timezoneOffset,
   } = input;
 
   // Map our 1-4 quality to SM-2's 0-5 scale
@@ -65,15 +67,40 @@ export function calculateSM2(input: SM2Input): SM2Result {
     }
   }
 
-  // Calculate next review date
-  const nextReview = new Date(now);
-  nextReview.setDate(nextReview.getDate() + newInterval);
+  // Calculate next review date honoring user timezone boundaries (start of day)
+  const current = new Date(now);
+  let localDate = new Date(current.getTime());
+
+  if (timezoneOffset !== undefined) {
+    // Convert current UTC time to user's local time (timezoneOffset is UTC - Local in minutes)
+    localDate = new Date(current.getTime() - timezoneOffset * 60000);
+  } else {
+    // Fallback: use server's local time offset
+    localDate = new Date(
+      current.getTime() - current.getTimezoneOffset() * 60000,
+    );
+  }
+
+  // Add the interval (in days)
+  localDate.setUTCDate(localDate.getUTCDate() + newInterval);
+  // Set to start of the day
+  localDate.setUTCHours(0, 0, 0, 0);
+
+  // Convert back to UTC
+  let nextReviewUTC;
+  if (timezoneOffset !== undefined) {
+    nextReviewUTC = new Date(localDate.getTime() + timezoneOffset * 60000);
+  } else {
+    nextReviewUTC = new Date(
+      localDate.getTime() + current.getTimezoneOffset() * 60000,
+    );
+  }
 
   return {
     repetitions: newRepetitions,
     easeFactor: newEaseFactor,
     interval: newInterval,
-    nextReviewAt: nextReview.toISOString(),
+    nextReviewAt: nextReviewUTC.toISOString(),
   };
 }
 
