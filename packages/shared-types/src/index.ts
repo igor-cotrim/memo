@@ -115,6 +115,7 @@ export interface DeckAccuracy {
 export interface ReviewStats {
   last7Days: DailyReviewCount[];
   last30Days: DailyReviewCount[];
+  last365Days: DailyReviewCount[];
   deckAccuracies: DeckAccuracy[];
   currentStreak: number;
 }

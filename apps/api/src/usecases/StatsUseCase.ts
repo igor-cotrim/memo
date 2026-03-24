@@ -15,12 +15,12 @@ export class GetReviewStatsUseCase {
   async execute(userId: string): Promise<ReviewStats> {
     const now = new Date();
 
-    // Last 30 days
-    const thirtyDaysAgo = new Date(now);
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    // Last 365 days
+    const yearAgo = new Date(now);
+    yearAgo.setDate(yearAgo.getDate() - 365);
     const allLogs = await this.reviewLogRepo.findByUserId(
       userId,
-      thirtyDaysAgo.toISOString(),
+      yearAgo.toISOString(),
     );
 
     // Daily counts
@@ -30,13 +30,20 @@ export class GetReviewStatsUseCase {
       dailyCounts.set(date, (dailyCounts.get(date) ?? 0) + 1);
     }
 
-    const last30Days: DailyReviewCount[] = [];
+    const thirtyDaysAgo = new Date(now);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const sevenDaysAgo = new Date(now);
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const last365Days: DailyReviewCount[] = [];
+    const last30Days: DailyReviewCount[] = [];
     const last7Days: DailyReviewCount[] = [];
 
     for (const [date, count] of dailyCounts.entries()) {
-      last30Days.push({ date, count });
+      last365Days.push({ date, count });
+      if (new Date(date) >= thirtyDaysAgo) {
+        last30Days.push({ date, count });
+      }
       if (new Date(date) >= sevenDaysAgo) {
         last7Days.push({ date, count });
       }
@@ -67,7 +74,13 @@ export class GetReviewStatsUseCase {
     const reviewDates = await this.reviewLogRepo.getReviewDates(userId);
     const currentStreak = this.calculateStreak(reviewDates, now);
 
-    return { last7Days, last30Days, deckAccuracies, currentStreak };
+    return {
+      last7Days,
+      last30Days,
+      last365Days,
+      deckAccuracies,
+      currentStreak,
+    };
   }
 
   private calculateStreak(dates: string[], now: Date): number {
