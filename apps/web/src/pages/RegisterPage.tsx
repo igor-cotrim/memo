@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
+import { useLocale } from "../hooks/useLocale";
 
 export default function RegisterPage() {
   const { register } = useAuth();
+  const { t, localeLabel, toggleLocale } = useLocale();
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -20,7 +22,7 @@ export default function RegisterPage() {
       await register(email, name, password);
       navigate("/");
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Registration failed";
+      const msg = err instanceof Error ? err.message : t("register.failed");
       if (typeof err === "object" && err !== null && "response" in err) {
         const axiosErr = err as { response?: { data?: { error?: string } } };
         setError(axiosErr.response?.data?.error ?? msg);
@@ -35,14 +37,23 @@ export default function RegisterPage() {
   return (
     <div className="flex items-center justify-center min-h-screen p-8 bg-bg-primary relative overflow-hidden before:content-[''] before:absolute before:-top-[40%] before:-left-[30%] before:w-[160%] before:h-[160%] before:bg-accent-primary/5 before:animate-bg-drift before:z-0">
       <div className="bg-bg-glass backdrop-blur-md border border-border rounded-xl p-11 w-full max-w-[430px] shadow-lg relative z-10 animate-card-entrance">
-        <div className="font-display text-[1.5rem] font-extrabold text-accent-primary flex items-center justify-center gap-2 mb-6 tracking-tight">
-          <span className="text-[1.5rem] !text-current">⚡</span> FlashMind
+        <div className="flex items-center justify-between mb-6">
+          <div className="font-display text-[1.5rem] font-extrabold text-accent-primary flex items-center gap-2 tracking-tight">
+            <span className="text-[1.5rem] !text-current">⚡</span> FlashMind
+          </div>
+          <button
+            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-bold text-[0.75rem] font-display transition-all whitespace-nowrap tracking-widest uppercase bg-white/5 text-text-secondary hover:text-accent-primary hover:bg-accent-primary/10 border border-border hover:border-accent-primary/30"
+            onClick={toggleLocale}
+            aria-label={`Switch language to ${localeLabel === "EN" ? "Portuguese" : "English"}`}
+          >
+            {localeLabel}
+          </button>
         </div>
         <h1 className="font-display text-[1.75rem] font-extrabold text-center mb-2 tracking-tight text-balance">
-          Create account
+          {t("register.title")}
         </h1>
         <p className="text-center text-text-secondary text-[0.9375rem] mb-8">
-          Start your spaced repetition journey today
+          {t("register.subtitle")}
         </p>
 
         <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
@@ -59,13 +70,13 @@ export default function RegisterPage() {
               className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
               htmlFor="register-name"
             >
-              Name
+              {t("register.nameLabel")}
             </label>
             <input
               id="register-name"
               className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-0 w-full"
               type="text"
-              placeholder="Your name…"
+              placeholder={t("register.namePlaceholder")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -77,13 +88,13 @@ export default function RegisterPage() {
               className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
               htmlFor="register-email"
             >
-              Email
+              {t("register.emailLabel")}
             </label>
             <input
               id="register-email"
               className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-0 w-full"
               type="email"
-              placeholder="you@example.com"
+              placeholder={t("register.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -96,13 +107,13 @@ export default function RegisterPage() {
               className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
               htmlFor="register-password"
             >
-              Password
+              {t("register.passwordLabel")}
             </label>
             <input
               id="register-password"
               className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-0 w-full"
               type="password"
-              placeholder="Min. 6 characters…"
+              placeholder={t("register.passwordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -115,17 +126,17 @@ export default function RegisterPage() {
             type="submit"
             disabled={loading}
           >
-            {loading ? "Creating account…" : "Create Account"}
+            {loading ? t("register.submitting") : t("register.submit")}
           </button>
         </form>
 
         <div className="text-center mt-7 text-text-secondary text-sm stagger-5">
-          Already have an account?{" "}
+          {t("register.hasAccount")}{" "}
           <Link
             to="/login"
             className="text-accent-primary hover:text-accent-secondary transition-colors"
           >
-            Sign in
+            {t("register.signIn")}
           </Link>
         </div>
       </div>

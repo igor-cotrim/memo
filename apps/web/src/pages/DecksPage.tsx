@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { Deck } from "@flashcard-app/shared-types";
+import { useLocale } from "../hooks/useLocale";
 import * as api from "../services/api";
 
 const DECK_COLORS = [
@@ -19,6 +20,7 @@ const DECK_COLORS = [
 
 export default function DecksPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -70,7 +72,7 @@ export default function DecksPage() {
   }
 
   async function handleDelete(id: string) {
-    if (confirm("Delete this deck and all its cards?")) {
+    if (confirm(t("decks.confirmDelete"))) {
       await api.deleteDeck(id);
       loadDecks();
     }
@@ -89,10 +91,10 @@ export default function DecksPage() {
       <div className="flex items-center justify-between mb-10 animate-fade-slide-up">
         <div>
           <h1 className="font-display text-[1.85rem] font-extrabold tracking-tight text-balance">
-            My Decks
+            {t("decks.title")}
           </h1>
           <p className="text-text-secondary text-[0.9375rem] mt-1">
-            Organize your flashcards into study decks
+            {t("decks.subtitle")}
           </p>
         </div>
         <button
@@ -100,7 +102,7 @@ export default function DecksPage() {
           onClick={openCreate}
           id="create-deck-btn"
         >
-          ＋ New Deck
+          {t("decks.newDeck")}
         </button>
       </div>
 
@@ -108,14 +110,14 @@ export default function DecksPage() {
         <div className="text-center py-20 px-8 text-text-secondary animate-fade-slide-up">
           <div className="text-[3.5rem] mb-4">📚</div>
           <h2 className="font-display text-xl font-bold mb-2 text-text-primary">
-            No decks yet
+            {t("decks.noDecksTitle")}
           </h2>
-          <p className="mb-6">Create your first deck to start studying</p>
+          <p className="mb-6">{t("decks.noDecksText")}</p>
           <button
             className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
             onClick={openCreate}
           >
-            Create a Deck
+            {t("decks.createDeck")}
           </button>
         </div>
       ) : (
@@ -144,19 +146,19 @@ export default function DecksPage() {
                   className="btn btn-ghost btn-sm"
                   onClick={() => navigate(`/review/${deck.id}`)}
                 >
-                  ▶ Study
+                  {t("decks.study")}
                 </button>
                 <button
                   className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed"
                   onClick={() => openEdit(deck)}
                 >
-                  ✎ Edit
+                  {t("decks.edit")}
                 </button>
                 <button
                   className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-accent-danger hover:text-accent-danger/80 hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed"
                   onClick={() => handleDelete(deck.id)}
                 >
-                  ✕ Delete
+                  {t("decks.deleteDeck")}
                 </button>
               </div>
             </div>
@@ -181,12 +183,14 @@ export default function DecksPage() {
                 className="font-display text-xl font-bold tracking-tight"
                 id="deck-modal-title"
               >
-                {editingDeck ? "Edit Deck" : "New Deck"}
+                {editingDeck
+                  ? t("decks.modalTitleEdit")
+                  : t("decks.modalTitleNew")}
               </h2>
               <button
                 className="inline-flex items-center justify-center w-[38px] h-[38px] rounded-sm bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5"
                 onClick={() => setShowModal(false)}
-                aria-label="Close"
+                aria-label={t("common.close")}
               >
                 ✕
               </button>
@@ -198,12 +202,12 @@ export default function DecksPage() {
                     className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
                     htmlFor="deck-name"
                   >
-                    Name
+                    {t("decks.nameLabel")}
                   </label>
                   <input
                     id="deck-name"
                     className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/10 w-full"
-                    placeholder="e.g. Spanish Vocabulary…"
+                    placeholder={t("decks.namePlaceholder")}
                     value={form.name}
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, name: e.target.value }))
@@ -218,12 +222,12 @@ export default function DecksPage() {
                     className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
                     htmlFor="deck-desc"
                   >
-                    Description
+                    {t("decks.descriptionLabel")}
                   </label>
                   <textarea
                     id="deck-desc"
                     className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/10 w-full min-h-[80px] resize-y"
-                    placeholder="What will you study?"
+                    placeholder={t("decks.descriptionPlaceholder")}
                     value={form.description}
                     onChange={(e) =>
                       setForm((prev) => ({
@@ -236,7 +240,7 @@ export default function DecksPage() {
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest">
-                    Color
+                    {t("decks.colorLabel")}
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {DECK_COLORS.map((color) => (
@@ -266,13 +270,13 @@ export default function DecksPage() {
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-semibold text-sm font-display border border-border bg-bg-card text-text-primary transition-all whitespace-nowrap tracking-tight hover:-translate-y-px hover:bg-bg-card-hover hover:border-border-light disabled:opacity-45 disabled:cursor-not-allowed"
                   onClick={() => setShowModal(false)}
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button
                   type="submit"
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
                 >
-                  {editingDeck ? "Save Changes" : "Create Deck"}
+                  {editingDeck ? t("common.save") : t("decks.createDeckSubmit")}
                 </button>
               </div>
             </form>

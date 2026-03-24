@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 
 import type { DailyReviewCount } from "@flashcard-app/shared-types";
+import { useLocale } from "../hooks/useLocale";
 
 interface ActivityGraphProps {
   data: DailyReviewCount[];
 }
 
-const DAY_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""] as const;
 const WEEKS = 53;
 
 // Fixed dimensions for the grid
@@ -14,22 +14,11 @@ const CELL_SIZE = 14; // 14px
 const GAP = 4; // 4px
 const DAY_LABEL_WIDTH = 28; // 28px
 
-function getMonthLabels(startDate: Date): { label: string; col: number }[] {
+function getMonthLabels(
+  startDate: Date,
+  monthNames: readonly string[],
+): { label: string; col: number }[] {
   const months: { label: string; col: number }[] = [];
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
   let lastMonth = -1;
 
   for (let week = 0; week < WEEKS; week++) {
@@ -55,6 +44,11 @@ function getIntensityClass(count: number, maxCount: number): string {
 }
 
 export default function ActivityGraph({ data }: ActivityGraphProps) {
+  const { t, tArray } = useLocale();
+
+  const monthNames = tArray("activity.months");
+  const dayLabels = tArray("activity.days");
+
   const { grid, startDate, maxCount, totalReviews } = useMemo(() => {
     const countMap = new Map<string, number>();
     let max = 0;
@@ -100,7 +94,10 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
     };
   }, [data]);
 
-  const monthLabels = useMemo(() => getMonthLabels(startDate), [startDate]);
+  const monthLabels = useMemo(
+    () => getMonthLabels(startDate, monthNames),
+    [startDate, monthNames],
+  );
 
   return (
     <div className="flex flex-col gap-2 w-full overflow-x-auto pb-4 overflow-y-hidden">
@@ -108,7 +105,7 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
         {/* Month labels */}
         <div
           className="relative h-4"
-          style={{ marginLeft: DAY_LABEL_WIDTH + 6 /* gap */ }}
+          style={{ marginLeft: DAY_LABEL_WIDTH + 6 }}
         >
           {monthLabels.map(({ label, col }) => (
             <span
@@ -124,7 +121,7 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
         <div className="flex gap-[6px]">
           {/* Day labels */}
           <div className="flex flex-col pr-[2px]" style={{ gap: GAP }}>
-            {DAY_LABELS.map((label, i) => (
+            {dayLabels.map((label, i) => (
               <span
                 key={i}
                 className="font-display text-[0.625rem] font-medium text-text-secondary text-right w-[24px]"
@@ -176,7 +173,7 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
                       width: CELL_SIZE,
                       height: CELL_SIZE,
                     }}
-                    title={`${dateStr}: ${count} review${count !== 1 ? "s" : ""}`}
+                    title={`${dateStr}: ${count} ${count !== 1 ? t("activity.reviews") : t("activity.review")}`}
                   />
                 );
               }),
@@ -187,12 +184,11 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
         {/* Footer legend */}
         <div className="flex items-center justify-between flex-wrap gap-3 mt-4 w-full">
           <span className="font-display text-[0.8125rem] font-semibold text-text-secondary">
-            {totalReviews} review{totalReviews !== 1 ? "s" : ""} in the last
-            year
+            {totalReviews} {t("activity.reviewsInYear")}
           </span>
           <div className="flex items-center gap-1">
             <span className="font-display text-[0.625rem] font-medium text-text-muted mx-[3px]">
-              Less
+              {t("activity.less")}
             </span>
             <div className="w-[12px] h-[12px] rounded-[3px] bg-white/5" />
             <div className="w-[12px] h-[12px] rounded-[3px] bg-accent-primary/25" />
@@ -200,7 +196,7 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
             <div className="w-[12px] h-[12px] rounded-[3px] bg-accent-primary/75" />
             <div className="w-[12px] h-[12px] rounded-[3px] bg-accent-primary" />
             <span className="font-display text-[0.625rem] font-medium text-text-muted mx-[3px]">
-              More
+              {t("activity.more")}
             </span>
           </div>
         </div>

@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { ReviewStats, Deck } from "@flashcard-app/shared-types";
+import { useLocale } from "../hooks/useLocale";
 import ActivityGraph from "../components/ActivityGraph";
 import * as api from "../services/api";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,10 +53,10 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between mb-10 animate-fade-slide-up page-header">
         <div>
           <h1 className="font-display text-[1.85rem] font-extrabold tracking-tight text-balance">
-            Dashboard
+            {t("dashboard.title")}
           </h1>
           <p className="text-text-secondary text-[0.9375rem] mt-1">
-            Your learning progress at a glance
+            {t("dashboard.subtitle")}
           </p>
         </div>
       </div>
@@ -66,7 +68,7 @@ export default function DashboardPage() {
             {stats?.currentStreak ?? 0}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
-            Day Streak 🔥
+            {t("dashboard.dayStreak")}
           </div>
         </div>
         <div className="text-center p-7 bg-bg-card border border-border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-2">
@@ -74,7 +76,7 @@ export default function DashboardPage() {
             {todayCount}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
-            Reviewed Today
+            {t("dashboard.reviewedToday")}
           </div>
         </div>
         <div className="text-center p-7 bg-bg-card border border-border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-3">
@@ -82,7 +84,7 @@ export default function DashboardPage() {
             {weekTotal}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
-            This Week
+            {t("dashboard.thisWeek")}
           </div>
         </div>
         <div className="text-center p-7 bg-bg-card border border-border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-4">
@@ -90,7 +92,7 @@ export default function DashboardPage() {
             {decks.length}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
-            Total Decks
+            {t("dashboard.totalDecks")}
           </div>
         </div>
       </div>
@@ -98,7 +100,7 @@ export default function DashboardPage() {
       {/* Activity Graph */}
       <div className="bg-bg-card border border-border rounded-md p-6 transition-all hover:border-border-light hover:shadow-md mb-4 stagger-5">
         <h2 className="font-display text-[1.125rem] font-bold tracking-tight mb-4">
-          Review Activity
+          {t("dashboard.reviewActivity")}
         </h2>
         <ActivityGraph data={stats?.last365Days ?? []} />
       </div>
@@ -107,7 +109,7 @@ export default function DashboardPage() {
       {stats?.deckAccuracies && stats.deckAccuracies.length > 0 && (
         <div className="bg-bg-card border border-border rounded-md p-6 transition-all hover:border-border-light hover:shadow-md mb-4 stagger-6">
           <h2 className="font-display text-[1.125rem] font-bold tracking-tight mb-2">
-            Deck Accuracy
+            {t("dashboard.deckAccuracy")}
           </h2>
           <div className="flex flex-col gap-3">
             {stats.deckAccuracies.map((da) => (
@@ -144,7 +146,7 @@ export default function DashboardPage() {
       {decks.length > 0 && (
         <div className="bg-bg-card border border-border rounded-md p-6 transition-all hover:border-border-light hover:shadow-md">
           <h2 className="font-display text-[1.125rem] font-bold tracking-tight mb-4">
-            Quick Study
+            {t("dashboard.quickStudy")}
           </h2>
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {decks.map((deck) => (
