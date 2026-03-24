@@ -1,0 +1,134 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { useAuth } from "../hooks/useAuth";
+
+export default function RegisterPage() {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      await register(email, name, password);
+      navigate("/");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Registration failed";
+      if (typeof err === "object" && err !== null && "response" in err) {
+        const axiosErr = err as { response?: { data?: { error?: string } } };
+        setError(axiosErr.response?.data?.error ?? msg);
+      } else {
+        setError(msg);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-center min-h-screen p-8 bg-bg-primary relative overflow-hidden before:content-[''] before:absolute before:-top-[40%] before:-left-[30%] before:w-[160%] before:h-[160%] before:bg-accent-primary/5 before:animate-bg-drift before:z-0">
+      <div className="bg-bg-glass backdrop-blur-md border border-border rounded-xl p-11 w-full max-w-[430px] shadow-lg relative z-10 animate-card-entrance">
+        <div className="font-display text-[1.5rem] font-extrabold text-accent-primary flex items-center justify-center gap-2 mb-6 tracking-tight">
+          <span className="text-[1.5rem] !text-current">⚡</span> FlashMind
+        </div>
+        <h1 className="font-display text-[1.75rem] font-extrabold text-center mb-2 tracking-tight text-balance">
+          Create account
+        </h1>
+        <p className="text-center text-text-secondary text-[0.9375rem] mb-8">
+          Start your spaced repetition journey today
+        </p>
+
+        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+          {error && (
+            <div
+              className="text-accent-danger text-[0.813rem] font-medium px-3 py-2 bg-accent-danger/10 rounded-sm border-l-[3px] border-accent-danger"
+              role="alert"
+            >
+              {error}
+            </div>
+          )}
+          <div className="flex flex-col gap-1.5 stagger-1">
+            <label
+              className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
+              htmlFor="register-name"
+            >
+              Name
+            </label>
+            <input
+              id="register-name"
+              className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-0 w-full"
+              type="text"
+              placeholder="Your name…"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              autoComplete="name"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5 stagger-2">
+            <label
+              className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
+              htmlFor="register-email"
+            >
+              Email
+            </label>
+            <input
+              id="register-email"
+              className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-0 w-full"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              spellCheck={false}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5 stagger-3">
+            <label
+              className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
+              htmlFor="register-password"
+            >
+              Password
+            </label>
+            <input
+              id="register-password"
+              className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-0 w-full"
+              type="password"
+              placeholder="Min. 6 characters…"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              autoComplete="new-password"
+            />
+          </div>
+          <button
+            className="inline-flex items-center justify-center gap-2 w-full px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed stagger-4"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Creating account…" : "Create Account"}
+          </button>
+        </form>
+
+        <div className="text-center mt-7 text-text-secondary text-sm stagger-5">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-accent-primary hover:text-accent-secondary transition-colors"
+          >
+            Sign in
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

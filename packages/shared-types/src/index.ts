@@ -1,0 +1,120 @@
+// ─── User ────────────────────────────────────────────────────────────────────
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  passwordHash: string;
+  createdAt: string;
+}
+
+export type PublicUser = Omit<User, "passwordHash">;
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+export interface RegisterRequest {
+  email: string;
+  name: string;
+  password: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: PublicUser;
+  accessToken: string;
+}
+
+export interface RefreshTokenResponse {
+  accessToken: string;
+}
+
+// ─── Deck ────────────────────────────────────────────────────────────────────
+
+export interface Deck {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  color?: string;
+  createdAt: string;
+}
+
+export interface CreateDeckRequest {
+  name: string;
+  description?: string;
+  color?: string;
+}
+
+export interface UpdateDeckRequest {
+  name?: string;
+  description?: string;
+  color?: string;
+}
+
+// ─── Flashcard ───────────────────────────────────────────────────────────────
+
+export interface Flashcard {
+  id: string;
+  deckId: string;
+  front: string;
+  back: string;
+  notes?: string;
+  easeFactor: number;
+  interval: number;
+  repetitions: number;
+  nextReviewAt: string;
+  createdAt: string;
+}
+
+export interface CreateCardRequest {
+  front: string;
+  back: string;
+  notes?: string;
+}
+
+export interface UpdateCardRequest {
+  front?: string;
+  back?: string;
+  notes?: string;
+}
+
+// ─── Review ──────────────────────────────────────────────────────────────────
+
+export type ReviewQuality = 1 | 2 | 3 | 4;
+
+export interface ReviewResult {
+  cardId: string;
+  quality: ReviewQuality;
+}
+
+export interface ReviewSession {
+  deckId: string;
+  cards: Flashcard[];
+  totalDue: number;
+}
+
+// ─── Stats ───────────────────────────────────────────────────────────────────
+
+export interface DailyReviewCount {
+  date: string;
+  count: number;
+}
+
+export interface DeckAccuracy {
+  deckId: string;
+  deckName: string;
+  totalReviews: number;
+  correctReviews: number;
+  accuracy: number;
+}
+
+export interface ReviewStats {
+  last7Days: DailyReviewCount[];
+  last30Days: DailyReviewCount[];
+  deckAccuracies: DeckAccuracy[];
+  currentStreak: number;
+}

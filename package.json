@@ -1,0 +1,14 @@
+{
+  "name": "flashcard-app",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel --filter './apps/*' run dev",
+    "dev:api": "pnpm --filter api run dev",
+    "dev:web": "pnpm --filter web run dev",
+    "build": "pnpm --filter './packages/*' run build && pnpm --filter './apps/*' run build",
+    "test": "pnpm -r run test",
+    "test:api": "pnpm --filter api run test",
+    "test:web": "pnpm --filter web run test",
+    "lint": "pnpm -r run lint"
+  }
+}
