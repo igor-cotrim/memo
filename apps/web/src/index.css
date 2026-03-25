@@ -12,8 +12,8 @@
   --color-text-secondary: #9a8fa6;
   --color-text-muted: #6a5e78;
 
-  --color-accent-primary: #e2a83e;
-  --color-accent-primary-hover: #d49a2e;
+  --color-accent-primary: #3aa6df;
+  --color-accent-primary-hover: #2991c8;
   --color-accent-secondary: #2dd4bf;
   --color-accent-success: #34d399;
   --color-accent-danger: #f87171;
@@ -21,7 +21,7 @@
 
   --color-border: #282337;
   --color-border-light: #3a3350;
-  --color-border-accent: rgba(226, 168, 62, 0.25);
+  --color-border-accent: rgba(58, 166, 223, 0.25);
 
   --font-display: "Sora", sans-serif;
   --font-body: "DM Sans", sans-serif;
@@ -34,7 +34,7 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.55);
-  --shadow-glow: 0 0 40px rgba(226, 168, 62, 0.12);
+  --shadow-glow: 0 0 40px rgba(58, 166, 223, 0.12);
 
   --animate-bg-drift: bgDrift 25s ease-in-out infinite;
   --animate-float-orb: floatOrb 20s ease-in-out infinite;
@@ -55,7 +55,7 @@
   /* Noise / grain texture overlay */
   body::after {
     content: "";
-    @apply fixed inset-0 z-[9999] pointer-events-none opacity-[0.028];
+    @apply fixed inset-0 z-9999 pointer-events-none opacity-[0.028];
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     background-repeat: repeat;
     background-size: 256px 256px;
