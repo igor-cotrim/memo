@@ -115,7 +115,20 @@ export const en = {
     qualityEasy: "Easy",
   },
   activity: {
-    months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    months: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
     days: ["", "Mon", "", "Wed", "", "Fri", ""],
     less: "Less",
     more: "More",
@@ -127,7 +140,8 @@ export const en = {
 
 export type Translations = {
   [K in keyof typeof en]: {
-    [P in keyof (typeof en)[K]]: (typeof en)[K][P] extends readonly string[] ? readonly string[] : string;
+    [P in keyof (typeof en)[K]]: (typeof en)[K][P] extends readonly string[]
+      ? readonly string[]
+      : string;
   };
 };
-

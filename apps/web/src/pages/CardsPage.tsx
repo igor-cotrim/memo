@@ -4,6 +4,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import type { Deck, Flashcard } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
 import * as api from "../services/api";
+import CardItem from "../components/CardItem";
+import CardModal from "../components/CardModal";
+import EmptyState from "../components/EmptyState";
 
 export default function CardsPage() {
   const { deckId } = useParams<{ deckId: string }>();
@@ -14,7 +17,6 @@ export default function CardsPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
-  const [form, setForm] = useState({ front: "", back: "", notes: "" });
 
   useEffect(() => {
     if (!deckId) return;
@@ -36,18 +38,19 @@ export default function CardsPage() {
 
   function openCreate() {
     setEditingCard(null);
-    setForm({ front: "", back: "", notes: "" });
     setShowModal(true);
   }
 
   function openEdit(card: Flashcard) {
     setEditingCard(card);
-    setForm({ front: card.front, back: card.back, notes: card.notes ?? "" });
     setShowModal(true);
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSave(form: {
+    front: string;
+    back: string;
+    notes: string;
+  }) {
     if (editingCard) {
       await api.updateCard(deckId!, editingCard.id, form);
     } else {
@@ -74,34 +77,34 @@ export default function CardsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-10 animate-fade-slide-up">
-        <div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 mb-10 animate-fade-slide-up">
+        <div className="w-full">
           <button
-            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed mb-2"
+            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed mb-2 -ml-3"
             onClick={() => navigate("/decks")}
           >
             {t("cards.backToDecks")}
           </button>
           <h1
-            className="font-display text-[1.85rem] font-extrabold tracking-tight text-balance"
+            className="font-display text-[1.85rem] font-extrabold tracking-tight text-balance break-words truncate max-w-full"
             style={{ color: deck?.color }}
           >
             {deck?.name}
           </h1>
-          <p className="text-text-secondary text-[0.9375rem] mt-1">
+          <p className="text-text-secondary text-[0.9375rem] mt-1 line-clamp-2">
             {cards.length} {t("cards.cardsCount")}
             {deck?.description ? ` · ${deck.description}` : ""}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <button
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-semibold text-sm font-display border border-border bg-bg-card text-text-primary transition-all whitespace-nowrap tracking-tight hover:-translate-y-px hover:bg-bg-card-hover hover:border-border-light disabled:opacity-45 disabled:cursor-not-allowed"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-semibold text-sm font-display border border-border bg-bg-card text-text-primary transition-all whitespace-nowrap tracking-tight hover:-translate-y-px hover:bg-bg-card-hover hover:border-border-light disabled:opacity-45 disabled:cursor-not-allowed"
             onClick={() => navigate(`/review/${deckId}`)}
           >
             {t("cards.studyNow")}
           </button>
           <button
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
             onClick={openCreate}
             id="create-card-btn"
           >
@@ -111,184 +114,39 @@ export default function CardsPage() {
       </div>
 
       {cards.length === 0 ? (
-        <div className="text-center py-20 px-8 text-text-secondary animate-fade-slide-up">
-          <div className="text-[3.5rem] mb-4">🃏</div>
-          <h2 className="font-display text-xl font-bold mb-2 text-text-primary">
-            {t("cards.noCardsTitle")}
-          </h2>
-          <p className="mb-6">{t("cards.noCardsText")}</p>
-          <button
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
-            onClick={openCreate}
-          >
-            {t("cards.addACard")}
-          </button>
-        </div>
+        <EmptyState
+          icon="🃏"
+          title={t("cards.noCardsTitle")}
+          description={t("cards.noCardsText")}
+          action={
+            <button
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
+              onClick={openCreate}
+            >
+              {t("cards.addACard")}
+            </button>
+          }
+        />
       ) : (
         <div className="grid gap-5 grid-cols-1 md:grid-cols-2">
           {cards.map((card, i) => (
-            <div
+            <CardItem
               key={card.id}
-              className={`bg-bg-card border border-border rounded-md p-6 transition-all hover:border-border-light hover:shadow-md stagger-${Math.min(i + 1, 6)}`}
-              id={`card-${card.id}`}
-            >
-              <div className="flex flex-row items-center justify-between mb-4">
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full font-display text-[0.7rem] font-semibold tracking-wide bg-accent-primary/10 text-accent-primary">
-                  {card.repetitions === 0
-                    ? t("cards.new")
-                    : `${t("cards.rep")} ${card.repetitions}`}
-                </span>
-                <div className="flex gap-1">
-                  <button
-                    className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed"
-                    onClick={() => openEdit(card)}
-                    aria-label="Edit card"
-                  >
-                    ✎
-                  </button>
-                  <button
-                    className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-accent-danger hover:text-accent-danger/80 hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed"
-                    onClick={() => handleDelete(card.id)}
-                    aria-label="Delete card"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-              <div className="mb-2">
-                <div className="text-sm text-muted mb-2">
-                  {t("cards.front")}
-                </div>
-                <div className="font-bold">{card.front}</div>
-              </div>
-              <div>
-                <div className="text-sm text-muted mb-2">{t("cards.back")}</div>
-                <div>{card.back}</div>
-              </div>
-              {card.notes && (
-                <div
-                  className="mt-2 text-sm text-muted"
-                  style={{ fontStyle: "italic" }}
-                >
-                  📝 {card.notes}
-                </div>
-              )}
-              <div className="mt-4 text-sm text-muted">
-                {t("cards.nextReview")}{" "}
-                {new Date(card.nextReviewAt).toLocaleDateString()}
-              </div>
-            </div>
+              card={card}
+              index={i}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+            />
           ))}
         </div>
       )}
 
       {showModal && (
-        <div
-          className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-[1000] p-8 animate-fade-in overscroll-contain"
-          onClick={() => setShowModal(false)}
-        >
-          <div
-            className="bg-bg-secondary border border-border rounded-lg w-full max-w-[500px] p-8 shadow-lg animate-modal-slide-up"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="card-modal-title"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2
-                className="font-display text-xl font-bold tracking-tight"
-                id="card-modal-title"
-              >
-                {editingCard
-                  ? t("cards.modalTitleEdit")
-                  : t("cards.modalTitleNew")}
-              </h2>
-              <button
-                className="inline-flex items-center justify-center w-[38px] h-[38px] rounded-sm bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5"
-                onClick={() => setShowModal(false)}
-                aria-label={t("common.close")}
-              >
-                ✕
-              </button>
-            </div>
-            <form onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-5">
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
-                    htmlFor="card-front"
-                  >
-                    {t("cards.frontLabel")}
-                  </label>
-                  <textarea
-                    id="card-front"
-                    className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/10 w-full min-h-[80px] resize-y"
-                    placeholder={t("cards.frontPlaceholder")}
-                    value={form.front}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, front: e.target.value }))
-                    }
-                    required
-                    autoFocus
-                    autoComplete="off"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
-                    htmlFor="card-back"
-                  >
-                    {t("cards.backLabel")}
-                  </label>
-                  <textarea
-                    id="card-back"
-                    className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/10 w-full min-h-[80px] resize-y"
-                    placeholder={t("cards.backPlaceholder")}
-                    value={form.back}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, back: e.target.value }))
-                    }
-                    required
-                    autoComplete="off"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
-                    htmlFor="card-notes"
-                  >
-                    {t("cards.notesLabel")}
-                  </label>
-                  <textarea
-                    id="card-notes"
-                    className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/10 w-full min-h-[80px] resize-y"
-                    placeholder={t("cards.notesPlaceholder")}
-                    value={form.notes}
-                    onChange={(e) =>
-                      setForm((prev) => ({ ...prev, notes: e.target.value }))
-                    }
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-3 justify-end mt-6">
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-semibold text-sm font-display border border-border bg-bg-card text-text-primary transition-all whitespace-nowrap tracking-tight hover:-translate-y-px hover:bg-bg-card-hover hover:border-border-light disabled:opacity-45 disabled:cursor-not-allowed"
-                  onClick={() => setShowModal(false)}
-                >
-                  {t("common.cancel")}
-                </button>
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
-                >
-                  {editingCard ? t("common.save") : t("cards.addCardSubmit")}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <CardModal
+          card={editingCard}
+          onClose={() => setShowModal(false)}
+          onSave={handleSave}
+        />
       )}
     </div>
   );

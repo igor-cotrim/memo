@@ -4,6 +4,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import type { Flashcard, ReviewQuality } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
 import * as api from "../services/api";
+import ReviewCard from "../components/ReviewCard";
+import ReviewScoreButtons from "../components/ReviewScoreButtons";
+import EmptyState from "../components/EmptyState";
 
 export default function ReviewPage() {
   const { deckId } = useParams<{ deckId: string }>();
@@ -81,17 +84,6 @@ export default function ReviewPage() {
     );
   }
 
-  const qualityOptions: {
-    quality: ReviewQuality;
-    label: string;
-    emoji: string;
-  }[] = [
-    { quality: 1, label: t("review.qualityBlackout"), emoji: "😵" },
-    { quality: 2, label: t("review.qualityHard"), emoji: "😰" },
-    { quality: 3, label: t("review.qualityGood"), emoji: "🤔" },
-    { quality: 4, label: t("review.qualityEasy"), emoji: "😎" },
-  ];
-
   const currentCard = cards[currentIndex];
   const isComplete = !currentCard || currentIndex >= cards.length;
 
@@ -105,46 +97,41 @@ export default function ReviewPage() {
       </button>
 
       {cards.length === 0 ? (
-        <div className="flex flex-col items-center justify-center flex-1 text-center py-20 px-4 animate-fade-slide-up">
-          <div className="text-[4rem] mb-6">🎉</div>
-          <h2 className="font-display text-2xl font-bold mb-3 text-text-primary tracking-tight">
-            {t("review.allCaughtUpTitle")}
-          </h2>
-          <p className="text-text-secondary mb-8">
-            {t("review.allCaughtUpText")}
-          </p>
-          <button
-            className="inline-flex items-center justify-center gap-2 w-full md:w-auto px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
-            onClick={() => navigate("/decks")}
-          >
-            {t("review.backToDecks")}
-          </button>
-        </div>
-      ) : isComplete ? (
-        <div className="flex flex-col items-center justify-center flex-1 text-center py-20 px-4 animate-fade-slide-up">
-          <div className="text-[4rem] mb-6">🏆</div>
-          <h2 className="font-display text-2xl font-bold mb-3 text-text-primary tracking-tight">
-            {t("review.sessionCompleteTitle")}
-          </h2>
-          <p className="text-text-secondary mb-8">
-            {t("review.youReviewed")} {completed}{" "}
-            {completed !== 1 ? t("review.cards") : t("review.card")}
-          </p>
-          <div className="flex gap-3 justify-center w-full max-w-sm">
+        <EmptyState
+          icon="🎉"
+          title={t("review.allCaughtUpTitle")}
+          description={t("review.allCaughtUpText")}
+          action={
             <button
-              className="inline-flex flex-1 items-center justify-center gap-2 px-8 py-3.5 rounded-md font-semibold text-base font-display border border-border bg-bg-card text-text-primary transition-all whitespace-nowrap tracking-tight hover:-translate-y-px hover:bg-bg-card-hover hover:border-border-light disabled:opacity-45 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 w-full md:w-auto px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
               onClick={() => navigate("/decks")}
             >
               {t("review.backToDecks")}
             </button>
-            <button
-              className="inline-flex flex-1 items-center justify-center gap-2 px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
-              onClick={() => navigate("/")}
-            >
-              {t("layout.dashboard")}
-            </button>
-          </div>
-        </div>
+          }
+        />
+      ) : isComplete ? (
+        <EmptyState
+          icon="🏆"
+          title={t("review.sessionCompleteTitle")}
+          description={`${t("review.youReviewed")} ${completed} ${completed !== 1 ? t("review.cards") : t("review.card")}`}
+          action={
+            <div className="flex gap-3 justify-center w-full max-w-sm mx-auto">
+              <button
+                className="inline-flex flex-1 items-center justify-center gap-2 px-8 py-3.5 rounded-md font-semibold text-base font-display border border-border bg-bg-card text-text-primary transition-all whitespace-nowrap tracking-tight hover:-translate-y-px hover:bg-bg-card-hover hover:border-border-light disabled:opacity-45 disabled:cursor-not-allowed"
+                onClick={() => navigate("/decks")}
+              >
+                {t("review.backToDecks")}
+              </button>
+              <button
+                className="inline-flex flex-1 items-center justify-center gap-2 px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
+                onClick={() => navigate("/")}
+              >
+                {t("layout.dashboard")}
+              </button>
+            </div>
+          }
+        />
       ) : (
         <>
           <div className="flex flex-col mt-4 mb-8">
@@ -164,64 +151,14 @@ export default function ReviewPage() {
             </div>
           </div>
 
-          <div
-            className="perspective-[1200px] w-full aspect-[3/2] mx-auto cursor-pointer"
-            onClick={handleFlip}
-          >
-            <div
-              className={`w-full h-full relative [transform-style:preserve-3d] transition-transform duration-[650ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isFlipped ? "[transform:rotateY(180deg)]" : ""}`}
-            >
-              <div className="absolute inset-0 [backface-visibility:hidden] flex flex-col items-center justify-center p-10 rounded-xl border border-border text-center shadow-lg bg-bg-card">
-                <div className="absolute top-4 left-4 font-display text-[0.7rem] font-semibold text-text-muted uppercase tracking-[0.1em]">
-                  {t("review.front")}
-                </div>
-                <div className="font-display text-[1.5rem] font-semibold leading-snug tracking-tight text-balance">
-                  {currentCard.front}
-                </div>
-                <div className="absolute bottom-4 text-xs text-text-muted">
-                  {t("review.flipHint")}
-                </div>
-              </div>
-              <div className="absolute inset-0 [backface-visibility:hidden] flex flex-col items-center justify-center p-10 rounded-xl border border-border text-center shadow-lg bg-bg-card-hover border-border-accent [transform:rotateY(180deg)]">
-                <div className="absolute top-4 left-4 font-display text-[0.7rem] font-semibold text-text-muted uppercase tracking-[0.1em]">
-                  {t("review.back")}
-                </div>
-                <div className="font-display text-[1.5rem] font-semibold leading-snug tracking-tight text-balance">
-                  {currentCard.back}
-                </div>
-                {currentCard.notes && (
-                  <div className="absolute bottom-4 text-xs text-text-secondary">
-                    📝 {currentCard.notes}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <ReviewCard
+            card={currentCard}
+            isFlipped={isFlipped}
+            onFlip={handleFlip}
+          />
 
           {isFlipped && (
-            <div className="flex gap-4 w-full mt-8 animate-fade-slide-up">
-              {qualityOptions.map(({ quality, label, emoji }) => (
-                <button
-                  key={quality}
-                  className={`flex-1 p-4 border rounded-md bg-bg-card text-text-primary font-display cursor-pointer transition-all text-center hover:-translate-y-[3px] hover:shadow-md active:-translate-y-px ${
-                    quality === 1
-                      ? "border-accent-danger hover:bg-accent-danger/10 text-accent-danger"
-                      : quality === 2
-                        ? "border-accent-warning hover:bg-accent-warning/10 text-accent-warning"
-                        : quality === 3
-                          ? "border-accent-secondary hover:bg-accent-secondary/10 text-accent-secondary"
-                          : "border-accent-success hover:bg-accent-success/10 text-accent-success"
-                  }`}
-                  onClick={() => handleRate(quality)}
-                  disabled={submitting}
-                >
-                  <span style={{ fontSize: "1.5rem" }}>{emoji}</span>
-                  <span className="block text-xs mt-1 font-medium">
-                    {label}
-                  </span>
-                </button>
-              ))}
-            </div>
+            <ReviewScoreButtons onRate={handleRate} disabled={submitting} />
           )}
         </>
       )}

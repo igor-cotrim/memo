@@ -7,8 +7,8 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 
-import { locales, defaultLocale, localeLabels } from "../i18n";
-import type { Locale, Translations } from "../i18n";
+import { locales, defaultLocale, localeLabels } from "../locale";
+import type { Locale, Translations } from "../locale";
 
 const STORAGE_KEY = "flashmind-locale";
 
