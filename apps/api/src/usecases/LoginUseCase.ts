@@ -7,7 +7,7 @@ import type { IUserRepository } from "../domain/repositories/IUserRepository";
 import type { IRefreshTokenRepository } from "../domain/repositories/IRefreshTokenRepository";
 import { UnauthorizedError } from "../shared/errors";
 
-const ACCESS_TOKEN_EXPIRY = "15m";
+const ACCESS_TOKEN_EXPIRY = "30m";
 const REFRESH_TOKEN_EXPIRY_DAYS = 7;
 
 export class LoginUseCase {

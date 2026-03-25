@@ -33,7 +33,7 @@ export class SqliteCardRepository implements ICardRepository {
       .where(
         and(
           eq(schema.flashcards.deckId, deckId),
-          lte(schema.flashcards.nextReviewAt, now),
+          lte(schema.flashcards.due, now),
         ),
       )
       .all();
@@ -49,10 +49,7 @@ export class SqliteCardRepository implements ICardRepository {
       .from(schema.flashcards)
       .innerJoin(schema.decks, eq(schema.flashcards.deckId, schema.decks.id))
       .where(
-        and(
-          eq(schema.decks.userId, userId),
-          lte(schema.flashcards.nextReviewAt, now),
-        ),
+        and(eq(schema.decks.userId, userId), lte(schema.flashcards.due, now)),
       )
       .all();
     return rows.map((r) => this.toCard(r.flashcard));
@@ -67,10 +64,15 @@ export class SqliteCardRepository implements ICardRepository {
         front: card.front,
         back: card.back,
         notes: card.notes ?? null,
-        easeFactor: card.easeFactor,
-        interval: card.interval,
-        repetitions: card.repetitions,
-        nextReviewAt: card.nextReviewAt,
+        state: card.state,
+        due: card.due,
+        stability: card.stability,
+        difficulty: card.difficulty,
+        elapsedDays: card.elapsedDays,
+        scheduledDays: card.scheduledDays,
+        reps: card.reps,
+        lapses: card.lapses,
+        lastReviewAt: card.lastReviewAt,
         createdAt: card.createdAt,
       })
       .run();
@@ -85,13 +87,19 @@ export class SqliteCardRepository implements ICardRepository {
     if (data.front !== undefined) updateData["front"] = data.front;
     if (data.back !== undefined) updateData["back"] = data.back;
     if (data.notes !== undefined) updateData["notes"] = data.notes;
-    if (data.easeFactor !== undefined)
-      updateData["easeFactor"] = data.easeFactor;
-    if (data.interval !== undefined) updateData["interval"] = data.interval;
-    if (data.repetitions !== undefined)
-      updateData["repetitions"] = data.repetitions;
-    if (data.nextReviewAt !== undefined)
-      updateData["nextReviewAt"] = data.nextReviewAt;
+    if (data.state !== undefined) updateData["state"] = data.state;
+    if (data.due !== undefined) updateData["due"] = data.due;
+    if (data.stability !== undefined) updateData["stability"] = data.stability;
+    if (data.difficulty !== undefined)
+      updateData["difficulty"] = data.difficulty;
+    if (data.elapsedDays !== undefined)
+      updateData["elapsedDays"] = data.elapsedDays;
+    if (data.scheduledDays !== undefined)
+      updateData["scheduledDays"] = data.scheduledDays;
+    if (data.reps !== undefined) updateData["reps"] = data.reps;
+    if (data.lapses !== undefined) updateData["lapses"] = data.lapses;
+    if (data.lastReviewAt !== undefined)
+      updateData["lastReviewAt"] = data.lastReviewAt;
 
     this.db
       .update(schema.flashcards)
@@ -125,10 +133,15 @@ export class SqliteCardRepository implements ICardRepository {
       front: row.front,
       back: row.back,
       notes: row.notes ?? undefined,
-      easeFactor: row.easeFactor,
-      interval: row.interval,
-      repetitions: row.repetitions,
-      nextReviewAt: row.nextReviewAt,
+      state: row.state,
+      due: row.due,
+      stability: row.stability,
+      difficulty: row.difficulty,
+      elapsedDays: row.elapsedDays,
+      scheduledDays: row.scheduledDays,
+      reps: row.reps,
+      lapses: row.lapses,
+      lastReviewAt: row.lastReviewAt,
       createdAt: row.createdAt,
     };
   }

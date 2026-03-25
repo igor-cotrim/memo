@@ -11,7 +11,7 @@ import type { IRefreshTokenRepository } from "../domain/repositories/IRefreshTok
 import { ConflictError, ValidationError } from "../shared/errors";
 
 const SALT_ROUNDS = 10;
-const ACCESS_TOKEN_EXPIRY = "15m";
+const ACCESS_TOKEN_EXPIRY = "30m";
 const REFRESH_TOKEN_EXPIRY_DAYS = 7;
 
 export class RegisterUseCase {

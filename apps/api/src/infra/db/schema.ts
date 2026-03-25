@@ -33,10 +33,16 @@ export const flashcards = sqliteTable("flashcards", {
   front: text("front").notNull(),
   back: text("back").notNull(),
   notes: text("notes"),
-  easeFactor: real("ease_factor").notNull().default(2.5),
-  interval: integer("interval").notNull().default(0),
-  repetitions: integer("repetitions").notNull().default(0),
-  nextReviewAt: text("next_review_at").notNull(),
+  state: integer("state").notNull().default(0), // 0=New, 1=Learning, 2=Review, 3=Relearning
+  due: text("due").notNull(),
+  stability: real("stability").notNull().default(0),
+  difficulty: real("difficulty").notNull().default(0),
+  elapsedDays: integer("elapsed_days").notNull().default(0),
+  scheduledDays: integer("scheduled_days").notNull().default(0),
+  reps: integer("reps").notNull().default(0),
+  lapses: integer("lapses").notNull().default(0),
+  lastReviewAt: text("last_review_at"),
+
   createdAt: text("created_at").notNull(),
 });
 

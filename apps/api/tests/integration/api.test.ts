@@ -128,7 +128,7 @@ describe("API Integration Tests", () => {
         .send({ front: "Hello", back: "Hola", notes: "Greeting" });
       expect(res.status).toBe(201);
       expect(res.body.front).toBe("Hello");
-      expect(res.body.easeFactor).toBe(2.5);
+      expect(res.body.state).toBe(0);
       cardId = res.body.id;
     });
 
@@ -167,8 +167,8 @@ describe("API Integration Tests", () => {
         .set("Authorization", `Bearer ${accessToken}`)
         .send({ cardId, quality: 4 });
       expect(res.status).toBe(200);
-      expect(res.body.repetitions).toBe(1);
-      expect(res.body.interval).toBe(1);
+      expect(res.body.reps).toBe(1);
+      expect(res.body.state).toBe(2);
     });
   });
 

@@ -8,7 +8,7 @@ import type {
 import type { ICardRepository } from "../domain/repositories/ICardRepository";
 import type { IDeckRepository } from "../domain/repositories/IDeckRepository";
 import type { IReviewLogRepository } from "../domain/repositories/IReviewLogRepository";
-import { calculateSM2 } from "../domain/sm2";
+import { calculateFSRS } from "../domain/fsrs";
 import { NotFoundError, ForbiddenError } from "../shared/errors";
 
 export class GetDueCardsUseCase {
@@ -47,19 +47,37 @@ export class SubmitReviewUseCase {
     const deck = await this.deckRepo.findById(card.deckId);
     if (!deck || deck.userId !== userId) throw new ForbiddenError();
 
-    const sm2Result = calculateSM2({
-      quality: review.quality,
-      repetitions: card.repetitions,
-      easeFactor: card.easeFactor,
-      interval: card.interval,
-      timezoneOffset: review.timezoneOffset,
-    });
+    const fsrsCard = calculateFSRS(
+      {
+        due: new Date(card.due),
+        stability: card.stability,
+        difficulty: card.difficulty,
+        elapsed_days: card.elapsedDays,
+        scheduled_days: card.scheduledDays,
+        reps: card.reps,
+        lapses: card.lapses,
+        state: card.state,
+        learning_steps: 0,
+        last_review: card.lastReviewAt
+          ? new Date(card.lastReviewAt)
+          : undefined,
+      },
+      review.quality,
+      new Date().toISOString(),
+    );
 
     const updatedCard = await this.cardRepo.update(review.cardId, {
-      easeFactor: sm2Result.easeFactor,
-      interval: sm2Result.interval,
-      repetitions: sm2Result.repetitions,
-      nextReviewAt: sm2Result.nextReviewAt,
+      state: fsrsCard.state,
+      due: fsrsCard.due.toISOString(),
+      stability: fsrsCard.stability,
+      difficulty: fsrsCard.difficulty,
+      elapsedDays: fsrsCard.elapsed_days,
+      scheduledDays: fsrsCard.scheduled_days,
+      reps: fsrsCard.reps,
+      lapses: fsrsCard.lapses,
+      lastReviewAt: fsrsCard.last_review
+        ? fsrsCard.last_review.toISOString()
+        : new Date().toISOString(),
     });
 
     if (!updatedCard) throw new NotFoundError("Card", review.cardId);

@@ -38,10 +38,15 @@ export function createTestApp(): { app: Express; cleanup: () => void } {
     front TEXT NOT NULL,
     back TEXT NOT NULL,
     notes TEXT,
-    ease_factor REAL NOT NULL DEFAULT 2.5,
-    interval INTEGER NOT NULL DEFAULT 0,
-    repetitions INTEGER NOT NULL DEFAULT 0,
-    next_review_at TEXT NOT NULL,
+    state INTEGER NOT NULL DEFAULT 0,
+    due TEXT NOT NULL,
+    stability REAL NOT NULL DEFAULT 0,
+    difficulty REAL NOT NULL DEFAULT 0,
+    elapsed_days INTEGER NOT NULL DEFAULT 0,
+    scheduled_days INTEGER NOT NULL DEFAULT 0,
+    reps INTEGER NOT NULL DEFAULT 0,
+    lapses INTEGER NOT NULL DEFAULT 0,
+    last_review_at TEXT,
     created_at TEXT NOT NULL
   )`);
 

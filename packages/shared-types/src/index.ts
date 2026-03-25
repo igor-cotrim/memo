@@ -63,10 +63,15 @@ export interface Flashcard {
   front: string;
   back: string;
   notes?: string;
-  easeFactor: number;
-  interval: number;
-  repetitions: number;
-  nextReviewAt: string;
+  state: number;
+  due: string;
+  stability: number;
+  difficulty: number;
+  elapsedDays: number;
+  scheduledDays: number;
+  reps: number;
+  lapses: number;
+  lastReviewAt: string | null;
   createdAt: string;
 }
 

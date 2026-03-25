@@ -1,5 +1,6 @@
 import type { Flashcard } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
+import { getRelativeTimeString } from "../utils/date";
 
 type CardItemProps = {
   card: Flashcard;
@@ -14,7 +15,7 @@ export default function CardItem({
   onEdit,
   onDelete,
 }: CardItemProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
 
   return (
     <div
@@ -23,9 +24,7 @@ export default function CardItem({
     >
       <div className="flex flex-row items-center justify-between mb-4">
         <span className="inline-flex items-center px-2.5 py-1 rounded-full font-display text-[0.7rem] font-semibold tracking-wide bg-accent-primary/10 text-accent-primary">
-          {card.repetitions === 0
-            ? t("cards.new")
-            : `${t("cards.rep")} ${card.repetitions}`}
+          {card.reps === 0 ? t("cards.new") : `${t("cards.rep")} ${card.reps}`}
         </span>
         <div className="flex gap-1">
           <button
@@ -63,8 +62,7 @@ export default function CardItem({
         </div>
       )}
       <div className="mt-4 text-sm text-muted">
-        {t("cards.nextReview")}{" "}
-        {new Date(card.nextReviewAt).toLocaleDateString()}
+        {t("cards.nextReview")} {getRelativeTimeString(card.due, locale)}
       </div>
     </div>
   );

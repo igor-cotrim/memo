@@ -31,7 +31,7 @@ function createMockCardRepo(): ICardRepository {
       return cards.filter((c) => c.deckId === deckId);
     },
     async findDueCards(deckId, now) {
-      return cards.filter((c) => c.deckId === deckId && c.nextReviewAt <= now);
+      return cards.filter((c) => c.deckId === deckId && c.due <= now);
     },
     async findAllDueCardsByUserId() {
       return [];
@@ -132,8 +132,8 @@ describe("Card Use Cases", () => {
       expect(card.front).toBe("Hello");
       expect(card.back).toBe("Hola");
       expect(card.deckId).toBe("deck-1");
-      expect(card.easeFactor).toBe(2.5);
-      expect(card.repetitions).toBe(0);
+      expect(card.state).toBe(0);
+      expect(card.reps).toBe(0);
     });
 
     it("should throw ValidationError for empty front", async () => {
@@ -210,9 +210,9 @@ describe("Review Use Cases", () => {
         quality: 4,
       });
 
-      expect(result.repetitions).toBe(1);
-      expect(result.interval).toBe(1);
-      expect(result.easeFactor).toBeGreaterThan(card.easeFactor);
+      expect(result.reps).toBe(1);
+      expect(result.state).toBe(2); // 2 = Review (graduated immediately because it was Easy)
+      expect(result.stability).toBeGreaterThan(0);
     });
 
     it("should reset on quality = 1", async () => {
@@ -231,8 +231,8 @@ describe("Review Use Cases", () => {
         cardId: card.id,
         quality: 1,
       });
-      expect(result.repetitions).toBe(0);
-      expect(result.interval).toBe(1);
+      expect(result.reps).toBe(2);
+      expect(result.state).toBe(3); // 3 = Relearning (lapsed from Review state)
     });
 
     it("should throw NotFoundError for invalid card", async () => {
