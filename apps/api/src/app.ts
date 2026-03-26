@@ -3,6 +3,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import pinoHttp from "pino-http";
+import { sql } from "drizzle-orm";
+import type { Logger } from "pino";
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 
 import type * as schema from "./infra/db/schema";
@@ -22,18 +25,29 @@ import { createStatsRoutes } from "./infra/http/routes/stats.routes";
 export function createApp(
   db: BetterSQLite3Database<typeof schema>,
   jwtSecret: string,
+  logger: Logger,
 ): express.Express {
   const app = express();
+
+  app.use(pinoHttp({ logger }));
 
   // Security Middlewares
   app.use(helmet());
 
-  // Rate limiting setup
+  // General Rate limiting setup
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-    standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+    limit: 100, // Limit each IP to 100 requests per `window`
+    standardHeaders: "draft-7",
+    legacyHeaders: false,
+  });
+
+  // Strict Rate limiter for Auth routes
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 10, // 10 requests per 15 minutes for auth endpoints
+    standardHeaders: "draft-7",
+    legacyHeaders: false,
   });
 
   app.use(
@@ -55,12 +69,22 @@ export function createApp(
   const refreshTokenRepo = new SqliteRefreshTokenRepository(db);
 
   // Health check
-  app.get("/health", (_req, res) => {
-    res.json({ status: "ok" });
+  app.get("/health", async (_req, res) => {
+    try {
+      await db.run(sql`SELECT 1`);
+      res.json({ status: "ok", db: "connected" });
+    } catch (err) {
+      logger.error({ err }, "Database health check failed");
+      res.status(503).json({ status: "error", db: "disconnected" });
+    }
   });
 
   // Auth (public)
-  app.use("/auth", createAuthRoutes(userRepo, refreshTokenRepo, jwtSecret));
+  app.use(
+    "/auth",
+    authLimiter,
+    createAuthRoutes(userRepo, refreshTokenRepo, jwtSecret),
+  );
 
   // Protected routes
   const auth = authMiddleware(jwtSecret);

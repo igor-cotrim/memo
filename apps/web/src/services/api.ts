@@ -2,6 +2,7 @@ import axios from "axios";
 
 import type {
   AuthResponse,
+  PublicUser,
   Deck,
   Flashcard,
   ReviewSession,
@@ -15,8 +16,14 @@ import type {
   RegisterRequest,
 } from "@flashcard-app/shared-types";
 
+const baseURL =
+  import.meta.env.VITE_API_URL || (import.meta.env.PROD ? undefined : "/api");
+if (!baseURL && import.meta.env.PROD) {
+  throw new Error("VITE_API_URL is undefined in production");
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "/api",
+  baseURL,
   withCredentials: true,
 });
 
@@ -77,6 +84,11 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
 export async function logout(): Promise<void> {
   await api.post("/auth/logout");
   localStorage.removeItem("accessToken");
+}
+
+export async function getMe(): Promise<{ user: PublicUser }> {
+  const res = await api.get<{ user: PublicUser }>("/auth/me");
+  return res.data;
 }
 
 // ─── Decks ───────────────────────────────────────────────────────────────────

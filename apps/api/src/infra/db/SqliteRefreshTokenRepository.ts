@@ -19,6 +19,7 @@ export class SqliteRefreshTokenRepository implements IRefreshTokenRepository {
         token: data.token,
         expiresAt: data.expiresAt,
         createdAt: data.createdAt,
+        revokedAt: data.revokedAt,
       })
       .run();
     return data;
@@ -36,6 +37,15 @@ export class SqliteRefreshTokenRepository implements IRefreshTokenRepository {
   async deleteByToken(token: string): Promise<boolean> {
     const result = this.db
       .delete(schema.refreshTokens)
+      .where(eq(schema.refreshTokens.token, token))
+      .run();
+    return result.changes > 0;
+  }
+
+  async revokeByToken(token: string): Promise<boolean> {
+    const result = this.db
+      .update(schema.refreshTokens)
+      .set({ revokedAt: new Date().toISOString() })
       .where(eq(schema.refreshTokens.token, token))
       .run();
     return result.changes > 0;

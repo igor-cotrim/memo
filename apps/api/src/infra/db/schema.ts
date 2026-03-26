@@ -70,4 +70,5 @@ export const refreshTokens = sqliteTable("refresh_tokens", {
   token: text("token").notNull().unique(),
   expiresAt: text("expires_at").notNull(),
   createdAt: text("created_at").notNull(),
+  revokedAt: text("revoked_at"),
 });

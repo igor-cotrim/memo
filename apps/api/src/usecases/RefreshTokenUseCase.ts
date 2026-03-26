@@ -23,6 +23,14 @@ export class RefreshTokenUseCase {
       throw new UnauthorizedError("Invalid refresh token");
     }
 
+    if (storedToken.revokedAt) {
+      // Reuse of a revoked token detected. Revoke all tokens for this user.
+      await this.refreshTokenRepo.deleteAllByUserId(storedToken.userId);
+      throw new UnauthorizedError(
+        "Suspicious activity detected. All sessions revoked.",
+      );
+    }
+
     if (new Date(storedToken.expiresAt) < new Date()) {
       await this.refreshTokenRepo.deleteByToken(token);
       throw new UnauthorizedError("Refresh token expired");
@@ -33,8 +41,8 @@ export class RefreshTokenUseCase {
       throw new UnauthorizedError("User not found");
     }
 
-    // Delete old token
-    await this.refreshTokenRepo.deleteByToken(token);
+    // Revoke old token instead of deleting it
+    await this.refreshTokenRepo.revokeByToken(token);
 
     // Issue new pair
     const accessToken = jwt.sign({ userId: user.id }, this.jwtSecret, {

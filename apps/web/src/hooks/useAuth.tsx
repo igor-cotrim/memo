@@ -27,23 +27,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      // Try to refresh to validate session
       api
         .getDecks()
         .then(() => {
-          // Token is valid, but we don't have user info yet
-          // Decode from token (simple approach)
-          try {
-            const payload = JSON.parse(atob(token.split(".")[1]!));
-            setUser({ id: payload.userId, email: "", name: "", createdAt: "" });
-          } catch {
-            localStorage.removeItem("accessToken");
-          }
+          api
+            .getMe()
+            .then((data) => {
+              setUser(data.user);
+            })
+            .catch(() => {
+              localStorage.removeItem("accessToken");
+            })
+            .finally(() => setIsLoading(false));
         })
         .catch(() => {
           localStorage.removeItem("accessToken");
-        })
-        .finally(() => setIsLoading(false));
+          setIsLoading(false);
+        });
     } else {
       setIsLoading(false);
     }

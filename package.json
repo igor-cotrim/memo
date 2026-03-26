@@ -10,5 +10,8 @@
     "test:api": "pnpm --filter api run test",
     "test:web": "pnpm --filter web run test",
     "lint": "pnpm -r run lint"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^11.0.0"
   }
 }

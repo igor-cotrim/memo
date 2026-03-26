@@ -2,6 +2,7 @@ import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { sql } from "drizzle-orm";
 import type { Express } from "express";
+import pino from "pino";
 
 import * as schema from "../../src/infra/db/schema";
 import { createApp } from "../../src/app";
@@ -63,10 +64,12 @@ export function createTestApp(): { app: Express; cleanup: () => void } {
     user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     token TEXT NOT NULL UNIQUE,
     expires_at TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    revoked_at TEXT
   )`);
 
-  const app = createApp(db, TEST_JWT_SECRET);
+  const logger = pino({ level: "silent" });
+  const app = createApp(db, TEST_JWT_SECRET, logger);
 
   return {
     app,
