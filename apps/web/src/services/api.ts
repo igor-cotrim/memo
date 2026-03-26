@@ -16,7 +16,7 @@ import type {
 } from "@flashcard-app/shared-types";
 
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_URL || "/api",
   withCredentials: true,
 });
 

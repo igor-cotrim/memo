@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
 
 import type * as schema from "./infra/db/schema";
@@ -23,12 +25,25 @@ export function createApp(
 ): express.Express {
   const app = express();
 
+  // Security Middlewares
+  app.use(helmet());
+
+  // Rate limiting setup
+  const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+    standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+  });
+
   app.use(
     cors({
       origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
       credentials: true,
     }),
   );
+
+  app.use(apiLimiter);
   app.use(express.json());
   app.use(cookieParser());
 
