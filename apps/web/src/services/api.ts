@@ -27,6 +27,8 @@ const api = axios.create({
   withCredentials: true,
 });
 
+let refreshPromise: Promise<string> | null = null;
+
 // Interceptor: attach token
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
@@ -44,19 +46,25 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !original._retry) {
       if (
         original.url?.includes("/auth/login") ||
-        original.url?.includes("/auth/register")
+        original.url?.includes("/auth/register") ||
+        original.url?.includes("/auth/refresh")
       ) {
         return Promise.reject(error);
       }
       original._retry = true;
       try {
-        const { data } = await axios.post(
-          "/api/auth/refresh",
-          {},
-          { withCredentials: true },
-        );
-        localStorage.setItem("accessToken", data.accessToken);
-        original.headers.Authorization = `Bearer ${data.accessToken}`;
+        if (!refreshPromise) {
+          refreshPromise = api
+            .post<{ accessToken: string }>("/auth/refresh")
+            .then((res) => res.data.accessToken)
+            .finally(() => {
+              refreshPromise = null;
+            });
+        }
+        const accessToken = await refreshPromise;
+        localStorage.setItem("accessToken", accessToken);
+        original.headers = original.headers ?? {};
+        original.headers.Authorization = `Bearer ${accessToken}`;
         return api(original);
       } catch {
         localStorage.removeItem("accessToken");

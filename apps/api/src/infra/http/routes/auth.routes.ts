@@ -1,5 +1,6 @@
 import { Router } from "express";
 import type { Request, Response, NextFunction } from "express";
+import rateLimit from "express-rate-limit";
 
 import { RegisterUseCase } from "../../../usecases/RegisterUseCase";
 import { LoginUseCase } from "../../../usecases/LoginUseCase";
@@ -18,6 +19,12 @@ export function createAuthRoutes(
   jwtSecret: string,
 ): Router {
   const router = Router();
+  const loginRegisterLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 10,
+    standardHeaders: "draft-7",
+    legacyHeaders: false,
+  });
 
   const registerUseCase = new RegisterUseCase(
     userRepo,
@@ -49,6 +56,7 @@ export function createAuthRoutes(
 
   router.post(
     "/register",
+    loginRegisterLimiter,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await registerUseCase.execute(req.body);
@@ -69,6 +77,7 @@ export function createAuthRoutes(
 
   router.post(
     "/login",
+    loginRegisterLimiter,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await loginUseCase.execute(req.body);
