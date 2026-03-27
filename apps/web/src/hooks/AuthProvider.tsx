@@ -1,24 +1,9 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
 
 import type { PublicUser } from "@flashcard-app/shared-types";
 import * as api from "../services/api";
-
-interface AuthContextType {
-  user: PublicUser | null;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, name: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
+import { AuthContext } from "./authContext";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<PublicUser | null>(null);
@@ -26,27 +11,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (token) {
-      api
-        .getDecks()
-        .then(() => {
-          api
-            .getMe()
-            .then((data) => {
-              setUser(data.user);
-            })
-            .catch(() => {
-              localStorage.removeItem("accessToken");
-            })
-            .finally(() => setIsLoading(false));
-        })
-        .catch(() => {
-          localStorage.removeItem("accessToken");
-          setIsLoading(false);
-        });
-    } else {
+    if (!token) {
       setIsLoading(false);
+      return;
     }
+
+    api
+      .getMe()
+      .then((data) => {
+        setUser(data.user);
+      })
+      .catch(() => {
+        localStorage.removeItem("accessToken");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
@@ -72,10 +52,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth(): AuthContextType {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
-  return ctx;
 }

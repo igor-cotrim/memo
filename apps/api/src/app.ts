@@ -42,14 +42,6 @@ export function createApp(
     legacyHeaders: false,
   });
 
-  // Strict Rate limiter for Auth routes
-  const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    limit: 10, // 10 requests per 15 minutes for auth endpoints
-    standardHeaders: "draft-7",
-    legacyHeaders: false,
-  });
-
   app.use(
     cors({
       origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
@@ -80,11 +72,7 @@ export function createApp(
   });
 
   // Auth (public)
-  app.use(
-    "/auth",
-    authLimiter,
-    createAuthRoutes(userRepo, refreshTokenRepo, jwtSecret),
-  );
+  app.use("/auth", createAuthRoutes(userRepo, refreshTokenRepo, jwtSecret));
 
   // Protected routes
   const auth = authMiddleware(jwtSecret);

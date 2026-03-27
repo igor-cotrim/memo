@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { AuthProvider } from "./hooks/AuthProvider";
+import { useAuth } from "./hooks/useAuth";
 import { LocaleProvider } from "./hooks/useLocale";
 import Layout from "./components/Layout";
 import LoginPage from "./pages/LoginPage";
