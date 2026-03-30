@@ -22,7 +22,7 @@ export default function DeckItem({
 
   return (
     <div
-      className={`cursor-pointer relative overflow-hidden bg-bg-card border border-border rounded-md p-6 transition-all hover:-translate-y-1 hover:scale-[1.005] hover:shadow-lg hover:shadow-glow hover:border-border-accent active:-translate-y-px active:scale-100 before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[3px] before:bg-[var(--deck-color,var(--color-accent-primary))] before:rounded-t-md stagger-${Math.min(index + 1, 6)}`}
+      className={`cursor-pointer relative overflow-hidden bg-bg-card border border-border rounded-md p-6 transition-all hover:-translate-y-1 hover:scale-[1.005] hover:shadow-lg hover:border-border-accent active:-translate-y-px active:scale-100 before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-[3px] before:bg-(--deck-color,var(--color-accent-primary)) before:rounded-t-md stagger-${Math.min(index + 1, 6)}`}
       style={{ "--deck-color": deck.color } as React.CSSProperties}
       onClick={() => onClick(deck.id)}
       id={`deck-${deck.id}`}

@@ -166,7 +166,7 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
                 return (
                   <div
                     key={`${weekIdx}-${dayIdx}`}
-                    className={`rounded-[3px] transition-all duration-150 cursor-crosshair hover:outline-2 hover:outline-text-secondary hover:outline-offset-[-1px] hover:scale-125 hover:z-10 ${getIntensityClass(count, maxCount)}`}
+                    className={`rounded-[3px] transition-all duration-150 cursor-crosshair hover:outline-2 hover:outline-text-secondary hover:-outline-offset-1 hover:scale-125 hover:z-10 ${getIntensityClass(count, maxCount)}`}
                     style={{
                       gridColumn: weekIdx + 1,
                       gridRow: dayIdx + 1,

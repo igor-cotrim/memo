@@ -39,7 +39,7 @@ export default function RegisterPage() {
       <div className="bg-bg-glass backdrop-blur-md border border-border rounded-xl p-11 w-full max-w-[430px] shadow-lg relative z-10 animate-card-entrance">
         <div className="flex items-center justify-between mb-6">
           <div className="font-display text-[1.5rem] font-extrabold text-accent-primary flex items-center gap-2 tracking-tight">
-            <span className="text-[1.5rem] !text-current">⚡</span> FlashMind
+            <span className="text-[1.5rem] text-current!">⚡</span> FlashMind
           </div>
           <button
             className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-bold text-[0.75rem] font-display transition-all whitespace-nowrap tracking-widest uppercase bg-white/5 text-text-secondary hover:text-accent-primary hover:bg-accent-primary/10 border border-border hover:border-accent-primary/30"
@@ -122,7 +122,7 @@ export default function RegisterPage() {
             />
           </div>
           <button
-            className="inline-flex items-center justify-center gap-2 w-full px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed stagger-4"
+            className="inline-flex items-center justify-center gap-2 w-full px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed stagger-4"
             type="submit"
             disabled={loading}
           >

@@ -10,6 +10,9 @@ import type {
 import {
   CreateCardUseCase,
   ListCardsUseCase,
+  GetCardUseCase,
+  UpdateCardUseCase,
+  DeleteCardUseCase,
 } from "../../src/usecases/CardUseCases";
 import {
   GetDueCardsUseCase,
@@ -167,6 +170,116 @@ describe("Card Use Cases", () => {
       const list = new ListCardsUseCase(cardRepo, deckRepo);
       const result = await list.execute("user-1", "deck-1");
       expect(result).toHaveLength(2);
+    });
+  });
+
+  describe("GetCardUseCase", () => {
+    it("should return a card for the owner", async () => {
+      const create = new CreateCardUseCase(cardRepo, deckRepo);
+      const card = await create.execute("user-1", "deck-1", {
+        front: "Hello",
+        back: "Hola",
+      });
+
+      const get = new GetCardUseCase(cardRepo, deckRepo);
+      const result = await get.execute("user-1", card.id);
+      expect(result.front).toBe("Hello");
+      expect(result.back).toBe("Hola");
+    });
+
+    it("should throw NotFoundError for invalid card id", async () => {
+      const get = new GetCardUseCase(cardRepo, deckRepo);
+      await expect(get.execute("user-1", "nonexistent")).rejects.toThrow(
+        NotFoundError,
+      );
+    });
+
+    it("should throw ForbiddenError for non-owner", async () => {
+      const create = new CreateCardUseCase(cardRepo, deckRepo);
+      const card = await create.execute("user-1", "deck-1", {
+        front: "X",
+        back: "Y",
+      });
+
+      const get = new GetCardUseCase(cardRepo, deckRepo);
+      await expect(get.execute("user-2", card.id)).rejects.toThrow(
+        ForbiddenError,
+      );
+    });
+  });
+
+  describe("UpdateCardUseCase", () => {
+    it("should update card fields", async () => {
+      const create = new CreateCardUseCase(cardRepo, deckRepo);
+      const card = await create.execute("user-1", "deck-1", {
+        front: "Old",
+        back: "Old",
+      });
+
+      const update = new UpdateCardUseCase(cardRepo, deckRepo);
+      const result = await update.execute("user-1", card.id, {
+        front: "New Front",
+        back: "New Back",
+      });
+      expect(result.front).toBe("New Front");
+      expect(result.back).toBe("New Back");
+    });
+
+    it("should throw NotFoundError for invalid card id", async () => {
+      const update = new UpdateCardUseCase(cardRepo, deckRepo);
+      await expect(
+        update.execute("user-1", "nonexistent", { front: "X" }),
+      ).rejects.toThrow(NotFoundError);
+    });
+
+    it("should throw ForbiddenError for non-owner", async () => {
+      const create = new CreateCardUseCase(cardRepo, deckRepo);
+      const card = await create.execute("user-1", "deck-1", {
+        front: "X",
+        back: "Y",
+      });
+
+      const update = new UpdateCardUseCase(cardRepo, deckRepo);
+      await expect(
+        update.execute("user-2", card.id, { front: "Z" }),
+      ).rejects.toThrow(ForbiddenError);
+    });
+  });
+
+  describe("DeleteCardUseCase", () => {
+    it("should delete a card", async () => {
+      const create = new CreateCardUseCase(cardRepo, deckRepo);
+      const card = await create.execute("user-1", "deck-1", {
+        front: "Delete me",
+        back: "Yes",
+      });
+
+      const del = new DeleteCardUseCase(cardRepo, deckRepo);
+      await del.execute("user-1", card.id);
+
+      const list = new ListCardsUseCase(cardRepo, deckRepo);
+      const results = await list.execute("user-1", "deck-1");
+      expect(results).toHaveLength(0);
+    });
+
+    it("should throw NotFoundError for invalid card id", async () => {
+      const del = new DeleteCardUseCase(cardRepo, deckRepo);
+      await expect(del.execute("user-1", "nonexistent")).rejects.toThrow(
+        NotFoundError,
+      );
+    });
+
+    it("should throw ForbiddenError for non-owner", async () => {
+      const create = new CreateCardUseCase(cardRepo, deckRepo);
+      const card = await create.execute("user-1", "deck-1", {
+        front: "X",
+        back: "Y",
+      });
+
+      const del = new DeleteCardUseCase(cardRepo, deckRepo);
+      await expect(del.execute("user-2", card.id)).rejects.toThrow(
+        ForbiddenError,
+      );
     });
   });
 });

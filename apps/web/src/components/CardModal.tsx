@@ -28,7 +28,7 @@ export default function CardModal({ card, onClose, onSave }: CardModalProps) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-[1000] p-8 animate-fade-in overscroll-contain"
+      className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-1000 p-8 animate-fade-in overscroll-contain"
       onClick={onClose}
     >
       <div
@@ -123,7 +123,7 @@ export default function CardModal({ card, onClose, onSave }: CardModalProps) {
             </button>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
             >
               {card ? t("common.save") : t("cards.addCardSubmit")}
             </button>

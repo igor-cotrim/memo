@@ -24,19 +24,19 @@ export default function Layout() {
     <div className="flex flex-col min-h-screen">
       <a
         href="#main-content"
-        className="absolute -top-[100%] left-4 z-[10000] px-5 py-3 bg-accent-primary text-bg-primary font-bold rounded-sm font-display transition-[top] duration-200 focus:top-4"
+        className="absolute -top-full left-4 z-10000 px-5 py-3 bg-accent-primary text-bg-primary font-bold rounded-sm font-display transition-[top] duration-200 focus:top-4"
       >
         {t("layout.skipToContent")}
       </a>
       <nav
-        className="bg-bg-glass backdrop-blur-[24px] border-b border-border px-8 h-[68px] flex items-center justify-between sticky top-0 z-50 after:content-[''] after:absolute after:-bottom-px after:left-0 after:right-0 after:h-px after:bg-border-accent"
+        className="bg-bg-glass backdrop-blur-xl border-b border-border px-8 h-[68px] flex items-center justify-between sticky top-0 z-50 after:content-[''] after:absolute after:-bottom-px after:left-0 after:right-0 after:h-px after:bg-border-accent"
         aria-label="Main navigation"
       >
         <Link
           to="/"
           className="font-display text-[1.3rem] font-extrabold text-accent-primary flex items-center gap-2 tracking-tight"
         >
-          <span className="text-[1.5rem] !text-current">⚡</span> FlashMind
+          <span className="text-[1.5rem] text-current!">⚡</span> FlashMind
         </Link>
         <ul className="flex items-center gap-1 list-none">
           {user ? (

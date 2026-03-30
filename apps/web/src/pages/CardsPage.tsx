@@ -86,7 +86,7 @@ export default function CardsPage() {
             {t("cards.backToDecks")}
           </button>
           <h1
-            className="font-display text-[1.85rem] font-extrabold tracking-tight text-balance break-words truncate max-w-full"
+            className="font-display text-[1.85rem] font-extrabold tracking-tight text-balance wrap-break-word truncate max-w-full"
             style={{ color: deck?.color }}
           >
             {deck?.name}
@@ -104,7 +104,7 @@ export default function CardsPage() {
             {t("cards.studyNow")}
           </button>
           <button
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
             onClick={openCreate}
             id="create-card-btn"
           >
@@ -120,7 +120,7 @@ export default function CardsPage() {
           description={t("cards.noCardsText")}
           action={
             <button
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
               onClick={openCreate}
             >
               {t("cards.addACard")}

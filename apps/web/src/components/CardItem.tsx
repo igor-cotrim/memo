@@ -45,17 +45,17 @@ export default function CardItem({
       </div>
       <div className="mb-2">
         <div className="text-sm text-muted mb-2">{t("cards.front")}</div>
-        <div className="font-bold whitespace-pre-wrap break-words">
+        <div className="font-bold whitespace-pre-wrap wrap-break-word">
           {card.front}
         </div>
       </div>
       <div>
         <div className="text-sm text-muted mb-2">{t("cards.back")}</div>
-        <div className="whitespace-pre-wrap break-words">{card.back}</div>
+        <div className="whitespace-pre-wrap wrap-break-word">{card.back}</div>
       </div>
       {card.notes && (
         <div
-          className="mt-2 text-sm text-muted whitespace-pre-wrap break-words"
+          className="mt-2 text-sm text-muted whitespace-pre-wrap wrap-break-word"
           style={{ fontStyle: "italic" }}
         >
           📝 {card.notes}
