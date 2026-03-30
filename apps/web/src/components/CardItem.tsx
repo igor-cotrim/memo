@@ -19,7 +19,7 @@ export default function CardItem({
 
   return (
     <div
-      className={`bg-bg-card border border-border rounded-md p-6 transition-all hover:border-border-light hover:shadow-md stagger-${Math.min(index + 1, 6)}`}
+      className={`bg-bg-card border border-border rounded-md p-6 transition-all hover:border-border-light hover:shadow-md stagger-${Math.min(index + 1, 6)} [content-visibility:auto]`}
       id={`card-${card.id}`}
     >
       <div className="flex flex-row items-center justify-between mb-4">

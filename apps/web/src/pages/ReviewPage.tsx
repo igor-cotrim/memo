@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import type { Flashcard, ReviewQuality } from "@flashcard-app/shared-types";
@@ -63,18 +63,26 @@ export default function ReviewPage() {
     }
   }
 
+  const handleKeyRef = useRef<(e: KeyboardEvent) => void>();
+
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) {
+    handleKeyRef.current = (e: KeyboardEvent) => {
       if (e.key === " " || e.key === "Enter") {
         e.preventDefault();
         handleFlip();
       } else if (isFlipped && ["1", "2", "3", "4"].includes(e.key)) {
         handleRate(parseInt(e.key) as ReviewQuality);
       }
+    };
+  });
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      handleKeyRef.current?.(e);
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [isFlipped, currentIndex, handleFlip]);
+  }, []);
 
   if (loading) {
     return (
