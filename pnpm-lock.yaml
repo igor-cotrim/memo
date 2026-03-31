@@ -20,9 +20,6 @@ importers:
       bcrypt:
         specifier: ^5.1.1
         version: 5.1.1
-      better-sqlite3:
-        specifier: ^11.7.0
-        version: 11.10.0
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
@@ -31,7 +28,7 @@ importers:
         version: 2.8.6
       drizzle-orm:
         specifier: ^0.38.0
-        version: 0.38.4(@types/better-sqlite3@7.6.13)(@types/react@18.3.28)(better-sqlite3@11.10.0)(react@18.3.1)
+        version: 0.38.4(@electric-sql/pglite@0.4.2)(@types/better-sqlite3@7.6.13)(@types/react@18.3.28)(better-sqlite3@11.10.0)(postgres@3.4.8)(react@18.3.1)
       express:
         specifier: ^4.21.0
         version: 4.22.1
@@ -50,6 +47,9 @@ importers:
       pino-http:
         specifier: ^11.0.0
         version: 11.0.0
+      postgres:
+        specifier: ^3.4.8
+        version: 3.4.8
       ts-fsrs:
         specifier: ^5.3.1
         version: 5.3.1
@@ -57,12 +57,12 @@ importers:
         specifier: ^11.0.0
         version: 11.1.0
     devDependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.4.2
+        version: 0.4.2
       '@types/bcrypt':
         specifier: ^5.0.2
         version: 5.0.2
-      '@types/better-sqlite3':
-        specifier: ^7.6.12
-        version: 7.6.13
       '@types/cookie-parser':
         specifier: ^1.4.8
         version: 1.4.10(@types/express@5.0.6)
@@ -323,6 +323,9 @@ packages:
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
+
+  '@electric-sql/pglite@0.4.2':
+    resolution: {integrity: sha512-1GUUl/MZpy5QWgWisD3Epho3GkJrZ1MzVgQpo2pifQWUs96F9rXKZxeVLPhkwFYck34CH/kQ8lis6wX9ifn3kg==}
 
   '@esbuild-kit/core-utils@3.3.2':
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
@@ -2501,6 +2504,10 @@ packages:
     resolution: {integrity: sha512-OW/rX8O/jXnm82Ey1k44pObPtdblfiuWnrd8X7GJ7emImCOstunGbXUpp7HdBrFQX6rJzn3sPT397Wp5aCwCHg==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postgres@3.4.8:
+    resolution: {integrity: sha512-d+JFcLM17njZaOLkv6SCev7uoLaBtfK86vMUXhW1Z4glPWh4jozno9APvW/XKFJ3CCxVoC7OL38BqRydtu5nGg==}
+    engines: {node: '>=12'}
+
   prebuild-install@7.1.3:
     resolution: {integrity: sha512-8Mf2cbV7x1cXPUILADGI3wuhfqWvtiLA1iclTDbFRZkgRQS0NqsPZphna9V+HyTEadheuPmjaJMsbzKQFOzLug==}
     engines: {node: '>=10'}
@@ -3214,6 +3221,8 @@ snapshots:
 
   '@drizzle-team/brocli@0.10.2': {}
 
+  '@electric-sql/pglite@0.4.2': {}
+
   '@esbuild-kit/core-utils@3.3.2':
     dependencies:
       esbuild: 0.18.20
@@ -3786,6 +3795,7 @@ snapshots:
   '@types/better-sqlite3@7.6.13':
     dependencies:
       '@types/node': 25.5.0
+    optional: true
 
   '@types/body-parser@1.19.6':
     dependencies:
@@ -4020,7 +4030,8 @@ snapshots:
 
   balanced-match@4.0.4: {}
 
-  base64-js@1.5.1: {}
+  base64-js@1.5.1:
+    optional: true
 
   baseline-browser-mapping@2.10.10: {}
 
@@ -4036,6 +4047,7 @@ snapshots:
     dependencies:
       bindings: 1.5.0
       prebuild-install: 7.1.3
+    optional: true
 
   bidi-js@1.0.3:
     dependencies:
@@ -4044,12 +4056,14 @@ snapshots:
   bindings@1.5.0:
     dependencies:
       file-uri-to-path: 1.0.0
+    optional: true
 
   bl@4.1.0:
     dependencies:
       buffer: 5.7.1
       inherits: 2.0.4
       readable-stream: 3.6.2
+    optional: true
 
   body-parser@1.20.4:
     dependencies:
@@ -4097,6 +4111,7 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
+    optional: true
 
   bytes@3.1.2: {}
 
@@ -4124,7 +4139,8 @@ snapshots:
 
   check-error@2.1.3: {}
 
-  chownr@1.1.4: {}
+  chownr@1.1.4:
+    optional: true
 
   chownr@2.0.0: {}
 
@@ -4215,10 +4231,12 @@ snapshots:
   decompress-response@6.0.0:
     dependencies:
       mimic-response: 3.1.0
+    optional: true
 
   deep-eql@5.0.2: {}
 
-  deep-extend@0.6.0: {}
+  deep-extend@0.6.0:
+    optional: true
 
   delayed-stream@1.0.0: {}
 
@@ -4266,11 +4284,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.38.4(@types/better-sqlite3@7.6.13)(@types/react@18.3.28)(better-sqlite3@11.10.0)(react@18.3.1):
+  drizzle-orm@0.38.4(@electric-sql/pglite@0.4.2)(@types/better-sqlite3@7.6.13)(@types/react@18.3.28)(better-sqlite3@11.10.0)(postgres@3.4.8)(react@18.3.1):
     optionalDependencies:
+      '@electric-sql/pglite': 0.4.2
       '@types/better-sqlite3': 7.6.13
       '@types/react': 18.3.28
       better-sqlite3: 11.10.0
+      postgres: 3.4.8
       react: 18.3.1
 
   dunder-proto@1.0.1:
@@ -4451,7 +4471,8 @@ snapshots:
 
   etag@1.8.1: {}
 
-  expand-template@2.0.3: {}
+  expand-template@2.0.3:
+    optional: true
 
   expect-type@1.3.0: {}
 
@@ -4504,7 +4525,8 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.4
 
-  file-uri-to-path@1.0.0: {}
+  file-uri-to-path@1.0.0:
+    optional: true
 
   finalhandler@1.3.2:
     dependencies:
@@ -4543,7 +4565,8 @@ snapshots:
 
   fresh@0.5.2: {}
 
-  fs-constants@1.0.0: {}
+  fs-constants@1.0.0:
+    optional: true
 
   fs-minipass@2.1.0:
     dependencies:
@@ -4605,7 +4628,8 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
-  github-from-package@0.0.0: {}
+  github-from-package@0.0.0:
+    optional: true
 
   glob@10.5.0:
     dependencies:
@@ -4674,7 +4698,8 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  ieee754@1.2.1: {}
+  ieee754@1.2.1:
+    optional: true
 
   indent-string@4.0.0: {}
 
@@ -4685,7 +4710,8 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  ini@1.3.8: {}
+  ini@1.3.8:
+    optional: true
 
   ip-address@10.1.0: {}
 
@@ -4907,7 +4933,8 @@ snapshots:
 
   mime@2.6.0: {}
 
-  mimic-response@3.1.0: {}
+  mimic-response@3.1.0:
+    optional: true
 
   min-indent@1.0.1: {}
 
@@ -4938,7 +4965,8 @@ snapshots:
       minipass: 3.3.6
       yallist: 4.0.0
 
-  mkdirp-classic@0.5.3: {}
+  mkdirp-classic@0.5.3:
+    optional: true
 
   mkdirp@1.0.4: {}
 
@@ -4948,13 +4976,15 @@ snapshots:
 
   nanoid@3.3.11: {}
 
-  napi-build-utils@2.0.0: {}
+  napi-build-utils@2.0.0:
+    optional: true
 
   negotiator@0.6.3: {}
 
   node-abi@3.89.0:
     dependencies:
       semver: 7.7.4
+    optional: true
 
   node-addon-api@5.1.0: {}
 
@@ -5065,6 +5095,8 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  postgres@3.4.8: {}
+
   prebuild-install@7.1.3:
     dependencies:
       detect-libc: 2.1.2
@@ -5079,6 +5111,7 @@ snapshots:
       simple-get: 4.0.1
       tar-fs: 2.1.4
       tunnel-agent: 0.6.0
+    optional: true
 
   pretty-format@27.5.1:
     dependencies:
@@ -5127,6 +5160,7 @@ snapshots:
       ini: 1.3.8
       minimist: 1.2.8
       strip-json-comments: 2.0.1
+    optional: true
 
   react-dom@18.3.1(react@18.3.1):
     dependencies:
@@ -5303,13 +5337,15 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
-  simple-concat@1.0.1: {}
+  simple-concat@1.0.1:
+    optional: true
 
   simple-get@4.0.1:
     dependencies:
       decompress-response: 6.0.0
       once: 1.4.0
       simple-concat: 1.0.1
+    optional: true
 
   sonic-boom@4.2.1:
     dependencies:
@@ -5360,7 +5396,8 @@ snapshots:
     dependencies:
       min-indent: 1.0.1
 
-  strip-json-comments@2.0.1: {}
+  strip-json-comments@2.0.1:
+    optional: true
 
   strip-json-comments@5.0.3: {}
 
@@ -5406,6 +5443,7 @@ snapshots:
       mkdirp-classic: 0.5.3
       pump: 3.0.4
       tar-stream: 2.2.0
+    optional: true
 
   tar-stream@2.2.0:
     dependencies:
@@ -5414,6 +5452,7 @@ snapshots:
       fs-constants: 1.0.0
       inherits: 2.0.4
       readable-stream: 3.6.2
+    optional: true
 
   tar@6.2.1:
     dependencies:
@@ -5479,6 +5518,7 @@ snapshots:
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
+    optional: true
 
   type-is@1.6.18:
     dependencies:

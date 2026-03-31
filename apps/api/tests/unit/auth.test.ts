@@ -55,6 +55,11 @@ function createMockRefreshTokenRepo(): IRefreshTokenRepository {
       }
       return false;
     },
+    async revokeByToken(token: string) {
+      const t = tokens.find((t) => t.token === token);
+      if (t) return true;
+      return false;
+    },
     async deleteAllByUserId(userId: string) {
       const filtered = tokens.filter((t) => t.userId !== userId);
       tokens.length = 0;

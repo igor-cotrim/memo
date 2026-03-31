@@ -1,5 +1,5 @@
 import { eq, and, gte } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import type {
   IReviewLogRepository,
@@ -7,25 +7,22 @@ import type {
 } from "../../domain/repositories/IReviewLogRepository";
 import * as schema from "./schema";
 
-export class SqliteReviewLogRepository implements IReviewLogRepository {
-  constructor(private readonly db: BetterSQLite3Database<typeof schema>) {}
+export class PgReviewLogRepository implements IReviewLogRepository {
+  constructor(private readonly db: PostgresJsDatabase<typeof schema>) {}
 
   async create(log: ReviewLog): Promise<ReviewLog> {
-    this.db
-      .insert(schema.reviewLogs)
-      .values({
-        id: log.id,
-        cardId: log.cardId,
-        userId: log.userId,
-        quality: log.quality,
-        reviewedAt: log.reviewedAt,
-      })
-      .run();
+    await this.db.insert(schema.reviewLogs).values({
+      id: log.id,
+      cardId: log.cardId,
+      userId: log.userId,
+      quality: log.quality,
+      reviewedAt: log.reviewedAt,
+    });
     return log;
   }
 
   async findByUserId(userId: string, since: string): Promise<ReviewLog[]> {
-    const rows = this.db
+    const rows = await this.db
       .select()
       .from(schema.reviewLogs)
       .where(
@@ -33,13 +30,12 @@ export class SqliteReviewLogRepository implements IReviewLogRepository {
           eq(schema.reviewLogs.userId, userId),
           gte(schema.reviewLogs.reviewedAt, since),
         ),
-      )
-      .all();
+      );
     return rows.map(this.toLog);
   }
 
   async findByDeckId(deckId: string, since: string): Promise<ReviewLog[]> {
-    const rows = this.db
+    const rows = await this.db
       .select({ log: schema.reviewLogs })
       .from(schema.reviewLogs)
       .innerJoin(
@@ -51,17 +47,15 @@ export class SqliteReviewLogRepository implements IReviewLogRepository {
           eq(schema.flashcards.deckId, deckId),
           gte(schema.reviewLogs.reviewedAt, since),
         ),
-      )
-      .all();
+      );
     return rows.map((r) => this.toLog(r.log));
   }
 
   async getReviewDates(userId: string): Promise<string[]> {
-    const rows = this.db
+    const rows = await this.db
       .select({ reviewedAt: schema.reviewLogs.reviewedAt })
       .from(schema.reviewLogs)
-      .where(eq(schema.reviewLogs.userId, userId))
-      .all();
+      .where(eq(schema.reviewLogs.userId, userId));
     return rows.map((r) => r.reviewedAt.split("T")[0]!);
   }
 

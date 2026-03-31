@@ -1,42 +1,37 @@
 import { eq } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import type { User } from "@flashcard-app/shared-types";
 import type { IUserRepository } from "../../domain/repositories/IUserRepository";
 import * as schema from "./schema";
 
-export class SqliteUserRepository implements IUserRepository {
-  constructor(private readonly db: BetterSQLite3Database<typeof schema>) {}
+export class PgUserRepository implements IUserRepository {
+  constructor(private readonly db: PostgresJsDatabase<typeof schema>) {}
 
   async findById(id: string): Promise<User | null> {
-    const row = this.db
+    const rows = await this.db
       .select()
       .from(schema.users)
-      .where(eq(schema.users.id, id))
-      .get();
-    return row ? this.toUser(row) : null;
+      .where(eq(schema.users.id, id));
+    return rows[0] ? this.toUser(rows[0]) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const row = this.db
+    const rows = await this.db
       .select()
       .from(schema.users)
-      .where(eq(schema.users.email, email))
-      .get();
-    return row ? this.toUser(row) : null;
+      .where(eq(schema.users.email, email));
+    return rows[0] ? this.toUser(rows[0]) : null;
   }
 
   async create(user: User): Promise<User> {
-    this.db
-      .insert(schema.users)
-      .values({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        passwordHash: user.passwordHash,
-        createdAt: user.createdAt,
-      })
-      .run();
+    await this.db.insert(schema.users).values({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      passwordHash: user.passwordHash,
+      createdAt: user.createdAt,
+    });
     return user;
   }
 

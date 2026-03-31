@@ -1,43 +1,38 @@
 import { eq } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import type { Deck } from "@flashcard-app/shared-types";
 import type { IDeckRepository } from "../../domain/repositories/IDeckRepository";
 import * as schema from "./schema";
 
-export class SqliteDeckRepository implements IDeckRepository {
-  constructor(private readonly db: BetterSQLite3Database<typeof schema>) {}
+export class PgDeckRepository implements IDeckRepository {
+  constructor(private readonly db: PostgresJsDatabase<typeof schema>) {}
 
   async findById(id: string): Promise<Deck | null> {
-    const row = this.db
+    const rows = await this.db
       .select()
       .from(schema.decks)
-      .where(eq(schema.decks.id, id))
-      .get();
-    return row ? this.toDeck(row) : null;
+      .where(eq(schema.decks.id, id));
+    return rows[0] ? this.toDeck(rows[0]) : null;
   }
 
   async findAllByUserId(userId: string): Promise<Deck[]> {
-    const rows = this.db
+    const rows = await this.db
       .select()
       .from(schema.decks)
-      .where(eq(schema.decks.userId, userId))
-      .all();
+      .where(eq(schema.decks.userId, userId));
     return rows.map(this.toDeck);
   }
 
   async create(deck: Deck): Promise<Deck> {
-    this.db
-      .insert(schema.decks)
-      .values({
-        id: deck.id,
-        userId: deck.userId,
-        name: deck.name,
-        description: deck.description ?? null,
-        color: deck.color ?? null,
-        createdAt: deck.createdAt,
-      })
-      .run();
+    await this.db.insert(schema.decks).values({
+      id: deck.id,
+      userId: deck.userId,
+      name: deck.name,
+      description: deck.description ?? null,
+      color: deck.color ?? null,
+      createdAt: deck.createdAt,
+    });
     return deck;
   }
 
@@ -45,16 +40,16 @@ export class SqliteDeckRepository implements IDeckRepository {
     id: string,
     data: Partial<Pick<Deck, "name" | "description" | "color">>,
   ): Promise<Deck | null> {
-    this.db.update(schema.decks).set(data).where(eq(schema.decks.id, id)).run();
+    await this.db.update(schema.decks).set(data).where(eq(schema.decks.id, id));
     return this.findById(id);
   }
 
   async delete(id: string): Promise<boolean> {
-    const result = this.db
+    const result = await this.db
       .delete(schema.decks)
       .where(eq(schema.decks.id, id))
-      .run();
-    return result.changes > 0;
+      .returning({ id: schema.decks.id });
+    return result.length > 0;
   }
 
   private toDeck(row: typeof schema.decks.$inferSelect): Deck {

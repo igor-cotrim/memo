@@ -1,8 +1,8 @@
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+import { pgTable, text, integer, doublePrecision } from "drizzle-orm/pg-core";
 
 // ─── Users ───────────────────────────────────────────────────────────────────
 
-export const users = sqliteTable("users", {
+export const users = pgTable("users", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
   name: text("name").notNull(),
@@ -12,7 +12,7 @@ export const users = sqliteTable("users", {
 
 // ─── Decks ───────────────────────────────────────────────────────────────────
 
-export const decks = sqliteTable("decks", {
+export const decks = pgTable("decks", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()
@@ -25,7 +25,7 @@ export const decks = sqliteTable("decks", {
 
 // ─── Flashcards ──────────────────────────────────────────────────────────────
 
-export const flashcards = sqliteTable("flashcards", {
+export const flashcards = pgTable("flashcards", {
   id: text("id").primaryKey(),
   deckId: text("deck_id")
     .notNull()
@@ -35,8 +35,8 @@ export const flashcards = sqliteTable("flashcards", {
   notes: text("notes"),
   state: integer("state").notNull().default(0), // 0=New, 1=Learning, 2=Review, 3=Relearning
   due: text("due").notNull(),
-  stability: real("stability").notNull().default(0),
-  difficulty: real("difficulty").notNull().default(0),
+  stability: doublePrecision("stability").notNull().default(0),
+  difficulty: doublePrecision("difficulty").notNull().default(0),
   elapsedDays: integer("elapsed_days").notNull().default(0),
   scheduledDays: integer("scheduled_days").notNull().default(0),
   reps: integer("reps").notNull().default(0),
@@ -48,7 +48,7 @@ export const flashcards = sqliteTable("flashcards", {
 
 // ─── Review Logs ─────────────────────────────────────────────────────────────
 
-export const reviewLogs = sqliteTable("review_logs", {
+export const reviewLogs = pgTable("review_logs", {
   id: text("id").primaryKey(),
   cardId: text("card_id")
     .notNull()
@@ -62,7 +62,7 @@ export const reviewLogs = sqliteTable("review_logs", {
 
 // ─── Refresh Tokens ──────────────────────────────────────────────────────────
 
-export const refreshTokens = sqliteTable("refresh_tokens", {
+export const refreshTokens = pgTable("refresh_tokens", {
   id: text("id").primaryKey(),
   userId: text("user_id")
     .notNull()

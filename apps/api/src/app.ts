@@ -6,14 +6,14 @@ import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
 import { sql } from "drizzle-orm";
 import type { Logger } from "pino";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import type * as schema from "./infra/db/schema";
-import { SqliteUserRepository } from "./infra/db/SqliteUserRepository";
-import { SqliteDeckRepository } from "./infra/db/SqliteDeckRepository";
-import { SqliteCardRepository } from "./infra/db/SqliteCardRepository";
-import { SqliteReviewLogRepository } from "./infra/db/SqliteReviewLogRepository";
-import { SqliteRefreshTokenRepository } from "./infra/db/SqliteRefreshTokenRepository";
+import { PgUserRepository } from "./infra/db/PgUserRepository";
+import { PgDeckRepository } from "./infra/db/PgDeckRepository";
+import { PgCardRepository } from "./infra/db/PgCardRepository";
+import { PgReviewLogRepository } from "./infra/db/PgReviewLogRepository";
+import { PgRefreshTokenRepository } from "./infra/db/PgRefreshTokenRepository";
 import { authMiddleware } from "./infra/http/middleware/auth";
 import { errorHandler } from "./infra/http/middleware/errorHandler";
 import { createAuthRoutes } from "./infra/http/routes/auth.routes";
@@ -23,7 +23,7 @@ import { createReviewRoutes } from "./infra/http/routes/review.routes";
 import { createStatsRoutes } from "./infra/http/routes/stats.routes";
 
 export function createApp(
-  db: BetterSQLite3Database<typeof schema>,
+  db: PostgresJsDatabase<typeof schema>,
   jwtSecret: string,
   logger: Logger,
 ): express.Express {
@@ -54,16 +54,16 @@ export function createApp(
   app.use(cookieParser());
 
   // Repositories
-  const userRepo = new SqliteUserRepository(db);
-  const deckRepo = new SqliteDeckRepository(db);
-  const cardRepo = new SqliteCardRepository(db);
-  const reviewLogRepo = new SqliteReviewLogRepository(db);
-  const refreshTokenRepo = new SqliteRefreshTokenRepository(db);
+  const userRepo = new PgUserRepository(db);
+  const deckRepo = new PgDeckRepository(db);
+  const cardRepo = new PgCardRepository(db);
+  const reviewLogRepo = new PgReviewLogRepository(db);
+  const refreshTokenRepo = new PgRefreshTokenRepository(db);
 
   // Health check
   app.get("/health", async (_req, res) => {
     try {
-      await db.run(sql`SELECT 1`);
+      await db.execute(sql`SELECT 1`);
       res.json({ status: "ok", db: "connected" });
     } catch (err) {
       logger.error({ err }, "Database health check failed");

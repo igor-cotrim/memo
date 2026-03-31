@@ -6,13 +6,13 @@ import { createTestApp } from "../helpers/setup";
 
 describe("API Integration Tests", () => {
   let app: Express;
-  let cleanup: () => void;
+  let cleanup: () => Promise<void>;
   let accessToken: string;
   let deckId: string;
   let cardId: string;
 
-  beforeAll(() => {
-    const testApp = createTestApp();
+  beforeAll(async () => {
+    const testApp = await createTestApp();
     app = testApp.app;
     cleanup = testApp.cleanup;
   });

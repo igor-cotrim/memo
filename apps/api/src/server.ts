@@ -1,5 +1,5 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
+import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
 import pino from "pino";
 
 import * as schema from "./infra/db/schema";
@@ -40,11 +40,8 @@ if (NODE_ENV === "production" && !CLIENT_ORIGIN) {
   process.exit(1);
 }
 
-const sqlite = new Database(DATABASE_URL);
-sqlite.pragma("journal_mode = WAL");
-sqlite.pragma("foreign_keys = ON");
-
-const db = drizzle(sqlite, { schema });
+const client = postgres(DATABASE_URL);
+const db = drizzle(client, { schema });
 
 const app = createApp(db, JWT_SECRET, logger);
 
