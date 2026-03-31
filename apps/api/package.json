@@ -1,7 +1,6 @@
 {
   "name": "@flashcard-app/api",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "dotenv -e ../../.env -- tsx watch src/server.ts",
     "build": "tsc",
