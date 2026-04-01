@@ -17,7 +17,7 @@
   "pnpm": {
     "overrides": {
       "tar": ">=7.5.10",
-      "path-to-regexp": ">=0.1.13"
+      "path-to-regexp": "0.1.12"
     }
   }
 }
