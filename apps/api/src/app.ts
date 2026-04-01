@@ -21,6 +21,7 @@ import { createDeckRoutes } from "./infra/http/routes/deck.routes";
 import { createCardRoutes } from "./infra/http/routes/card.routes";
 import { createReviewRoutes } from "./infra/http/routes/review.routes";
 import { createStatsRoutes } from "./infra/http/routes/stats.routes";
+import { createUserRoutes } from "./infra/http/routes/user.routes";
 
 export function createApp(
   db: PostgresJsDatabase<typeof schema>,
@@ -84,6 +85,7 @@ export function createApp(
     createReviewRoutes(cardRepo, deckRepo, reviewLogRepo),
   );
   app.use("/stats", auth, createStatsRoutes(reviewLogRepo, deckRepo));
+  app.use("/users", auth, createUserRoutes(userRepo));
 
   // Error handling
   app.use(errorHandler);

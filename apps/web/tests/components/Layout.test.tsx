@@ -21,7 +21,7 @@ describe("Layout", () => {
 
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
     expect(screen.getByText("Decks")).toBeInTheDocument();
-    expect(screen.getByText("Sign Out")).toBeInTheDocument();
+    expect(screen.getByLabelText("User menu")).toBeInTheDocument();
   });
 
   it("shows only locale toggle when user is not logged in", () => {
@@ -31,7 +31,7 @@ describe("Layout", () => {
 
     expect(screen.queryByText("Dashboard")).not.toBeInTheDocument();
     expect(screen.queryByText("Decks")).not.toBeInTheDocument();
-    expect(screen.queryByText("Sign Out")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("User menu")).not.toBeInTheDocument();
     // Locale toggle should be there
     expect(screen.getByText("EN")).toBeInTheDocument();
   });
@@ -61,6 +61,7 @@ describe("Layout", () => {
       },
     });
 
+    await user.click(screen.getByLabelText("User menu"));
     await user.click(screen.getByText("Sign Out"));
     expect(logout).toHaveBeenCalled();
   });

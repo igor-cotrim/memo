@@ -17,6 +17,12 @@ function createMockUserRepo(users: User[] = []): IUserRepository {
       users.push(user);
       return user;
     },
+    async update(id: string, data: Partial<Pick<User, "name" | "passwordHash">>) {
+      const user = users.find((u) => u.id === id);
+      if (!user) throw new Error("Not found");
+      Object.assign(user, data);
+      return user;
+    },
   };
 }
 

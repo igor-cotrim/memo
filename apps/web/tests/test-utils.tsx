@@ -12,6 +12,7 @@ const defaultAuth: AuthContextType = {
   login: vi.fn(),
   register: vi.fn(),
   logout: vi.fn(),
+  updateUser: vi.fn(),
 };
 
 export function renderWithProviders(

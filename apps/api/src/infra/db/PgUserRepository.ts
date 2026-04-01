@@ -3,6 +3,7 @@ import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import type { User } from "@flashcard-app/shared-types";
 import type { IUserRepository } from "../../domain/repositories/IUserRepository";
+import { NotFoundError } from "../../shared/errors";
 import * as schema from "./schema";
 
 export class PgUserRepository implements IUserRepository {
@@ -33,6 +34,23 @@ export class PgUserRepository implements IUserRepository {
       createdAt: user.createdAt,
     });
     return user;
+  }
+
+  async update(
+    id: string,
+    data: Partial<Pick<User, "name" | "passwordHash">>,
+  ): Promise<User> {
+    const rows = await this.db
+      .update(schema.users)
+      .set(data)
+      .where(eq(schema.users.id, id))
+      .returning();
+
+    if (!rows[0]) {
+      throw new NotFoundError("User", id);
+    }
+
+    return this.toUser(rows[0]);
   }
 
   private toUser(row: typeof schema.users.$inferSelect): User {

@@ -32,6 +32,21 @@ export interface RefreshTokenResponse {
   accessToken: string;
 }
 
+// ─── User Profile ───────────────────────────────────────────────────────────
+
+export interface UpdateProfileRequest {
+  name: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface UpdateProfileResponse {
+  user: PublicUser;
+}
+
 // ─── Deck ────────────────────────────────────────────────────────────────────
 
 export interface Deck {

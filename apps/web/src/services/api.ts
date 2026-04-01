@@ -14,6 +14,9 @@ import type {
   ReviewResult,
   LoginRequest,
   RegisterRequest,
+  UpdateProfileRequest,
+  UpdateProfileResponse,
+  ChangePasswordRequest,
 } from "@flashcard-app/shared-types";
 
 const baseURL =
@@ -97,6 +100,21 @@ export async function logout(): Promise<void> {
 export async function getMe(): Promise<{ user: PublicUser }> {
   const res = await api.get<{ user: PublicUser }>("/auth/me");
   return res.data;
+}
+
+// ─── User Profile ───────────────────────────────────────────────────────────
+
+export async function updateProfile(
+  data: UpdateProfileRequest,
+): Promise<UpdateProfileResponse> {
+  const res = await api.put<UpdateProfileResponse>("/users/profile", data);
+  return res.data;
+}
+
+export async function changePassword(
+  data: ChangePasswordRequest,
+): Promise<void> {
+  await api.put("/users/password", data);
 }
 
 // ─── Decks ───────────────────────────────────────────────────────────────────

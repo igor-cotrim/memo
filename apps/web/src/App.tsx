@@ -12,6 +12,7 @@ const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const DecksPage = lazy(() => import("./pages/DecksPage"));
 const CardsPage = lazy(() => import("./pages/CardsPage"));
 const ReviewPage = lazy(() => import("./pages/ReviewPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 
 function PageLoader() {
   return (
@@ -83,6 +84,7 @@ export default function App() {
                 <Route path="/decks" element={<DecksPage />} />
                 <Route path="/decks/:deckId" element={<CardsPage />} />
                 <Route path="/review/:deckId" element={<ReviewPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

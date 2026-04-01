@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
@@ -8,6 +9,18 @@ export default function Layout() {
   const { t, localeLabel, toggleLocale } = useLocale();
   const location = useLocation();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   function isActive(path: string) {
     return (
@@ -68,12 +81,37 @@ export default function Layout() {
                 </button>
               </li>
               <li>
-                <button
-                  className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed"
-                  onClick={handleLogout}
-                >
-                  {t("layout.signOut")}
-                </button>
+                <div className="relative" ref={menuRef}>
+                  <button
+                    className="w-8 h-8 rounded-full bg-accent-primary/20 text-accent-primary font-bold text-sm flex items-center justify-center transition-colors hover:bg-accent-primary/30 cursor-pointer"
+                    onClick={() => setMenuOpen((v) => !v)}
+                    aria-label="User menu"
+                    aria-expanded={menuOpen}
+                  >
+                    {user?.name?.charAt(0).toUpperCase() || "?"}
+                  </button>
+                  {menuOpen && (
+                    <div className="absolute right-0 top-full mt-2 bg-bg-secondary border border-border rounded-lg shadow-lg min-w-[180px] py-1 z-50 animate-fade-in">
+                      <Link
+                        to="/settings"
+                        className="block px-4 py-2.5 text-sm font-display text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        {t("layout.settings")}
+                      </Link>
+                      <div className="h-px bg-border mx-2" />
+                      <button
+                        className="w-full text-left px-4 py-2.5 text-sm font-display text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          handleLogout();
+                        }}
+                      >
+                        {t("layout.signOut")}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </li>
             </>
           ) : (
