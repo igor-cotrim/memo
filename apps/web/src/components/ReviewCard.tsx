@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import type { Flashcard } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
 
@@ -7,7 +9,7 @@ type ReviewCardProps = {
   onFlip: () => void;
 };
 
-export default function ReviewCard({
+const ReviewCard = memo(function ReviewCard({
   card,
   isFlipped,
   onFlip,
@@ -59,4 +61,6 @@ export default function ReviewCard({
       </div>
     </div>
   );
-}
+});
+
+export default ReviewCard;

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { Button, Input, Label, Alert } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { useLocale } from "../hooks/useLocale";
+import { getErrorMessage } from "../utils/error";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -21,13 +23,7 @@ export default function LoginPage() {
       await login(email, password);
       navigate("/");
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : t("login.failed");
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const axiosErr = err as { response?: { data?: { error?: string } } };
-        setError(axiosErr.response?.data?.error ?? msg);
-      } else {
-        setError(msg);
-      }
+      setError(getErrorMessage(err, t("login.failed")));
     } finally {
       setLoading(false);
     }
@@ -56,24 +52,11 @@ export default function LoginPage() {
         </p>
 
         <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-          {error && (
-            <div
-              className="text-accent-danger text-[0.813rem] font-medium px-3 py-2 bg-accent-danger/10 rounded-sm border-l-[3px] border-accent-danger"
-              role="alert"
-            >
-              {error}
-            </div>
-          )}
+          {error && <Alert variant="danger">{error}</Alert>}
           <div className="flex flex-col gap-1.5 stagger-1">
-            <label
-              className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
-              htmlFor="login-email"
-            >
-              {t("login.emailLabel")}
-            </label>
-            <input
+            <Label htmlFor="login-email">{t("login.emailLabel")}</Label>
+            <Input
               id="login-email"
-              className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-0 w-full"
               type="email"
               placeholder={t("login.emailPlaceholder")}
               value={email}
@@ -84,15 +67,9 @@ export default function LoginPage() {
             />
           </div>
           <div className="flex flex-col gap-1.5 stagger-2">
-            <label
-              className="font-display text-xs font-semibold text-text-secondary uppercase tracking-widest"
-              htmlFor="login-password"
-            >
-              {t("login.passwordLabel")}
-            </label>
-            <input
+            <Label htmlFor="login-password">{t("login.passwordLabel")}</Label>
+            <Input
               id="login-password"
-              className="bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-0 w-full"
               type="password"
               placeholder={t("login.passwordPlaceholder")}
               value={password}
@@ -101,13 +78,14 @@ export default function LoginPage() {
               autoComplete="current-password"
             />
           </div>
-          <button
-            className="inline-flex items-center justify-center gap-2 w-full px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed stagger-3"
+          <Button
+            className="w-full stagger-3"
+            size="lg"
             type="submit"
             disabled={loading}
           >
             {loading ? t("login.submitting") : t("login.submit")}
-          </button>
+          </Button>
         </form>
 
         <div className="text-center mt-7 text-text-secondary text-sm stagger-4">

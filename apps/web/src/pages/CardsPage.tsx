@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import type { Deck, Flashcard } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
 import * as api from "../services/api";
+import { Button, Spinner } from "../components/ui";
 import CardItem from "../components/CardItem";
 import CardModal from "../components/CardModal";
 import EmptyState from "../components/EmptyState";
@@ -68,23 +69,21 @@ export default function CardsPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-4 border-accent-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 mb-10 animate-fade-slide-up">
         <div className="w-full">
-          <button
-            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed mb-2 -ml-3"
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mb-2 -ml-3"
             onClick={() => navigate("/decks")}
           >
             {t("cards.backToDecks")}
-          </button>
+          </Button>
           <h1
             className="font-display text-[1.85rem] font-extrabold tracking-tight text-balance wrap-break-word truncate max-w-full"
             style={{ color: deck?.color }}
@@ -97,19 +96,20 @@ export default function CardsPage() {
           </p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
-          <button
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-semibold text-sm font-display border border-border bg-bg-card text-text-primary transition-all whitespace-nowrap tracking-tight hover:-translate-y-px hover:bg-bg-card-hover hover:border-border-light disabled:opacity-45 disabled:cursor-not-allowed"
+          <Button
+            variant="secondary"
+            className="flex-1 sm:flex-none"
             onClick={() => navigate(`/review/${deckId}`)}
           >
             {t("cards.studyNow")}
-          </button>
-          <button
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
+          </Button>
+          <Button
+            className="flex-1 sm:flex-none"
             onClick={openCreate}
             id="create-card-btn"
           >
             {t("cards.addCard")}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -118,14 +118,7 @@ export default function CardsPage() {
           icon="🃏"
           title={t("cards.noCardsTitle")}
           description={t("cards.noCardsText")}
-          action={
-            <button
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
-              onClick={openCreate}
-            >
-              {t("cards.addACard")}
-            </button>
-          }
+          action={<Button onClick={openCreate}>{t("cards.addACard")}</Button>}
         />
       ) : (
         <div className="grid gap-5 grid-cols-1 md:grid-cols-2">

@@ -1,8 +1,10 @@
 import { useState } from "react";
 
+import { Button, Input, Label, Alert } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { useLocale } from "../hooks/useLocale";
 import * as api from "../services/api";
+import { getErrorMessage } from "../utils/error";
 
 export default function SettingsPage() {
   const { user, updateUser } = useAuth();
@@ -33,14 +35,7 @@ export default function SettingsPage() {
       setProfileSuccess(t("settings.profileUpdated"));
       setTimeout(() => setProfileSuccess(""), 3000);
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : t("settings.profileFailed");
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const axiosErr = err as { response?: { data?: { error?: string } } };
-        setProfileError(axiosErr.response?.data?.error ?? msg);
-      } else {
-        setProfileError(msg);
-      }
+      setProfileError(getErrorMessage(err, t("settings.profileFailed")));
     } finally {
       setProfileLoading(false);
     }
@@ -65,27 +60,11 @@ export default function SettingsPage() {
       setPasswordSuccess(t("settings.passwordChanged"));
       setTimeout(() => setPasswordSuccess(""), 3000);
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : t("settings.passwordFailed");
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const axiosErr = err as { response?: { data?: { error?: string } } };
-        setPasswordError(axiosErr.response?.data?.error ?? msg);
-      } else {
-        setPasswordError(msg);
-      }
+      setPasswordError(getErrorMessage(err, t("settings.passwordFailed")));
     } finally {
       setPasswordLoading(false);
     }
   }
-
-  const inputClass =
-    "bg-bg-input border border-border rounded-sm px-4 py-3 text-text-primary font-body text-[0.9375rem] transition shadow-none focus:outline-none focus:border-accent-primary focus:ring-0 w-full";
-
-  const labelClass =
-    "font-display text-xs font-semibold text-text-secondary uppercase tracking-widest";
-
-  const buttonClass =
-    "inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed";
 
   return (
     <div className="animate-fade-slide-up">
@@ -104,27 +83,16 @@ export default function SettingsPage() {
           </h2>
 
           <form className="flex flex-col gap-5" onSubmit={handleProfileSubmit}>
-            {profileError && (
-              <div
-                className="text-accent-danger text-[0.813rem] font-medium px-3 py-2 bg-accent-danger/10 rounded-sm border-l-[3px] border-accent-danger"
-                role="alert"
-              >
-                {profileError}
-              </div>
-            )}
+            {profileError && <Alert variant="danger">{profileError}</Alert>}
             {profileSuccess && (
-              <div className="text-accent-success text-[0.813rem] font-medium px-3 py-2 bg-accent-success/10 rounded-sm border-l-[3px] border-accent-success">
-                {profileSuccess}
-              </div>
+              <Alert variant="success">{profileSuccess}</Alert>
             )}
 
             <div className="flex flex-col gap-1.5">
-              <label className={labelClass} htmlFor="settings-email">
-                {t("settings.emailLabel")}
-              </label>
-              <input
+              <Label htmlFor="settings-email">{t("settings.emailLabel")}</Label>
+              <Input
                 id="settings-email"
-                className={`${inputClass} opacity-60 cursor-not-allowed`}
+                className="opacity-60 cursor-not-allowed"
                 type="email"
                 value={user?.email ?? ""}
                 disabled
@@ -135,12 +103,9 @@ export default function SettingsPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className={labelClass} htmlFor="settings-name">
-                {t("settings.nameLabel")}
-              </label>
-              <input
+              <Label htmlFor="settings-name">{t("settings.nameLabel")}</Label>
+              <Input
                 id="settings-name"
-                className={inputClass}
                 type="text"
                 placeholder={t("settings.namePlaceholder")}
                 value={name}
@@ -149,15 +114,11 @@ export default function SettingsPage() {
               />
             </div>
 
-            <button
-              className={buttonClass}
-              type="submit"
-              disabled={profileLoading}
-            >
+            <Button type="submit" disabled={profileLoading}>
               {profileLoading
                 ? t("settings.savingProfile")
                 : t("settings.saveProfile")}
-            </button>
+            </Button>
           </form>
         </div>
 
@@ -168,27 +129,17 @@ export default function SettingsPage() {
           </h2>
 
           <form className="flex flex-col gap-5" onSubmit={handlePasswordSubmit}>
-            {passwordError && (
-              <div
-                className="text-accent-danger text-[0.813rem] font-medium px-3 py-2 bg-accent-danger/10 rounded-sm border-l-[3px] border-accent-danger"
-                role="alert"
-              >
-                {passwordError}
-              </div>
-            )}
+            {passwordError && <Alert variant="danger">{passwordError}</Alert>}
             {passwordSuccess && (
-              <div className="text-accent-success text-[0.813rem] font-medium px-3 py-2 bg-accent-success/10 rounded-sm border-l-[3px] border-accent-success">
-                {passwordSuccess}
-              </div>
+              <Alert variant="success">{passwordSuccess}</Alert>
             )}
 
             <div className="flex flex-col gap-1.5">
-              <label className={labelClass} htmlFor="settings-current-password">
+              <Label htmlFor="settings-current-password">
                 {t("settings.currentPasswordLabel")}
-              </label>
-              <input
+              </Label>
+              <Input
                 id="settings-current-password"
-                className={inputClass}
                 type="password"
                 placeholder={t("settings.currentPasswordPlaceholder")}
                 value={currentPassword}
@@ -199,12 +150,11 @@ export default function SettingsPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className={labelClass} htmlFor="settings-new-password">
+              <Label htmlFor="settings-new-password">
                 {t("settings.newPasswordLabel")}
-              </label>
-              <input
+              </Label>
+              <Input
                 id="settings-new-password"
-                className={inputClass}
                 type="password"
                 placeholder={t("settings.newPasswordPlaceholder")}
                 value={newPassword}
@@ -216,12 +166,11 @@ export default function SettingsPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className={labelClass} htmlFor="settings-confirm-password">
+              <Label htmlFor="settings-confirm-password">
                 {t("settings.confirmPasswordLabel")}
-              </label>
-              <input
+              </Label>
+              <Input
                 id="settings-confirm-password"
-                className={inputClass}
                 type="password"
                 placeholder={t("settings.confirmPasswordPlaceholder")}
                 value={confirmPassword}
@@ -232,15 +181,11 @@ export default function SettingsPage() {
               />
             </div>
 
-            <button
-              className={buttonClass}
-              type="submit"
-              disabled={passwordLoading}
-            >
+            <Button type="submit" disabled={passwordLoading}>
               {passwordLoading
                 ? t("settings.changingPassword")
                 : t("settings.changePassword")}
-            </button>
+            </Button>
           </form>
         </div>
       </div>

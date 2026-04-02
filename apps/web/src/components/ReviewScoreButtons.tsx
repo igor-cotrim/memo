@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import type { ReviewQuality } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
 
@@ -6,7 +8,7 @@ type ReviewScoreButtonsProps = {
   disabled: boolean;
 };
 
-export default function ReviewScoreButtons({
+const ReviewScoreButtons = memo(function ReviewScoreButtons({
   onRate,
   disabled,
 }: ReviewScoreButtonsProps) {
@@ -46,4 +48,6 @@ export default function ReviewScoreButtons({
       ))}
     </div>
   );
-}
+});
+
+export default ReviewScoreButtons;

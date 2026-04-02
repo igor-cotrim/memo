@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { ReviewStats, Deck } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
-import ActivityGraph from "../components/ActivityGraph";
 import * as api from "../services/api";
+import { Button, Spinner, PageHeader } from "../components/ui";
+import ActivityGraph from "../components/ActivityGraph";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -30,36 +31,28 @@ export default function DashboardPage() {
     }
   }
 
+  const todayCount = useMemo(() => {
+    const today = new Date();
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    const dateStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+    return stats?.last7Days.find((d) => d.date === dateStr)?.count ?? 0;
+  }, [stats]);
+
+  const weekTotal = useMemo(
+    () => stats?.last7Days.reduce((sum, d) => sum + d.count, 0) ?? 0,
+    [stats],
+  );
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-4 border-accent-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <Spinner />;
   }
-
-  const todayCount =
-    stats?.last7Days.find((d) => {
-      const today = new Date();
-      const pad = (n: number) => n.toString().padStart(2, "0");
-      const dateStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
-      return d.date === dateStr;
-    })?.count ?? 0;
-
-  const weekTotal = stats?.last7Days.reduce((sum, d) => sum + d.count, 0) ?? 0;
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-10 animate-fade-slide-up page-header">
-        <div>
-          <h1 className="font-display text-[1.85rem] font-extrabold tracking-tight text-balance">
-            {t("dashboard.title")}
-          </h1>
-          <p className="text-text-secondary text-[0.9375rem] mt-1">
-            {t("dashboard.subtitle")}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title={t("dashboard.title")}
+        subtitle={t("dashboard.subtitle")}
+      />
 
       {/* Stats Overview */}
       <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-4">
@@ -150,9 +143,10 @@ export default function DashboardPage() {
           </h2>
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {decks.map((deck) => (
-              <button
+              <Button
                 key={deck.id}
-                className="inline-flex items-center justify-start gap-2 w-full px-5 py-2.5 rounded-sm font-semibold text-sm font-display border border-border bg-bg-card text-text-primary transition-all whitespace-nowrap tracking-tight hover:-translate-y-px hover:bg-bg-card-hover hover:border-border-light disabled:opacity-45 disabled:cursor-not-allowed"
+                variant="secondary"
+                className="w-full justify-start"
                 onClick={() => navigate(`/review/${deck.id}`)}
               >
                 <span
@@ -162,7 +156,7 @@ export default function DashboardPage() {
                   ●
                 </span>
                 {deck.name}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

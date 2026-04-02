@@ -1,5 +1,8 @@
+import { memo } from "react";
+
 import type { Deck } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
+import { Button } from "./ui";
 
 type DeckItemProps = {
   deck: Deck;
@@ -10,7 +13,7 @@ type DeckItemProps = {
   onClick: (id: string) => void;
 };
 
-export default function DeckItem({
+const DeckItem = memo(function DeckItem({
   deck,
   index,
   onStudy,
@@ -39,25 +42,22 @@ export default function DeckItem({
         className="flex gap-2 mt-4 pt-4 border-t border-border"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          className="btn btn-ghost btn-sm"
-          onClick={() => onStudy(deck.id)}
-        >
+        <Button variant="ghost" size="sm" onClick={() => onStudy(deck.id)}>
           {t("decks.study")}
-        </button>
-        <button
-          className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed"
-          onClick={() => onEdit(deck)}
-        >
+        </Button>
+        <Button variant="ghost" size="sm" onClick={() => onEdit(deck)}>
           {t("decks.edit")}
-        </button>
-        <button
-          className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-accent-danger hover:text-accent-danger/80 hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed"
+        </Button>
+        <Button
+          variant="danger-ghost"
+          size="sm"
           onClick={() => onDelete(deck.id)}
         >
           {t("decks.deleteDeck")}
-        </button>
+        </Button>
       </div>
     </div>
   );
-}
+});
+
+export default DeckItem;

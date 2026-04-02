@@ -5,6 +5,7 @@ import { AuthProvider } from "./hooks/AuthProvider";
 import { useAuth } from "./hooks/useAuth";
 import { LocaleProvider } from "./hooks/useLocale";
 import Layout from "./components/Layout";
+import { Spinner } from "./components/ui";
 
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const RegisterPage = lazy(() => import("./pages/RegisterPage"));
@@ -15,11 +16,7 @@ const ReviewPage = lazy(() => import("./pages/ReviewPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 
 function PageLoader() {
-  return (
-    <div className="flex items-center justify-center min-h-[50vh]">
-      <div className="w-8 h-8 border-4 border-accent-primary border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
+  return <Spinner />;
 }
 
 function ProtectedRoute({ children }: { children: ReactNode }) {

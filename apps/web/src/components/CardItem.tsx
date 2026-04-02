@@ -1,6 +1,9 @@
+import { memo } from "react";
+
 import type { Flashcard } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
 import { getRelativeTimeString } from "../utils/date";
+import { Button } from "./ui";
 
 type CardItemProps = {
   card: Flashcard;
@@ -9,7 +12,7 @@ type CardItemProps = {
   onDelete: (id: string) => void;
 };
 
-export default function CardItem({
+const CardItem = memo(function CardItem({
   card,
   index,
   onEdit,
@@ -27,43 +30,47 @@ export default function CardItem({
           {card.reps === 0 ? t("cards.new") : `${t("cards.rep")} ${card.reps}`}
         </span>
         <div className="flex gap-1">
-          <button
-            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onEdit(card)}
             aria-label="Edit card"
           >
             ✎
-          </button>
-          <button
-            className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-accent-danger hover:text-accent-danger/80 hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed"
+          </Button>
+          <Button
+            variant="danger-ghost"
+            size="sm"
             onClick={() => onDelete(card.id)}
             aria-label="Delete card"
           >
             ✕
-          </button>
+          </Button>
         </div>
       </div>
       <div className="mb-2">
-        <div className="text-sm text-muted mb-2">{t("cards.front")}</div>
+        <div className="text-sm text-text-muted mb-2">{t("cards.front")}</div>
         <div className="font-bold whitespace-pre-wrap wrap-break-word">
           {card.front}
         </div>
       </div>
       <div>
-        <div className="text-sm text-muted mb-2">{t("cards.back")}</div>
+        <div className="text-sm text-text-muted mb-2">{t("cards.back")}</div>
         <div className="whitespace-pre-wrap wrap-break-word">{card.back}</div>
       </div>
       {card.notes && (
         <div
-          className="mt-2 text-sm text-muted whitespace-pre-wrap wrap-break-word"
+          className="mt-2 text-sm text-text-muted whitespace-pre-wrap wrap-break-word"
           style={{ fontStyle: "italic" }}
         >
           📝 {card.notes}
         </div>
       )}
-      <div className="mt-4 text-sm text-muted">
+      <div className="mt-4 text-sm text-text-muted">
         {t("cards.nextReview")} {getRelativeTimeString(card.due, locale)}
       </div>
     </div>
   );
-}
+});
+
+export default CardItem;

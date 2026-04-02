@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { Deck } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
 import * as api from "../services/api";
+import { Button, PageHeader, Spinner } from "../components/ui";
 import DeckItem from "../components/DeckItem";
 import DeckModal from "../components/DeckModal";
 import EmptyState from "../components/EmptyState";
@@ -60,47 +61,38 @@ export default function DecksPage() {
     }
   }
 
+  const handleStudy = useCallback(
+    (id: string) => navigate(`/review/${id}`),
+    [navigate],
+  );
+
+  const handleClick = useCallback(
+    (id: string) => navigate(`/decks/${id}`),
+    [navigate],
+  );
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-4 border-accent-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <Spinner />;
   }
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-10 animate-fade-slide-up">
-        <div>
-          <h1 className="font-display text-[1.85rem] font-extrabold tracking-tight text-balance">
-            {t("decks.title")}
-          </h1>
-          <p className="text-text-secondary text-[0.9375rem] mt-1">
-            {t("decks.subtitle")}
-          </p>
-        </div>
-        <button
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
-          onClick={openCreate}
-          id="create-deck-btn"
-        >
-          {t("decks.newDeck")}
-        </button>
-      </div>
+      <PageHeader
+        title={t("decks.title")}
+        subtitle={t("decks.subtitle")}
+        action={
+          <Button onClick={openCreate} id="create-deck-btn">
+            {t("decks.newDeck")}
+          </Button>
+        }
+      />
 
       {decks.length === 0 ? (
         <EmptyState
           icon="📚"
           title={t("decks.noDecksTitle")}
           description={t("decks.noDecksText")}
-          action={
-            <button
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm font-bold text-sm font-display border-none cursor-pointer transition-all whitespace-nowrap tracking-tight bg-accent-primary text-bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
-              onClick={openCreate}
-            >
-              {t("decks.createDeck")}
-            </button>
-          }
+          action={<Button onClick={openCreate}>{t("decks.createDeck")}</Button>}
         />
       ) : (
         <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -109,10 +101,10 @@ export default function DecksPage() {
               key={deck.id}
               deck={deck}
               index={i}
-              onStudy={(id) => navigate(`/review/${id}`)}
+              onStudy={handleStudy}
               onEdit={openEdit}
               onDelete={handleDelete}
-              onClick={(id) => navigate(`/decks/${id}`)}
+              onClick={handleClick}
             />
           ))}
         </div>

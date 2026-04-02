@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 
 type EmptyStateProps = {
   icon: string | ReactNode;
@@ -7,7 +7,7 @@ type EmptyStateProps = {
   action?: ReactNode;
 };
 
-export default function EmptyState({
+const EmptyState = memo(function EmptyState({
   icon,
   title,
   description,
@@ -23,4 +23,6 @@ export default function EmptyState({
       {action && <div>{action}</div>}
     </div>
   );
-}
+});
+
+export default EmptyState;

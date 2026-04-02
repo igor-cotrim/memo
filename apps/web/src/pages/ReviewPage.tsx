@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import type { Flashcard, ReviewQuality } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
 import * as api from "../services/api";
+import { Button, Spinner } from "../components/ui";
 import ReviewCard from "../components/ReviewCard";
 import ReviewScoreButtons from "../components/ReviewScoreButtons";
 import EmptyState from "../components/EmptyState";
@@ -85,11 +86,7 @@ export default function ReviewPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-4 border-accent-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <Spinner />;
   }
 
   const currentCard = cards[currentIndex];
@@ -97,12 +94,14 @@ export default function ReviewPage() {
 
   return (
     <div className="flex flex-col flex-1 bg-bg-primary max-w-2xl mx-auto w-full pt-8">
-      <button
-        className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-semibold text-[0.813rem] font-display transition-all whitespace-nowrap tracking-tight bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5 disabled:opacity-45 disabled:cursor-not-allowed mb-4 self-start"
+      <Button
+        variant="ghost"
+        size="sm"
+        className="mb-4 self-start"
         onClick={() => navigate(`/decks/${deckId}`)}
       >
         {t("review.backToDeck")}
-      </button>
+      </Button>
 
       {cards.length === 0 ? (
         <EmptyState
@@ -110,12 +109,13 @@ export default function ReviewPage() {
           title={t("review.allCaughtUpTitle")}
           description={t("review.allCaughtUpText")}
           action={
-            <button
-              className="inline-flex items-center justify-center gap-2 w-full md:w-auto px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
+            <Button
+              size="lg"
+              className="w-full md:w-auto"
               onClick={() => navigate("/decks")}
             >
               {t("review.backToDecks")}
-            </button>
+            </Button>
           }
         />
       ) : isComplete ? (
@@ -125,18 +125,21 @@ export default function ReviewPage() {
           description={`${t("review.youReviewed")} ${completed} ${completed !== 1 ? t("review.cards") : t("review.card")}`}
           action={
             <div className="flex gap-3 justify-center w-full max-w-sm mx-auto">
-              <button
-                className="inline-flex flex-1 items-center justify-center gap-2 px-8 py-3.5 rounded-md font-semibold text-base font-display border border-border bg-bg-card text-text-primary transition-all whitespace-nowrap tracking-tight hover:-translate-y-px hover:bg-bg-card-hover hover:border-border-light disabled:opacity-45 disabled:cursor-not-allowed"
+              <Button
+                variant="secondary"
+                size="lg"
+                className="flex-1"
                 onClick={() => navigate("/decks")}
               >
                 {t("review.backToDecks")}
-              </button>
-              <button
-                className="inline-flex flex-1 items-center justify-center gap-2 px-8 py-3.5 rounded-md font-bold text-base font-display text-bg-primary bg-accent-primary shadow-sm transition-all tracking-tight hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 disabled:opacity-45 disabled:cursor-not-allowed"
+              </Button>
+              <Button
+                size="lg"
+                className="flex-1"
                 onClick={() => navigate("/")}
               >
                 {t("layout.dashboard")}
-              </button>
+              </Button>
             </div>
           }
         />
