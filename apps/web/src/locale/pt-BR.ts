@@ -53,6 +53,10 @@ export const ptBR: Translations = {
     reviewActivity: "Atividade de Revisão",
     deckAccuracy: "Precisão por Baralho",
     quickStudy: "Estudo Rápido",
+    createFirstDeck: "Crie seu primeiro baralho",
+    createFirstDeckText:
+      "Comece sua jornada de aprendizado criando um baralho",
+    createDeck: "Criar um Baralho",
   },
   decks: {
     title: "Meus Baralhos",

@@ -6,6 +6,7 @@ import { useLocale } from "../hooks/useLocale";
 import * as api from "../services/api";
 import { Button, Spinner, PageHeader } from "../components/ui";
 import ActivityGraph from "../components/ActivityGraph";
+import EmptyState from "../components/EmptyState";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -135,8 +136,19 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Quick Study */}
-      {decks.length > 0 && (
+      {/* Quick Study / Empty CTA */}
+      {decks.length === 0 ? (
+        <EmptyState
+          icon="📚"
+          title={t("dashboard.createFirstDeck")}
+          description={t("dashboard.createFirstDeckText")}
+          action={
+            <Button onClick={() => navigate("/decks")}>
+              {t("dashboard.createDeck")}
+            </Button>
+          }
+        />
+      ) : (
         <div className="bg-bg-card border border-border rounded-md p-6 transition-all hover:border-border-light hover:shadow-md">
           <h2 className="font-display text-[1.125rem] font-bold tracking-tight mb-4">
             {t("dashboard.quickStudy")}

@@ -51,6 +51,10 @@ export const en = {
     reviewActivity: "Review Activity",
     deckAccuracy: "Deck Accuracy",
     quickStudy: "Quick Study",
+    createFirstDeck: "Create your first deck",
+    createFirstDeckText:
+      "Start your learning journey by creating a deck",
+    createDeck: "Create a Deck",
   },
   decks: {
     title: "My Decks",

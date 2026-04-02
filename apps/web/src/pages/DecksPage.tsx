@@ -47,11 +47,13 @@ export default function DecksPage() {
   }) {
     if (editingDeck) {
       await api.updateDeck(editingDeck.id, form);
+      setShowModal(false);
+      loadDecks();
     } else {
-      await api.createDeck(form);
+      const newDeck = await api.createDeck(form);
+      setShowModal(false);
+      navigate(`/decks/${newDeck.id}`);
     }
-    setShowModal(false);
-    loadDecks();
   }
 
   async function handleDelete(id: string) {
