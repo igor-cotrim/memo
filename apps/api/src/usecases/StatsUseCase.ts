@@ -6,13 +6,30 @@ import type {
 import type { IReviewLogRepository } from "../domain/repositories/IReviewLogRepository";
 import type { IDeckRepository } from "../domain/repositories/IDeckRepository";
 
+/**
+ * Converts a UTC ISO string to the user's local YYYY-MM-DD date string.
+ * timezoneOffset is in minutes (same as Date.getTimezoneOffset()),
+ * e.g. -180 for UTC+3, 180 for UTC-3 (BRT).
+ */
+function toLocalDateString(utcIso: string, timezoneOffset: number): string {
+  const date = new Date(utcIso);
+  // getTimezoneOffset() returns minutes to ADD to get UTC.
+  // So to get local time from UTC, we SUBTRACT the offset.
+  const localMs = date.getTime() - timezoneOffset * 60 * 1000;
+  const local = new Date(localMs);
+  return local.toISOString().split("T")[0]!;
+}
+
 export class GetReviewStatsUseCase {
   constructor(
     private readonly reviewLogRepo: IReviewLogRepository,
     private readonly deckRepo: IDeckRepository,
   ) {}
 
-  async execute(userId: string): Promise<ReviewStats> {
+  async execute(
+    userId: string,
+    timezoneOffset: number = 0,
+  ): Promise<ReviewStats> {
     const now = new Date();
 
     // Last 365 days
@@ -23,10 +40,10 @@ export class GetReviewStatsUseCase {
       yearAgo.toISOString(),
     );
 
-    // Daily counts
+    // Daily counts — group by user's local date
     const dailyCounts = new Map<string, number>();
     for (const log of allLogs) {
-      const date = log.reviewedAt.split("T")[0]!;
+      const date = toLocalDateString(log.reviewedAt, timezoneOffset);
       dailyCounts.set(date, (dailyCounts.get(date) ?? 0) + 1);
     }
 
@@ -70,9 +87,12 @@ export class GetReviewStatsUseCase {
       });
     }
 
-    // Streak
-    const reviewDates = await this.reviewLogRepo.getReviewDates(userId);
-    const currentStreak = this.calculateStreak(reviewDates, now);
+    // Streak — also using user's local dates
+    const reviewDates = await this.reviewLogRepo.getReviewDates(
+      userId,
+      timezoneOffset,
+    );
+    const currentStreak = this.calculateStreak(reviewDates, now, timezoneOffset);
 
     return {
       last7Days,
@@ -83,11 +103,15 @@ export class GetReviewStatsUseCase {
     };
   }
 
-  private calculateStreak(dates: string[], now: Date): number {
+  private calculateStreak(
+    dates: string[],
+    now: Date,
+    timezoneOffset: number,
+  ): number {
     if (dates.length === 0) return 0;
 
     const uniqueDates = [...new Set(dates)].sort().reverse();
-    const today = now.toISOString().split("T")[0]!;
+    const today = toLocalDateString(now.toISOString(), timezoneOffset);
 
     let streak = 0;
     const checkDate = new Date(today);

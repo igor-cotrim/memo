@@ -51,12 +51,19 @@ export class PgReviewLogRepository implements IReviewLogRepository {
     return rows.map((r) => this.toLog(r.log));
   }
 
-  async getReviewDates(userId: string): Promise<string[]> {
+  async getReviewDates(
+    userId: string,
+    timezoneOffset: number = 0,
+  ): Promise<string[]> {
     const rows = await this.db
       .select({ reviewedAt: schema.reviewLogs.reviewedAt })
       .from(schema.reviewLogs)
       .where(eq(schema.reviewLogs.userId, userId));
-    return rows.map((r) => r.reviewedAt.split("T")[0]!);
+    return rows.map((r) => {
+      const date = new Date(r.reviewedAt);
+      const localMs = date.getTime() - timezoneOffset * 60 * 1000;
+      return new Date(localMs).toISOString().split("T")[0]!;
+    });
   }
 
   private toLog(row: typeof schema.reviewLogs.$inferSelect): ReviewLog {

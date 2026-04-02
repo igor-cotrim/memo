@@ -19,7 +19,10 @@ export function createStatsRoutes(
     "/",
     async (req: AuthRequest, res: Response, next: NextFunction) => {
       try {
-        const stats = await getStats.execute(req.userId!);
+        const timezoneOffset = req.query.timezoneOffset
+          ? parseInt(req.query.timezoneOffset as string, 10)
+          : 0;
+        const stats = await getStats.execute(req.userId!, timezoneOffset);
         res.json(stats);
       } catch (err) {
         next(err);

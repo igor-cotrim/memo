@@ -195,6 +195,9 @@ export async function submitReview(data: ReviewResult): Promise<Flashcard> {
 // ─── Stats ───────────────────────────────────────────────────────────────────
 
 export async function getStats(): Promise<ReviewStats> {
-  const res = await api.get<ReviewStats>("/stats");
+  const timezoneOffset = new Date().getTimezoneOffset();
+  const res = await api.get<ReviewStats>("/stats", {
+    params: { timezoneOffset },
+  });
   return res.data;
 }

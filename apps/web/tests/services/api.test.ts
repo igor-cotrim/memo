@@ -238,7 +238,9 @@ describe("API Service", () => {
       (api.get as ReturnType<typeof vi.fn>).mockResolvedValue({ data: stats });
 
       const result = await apiModule.getStats();
-      expect(api.get).toHaveBeenCalledWith("/stats");
+      expect(api.get).toHaveBeenCalledWith("/stats", {
+        params: { timezoneOffset: expect.any(Number) },
+      });
       expect(result.currentStreak).toBe(5);
     });
   });
