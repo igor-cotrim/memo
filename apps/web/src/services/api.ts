@@ -119,6 +119,13 @@ export async function changePassword(
   await api.put("/users/password", data);
 }
 
+export async function completeOnboarding(): Promise<UpdateProfileResponse> {
+  const res = await api.patch<UpdateProfileResponse>(
+    "/users/onboarding-complete",
+  );
+  return res.data;
+}
+
 // ─── Decks ───────────────────────────────────────────────────────────────────
 
 export async function getDecks(): Promise<Deck[]> {

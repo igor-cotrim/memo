@@ -24,6 +24,21 @@ export function createUserRoutes(userRepo: IUserRepository): Router {
     },
   );
 
+  router.patch(
+    "/onboarding-complete",
+    async (req: AuthRequest, res: Response, next: NextFunction) => {
+      try {
+        const user = await userRepo.update(req.userId!, {
+          onboardingCompletedAt: new Date().toISOString(),
+        });
+        const { passwordHash, ...publicUser } = user;
+        res.json({ user: publicUser });
+      } catch (err) {
+        next(err);
+      }
+    },
+  );
+
   router.put(
     "/password",
     async (req: AuthRequest, res: Response, next: NextFunction) => {

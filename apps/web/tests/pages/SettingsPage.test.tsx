@@ -14,6 +14,7 @@ const testUser = {
   name: "John Doe",
   email: "john@example.com",
   createdAt: "2026-01-01T00:00:00.000Z",
+  onboardingCompletedAt: "2026-01-01T00:00:00.000Z",
 };
 
 describe("SettingsPage", () => {

@@ -59,6 +59,7 @@ describe("AuthProvider", () => {
         email: "a@b.com",
         name: "John",
         createdAt: new Date().toISOString(),
+        onboardingCompletedAt: null,
       },
     });
 
@@ -93,6 +94,7 @@ describe("AuthProvider", () => {
         email: "a@b.com",
         name: "Jane",
         createdAt: new Date().toISOString(),
+        onboardingCompletedAt: null,
       },
       accessToken: "tok",
     });
@@ -122,6 +124,7 @@ describe("AuthProvider", () => {
         email: "a@b.com",
         name: "Test",
         createdAt: "",
+        onboardingCompletedAt: null,
       },
       accessToken: "tok",
     });
@@ -155,6 +158,7 @@ describe("AuthProvider", () => {
         email: "a@b.com",
         name: "John",
         createdAt: "",
+        onboardingCompletedAt: null,
       },
     });
     mockedApi.logout.mockResolvedValue(undefined);

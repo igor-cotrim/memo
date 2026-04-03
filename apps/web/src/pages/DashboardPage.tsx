@@ -3,17 +3,33 @@ import { useNavigate } from "react-router-dom";
 
 import type { ReviewStats, Deck } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
+import { useAuth } from "../hooks/useAuth";
 import * as api from "../services/api";
 import { Button, Spinner, PageHeader } from "../components/ui";
 import ActivityGraph from "../components/ActivityGraph";
 import EmptyState from "../components/EmptyState";
+import OnboardingWizard from "../components/OnboardingWizard";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { t } = useLocale();
+  const { user, updateUser } = useAuth();
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(
+    () => user?.onboardingCompletedAt === null,
+  );
+
+  async function handleOnboardingComplete() {
+    setShowOnboarding(false);
+    try {
+      const { user: updatedUser } = await api.completeOnboarding();
+      updateUser(updatedUser);
+    } catch {
+      // Silently fail — worst case they see it again next login
+    }
+  }
 
   useEffect(() => {
     loadData();
@@ -50,6 +66,10 @@ export default function DashboardPage() {
 
   return (
     <div>
+      {showOnboarding && (
+        <OnboardingWizard onComplete={handleOnboardingComplete} />
+      )}
+
       <PageHeader
         title={t("dashboard.title")}
         subtitle={t("dashboard.subtitle")}

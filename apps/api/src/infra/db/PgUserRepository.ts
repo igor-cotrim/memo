@@ -32,13 +32,16 @@ export class PgUserRepository implements IUserRepository {
       name: user.name,
       passwordHash: user.passwordHash,
       createdAt: user.createdAt,
+      onboardingCompletedAt: user.onboardingCompletedAt,
     });
     return user;
   }
 
   async update(
     id: string,
-    data: Partial<Pick<User, "name" | "passwordHash">>,
+    data: Partial<
+      Pick<User, "name" | "passwordHash" | "onboardingCompletedAt">
+    >,
   ): Promise<User> {
     const rows = await this.db
       .update(schema.users)
@@ -60,6 +63,7 @@ export class PgUserRepository implements IUserRepository {
       name: row.name,
       passwordHash: row.passwordHash,
       createdAt: row.createdAt,
+      onboardingCompletedAt: row.onboardingCompletedAt,
     };
   }
 }

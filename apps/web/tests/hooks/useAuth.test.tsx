@@ -19,6 +19,7 @@ describe("useAuth", () => {
         email: "a@b.com",
         name: "Test",
         createdAt: new Date().toISOString(),
+        onboardingCompletedAt: null,
       },
       isLoading: false,
       login: vi.fn(),

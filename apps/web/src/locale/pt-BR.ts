@@ -54,8 +54,7 @@ export const ptBR: Translations = {
     deckAccuracy: "Precisão por Baralho",
     quickStudy: "Estudo Rápido",
     createFirstDeck: "Crie seu primeiro baralho",
-    createFirstDeckText:
-      "Comece sua jornada de aprendizado criando um baralho",
+    createFirstDeckText: "Comece sua jornada de aprendizado criando um baralho",
     createDeck: "Criar um Baralho",
   },
   decks: {
@@ -80,7 +79,8 @@ export const ptBR: Translations = {
     importDeck: "Importar Baralho",
     importModalTitle: "Importar Baralho",
     importExampleTitle: "Formato esperado",
-    importCsvNote: "Para CSV, você preencherá o nome e descrição do baralho após selecionar o arquivo.",
+    importCsvNote:
+      "Para CSV, você preencherá o nome e descrição do baralho após selecionar o arquivo.",
     importFileLabel: "Arquivo (.json ou .csv)",
     importDropHint: "Arraste um arquivo aqui ou clique para procurar",
     importFileHint: "Formatos: JSON, CSV (máx. 2MB)",
@@ -200,6 +200,25 @@ export const ptBR: Translations = {
     passwordMismatch: "As senhas não coincidem",
     profileFailed: "Falha ao atualizar perfil",
     passwordFailed: "Falha ao alterar senha",
+  },
+  onboarding: {
+    skip: "Pular",
+    next: "Próximo",
+    back: "Voltar",
+    getStarted: "Começar",
+    step1Title: "Bem-vindo ao Memô",
+    step1Text:
+      "Seu sistema pessoal de repetição espaçada. Aprenda qualquer coisa mais rápido e lembre por mais tempo.",
+    step2Title: "Como funciona",
+    step2CreateDecks: "Crie baralhos para organizar seus assuntos",
+    step2AddCards: "Adicione flashcards com perguntas e respostas",
+    step2Review: "Revise os cartões em intervalos cientificamente otimizados",
+    step3Title: "A ciência de lembrar",
+    step3Text:
+      "Sem revisão, você esquece 80% das informações novas em poucos dias. A repetição espaçada agenda revisões no momento ideal, para que cada sessão fortaleça sua memória com o mínimo de esforço.",
+    step3Benefit1: "Vença a curva do esquecimento",
+    step3Benefit2: "Estude menos, lembre mais",
+    step3Benefit3: "Agendamento automático — é só aparecer",
   },
   validation: {
     required: "Este campo é obrigatório",

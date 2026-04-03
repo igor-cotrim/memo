@@ -6,6 +6,8 @@ export interface IUserRepository {
   create(user: User): Promise<User>;
   update(
     id: string,
-    data: Partial<Pick<User, "name" | "passwordHash">>,
+    data: Partial<
+      Pick<User, "name" | "passwordHash" | "onboardingCompletedAt">
+    >,
   ): Promise<User>;
 }

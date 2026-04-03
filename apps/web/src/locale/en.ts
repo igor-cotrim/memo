@@ -52,8 +52,7 @@ export const en = {
     deckAccuracy: "Deck Accuracy",
     quickStudy: "Quick Study",
     createFirstDeck: "Create your first deck",
-    createFirstDeckText:
-      "Start your learning journey by creating a deck",
+    createFirstDeckText: "Start your learning journey by creating a deck",
     createDeck: "Create a Deck",
   },
   decks: {
@@ -78,7 +77,8 @@ export const en = {
     importDeck: "Import Deck",
     importModalTitle: "Import Deck",
     importExampleTitle: "Expected format",
-    importCsvNote: "For CSV, you'll fill in the deck name and description after selecting the file.",
+    importCsvNote:
+      "For CSV, you'll fill in the deck name and description after selecting the file.",
     importFileLabel: "File (.json or .csv)",
     importDropHint: "Drop a file here or click to browse",
     importFileHint: "Supported: JSON, CSV (max 2MB)",
@@ -198,6 +198,25 @@ export const en = {
     passwordMismatch: "Passwords do not match",
     profileFailed: "Failed to update profile",
     passwordFailed: "Failed to change password",
+  },
+  onboarding: {
+    skip: "Skip",
+    next: "Next",
+    back: "Back",
+    getStarted: "Get Started",
+    step1Title: "Welcome to Memô",
+    step1Text:
+      "Your personal spaced repetition system. Learn anything faster and remember it longer.",
+    step2Title: "How it works",
+    step2CreateDecks: "Create decks to organize your subjects",
+    step2AddCards: "Add flashcards with questions and answers",
+    step2Review: "Review cards at scientifically optimal intervals",
+    step3Title: "The science of remembering",
+    step3Text:
+      "Without review, you forget 80% of new information within days. Spaced repetition schedules reviews right before you'd forget, so each session strengthens your memory with minimal effort.",
+    step3Benefit1: "Beat the forgetting curve",
+    step3Benefit2: "Study less, remember more",
+    step3Benefit3: "Automatic scheduling — just show up",
   },
   validation: {
     required: "This field is required",

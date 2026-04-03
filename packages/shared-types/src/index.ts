@@ -6,6 +6,7 @@ export interface User {
   name: string;
   passwordHash: string;
   createdAt: string;
+  onboardingCompletedAt: string | null;
 }
 
 export type PublicUser = Omit<User, "passwordHash">;

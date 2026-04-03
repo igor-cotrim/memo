@@ -41,6 +41,7 @@ export class RegisterUseCase {
       name: input.name,
       passwordHash,
       createdAt: now,
+      onboardingCompletedAt: null,
     });
 
     const accessToken = jwt.sign({ userId: user.id }, this.jwtSecret, {

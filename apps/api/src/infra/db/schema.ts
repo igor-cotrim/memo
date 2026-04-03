@@ -8,6 +8,7 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   passwordHash: text("password_hash").notNull(),
   createdAt: text("created_at").notNull(),
+  onboardingCompletedAt: text("onboarding_completed_at"),
 });
 
 // ─── Decks ───────────────────────────────────────────────────────────────────

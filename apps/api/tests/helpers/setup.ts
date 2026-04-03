@@ -21,7 +21,8 @@ export async function createTestApp(): Promise<{
     email TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
     password_hash TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    onboarding_completed_at TEXT
   )`);
 
   await db.execute(`CREATE TABLE decks (
