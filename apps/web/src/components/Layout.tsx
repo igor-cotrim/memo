@@ -42,22 +42,22 @@ export default function Layout() {
         {t("layout.skipToContent")}
       </a>
       <nav
-        className="bg-bg-glass backdrop-blur-xl border-b border-border px-8 h-[68px] flex items-center justify-between sticky top-0 z-50 after:content-[''] after:absolute after:-bottom-px after:left-0 after:right-0 after:h-px after:bg-border-accent"
+        className="bg-bg-glass backdrop-blur-xl border-b border-border px-8 max-sm:px-4 h-[68px] flex items-center justify-between sticky top-0 z-50 after:content-[''] after:absolute after:-bottom-px after:left-0 after:right-0 after:h-px after:bg-border-accent"
         aria-label="Main navigation"
       >
         <Link
           to="/"
-          className="font-display text-[1.3rem] font-extrabold text-accent-primary flex items-center gap-2 tracking-tight"
+          className="font-display text-[1.3rem] max-sm:text-base font-extrabold text-accent-primary flex items-center gap-2 max-sm:gap-1.5 tracking-tight"
         >
-          <span className="text-[1.5rem] text-current!">⚡</span> FlashMind
+          <span className="text-[1.5rem] max-sm:text-[1.2rem] text-current!">⚡</span> FlashMind
         </Link>
-        <ul className="flex items-center gap-1 list-none">
+        <ul className="flex items-center gap-1 max-sm:gap-0.5 list-none">
           {user ? (
             <>
               <li>
                 <Link
                   to="/"
-                  className={`px-4 py-2 rounded-sm font-medium text-sm font-display transition-colors ${isActive("/") && location.pathname === "/" ? "text-accent-primary bg-accent-primary/10" : "text-text-secondary hover:text-text-primary hover:bg-white/5"}`}
+                  className={`px-4 py-2 max-sm:px-2.5 max-sm:py-1.5 rounded-sm font-medium text-sm font-display transition-colors ${isActive("/") && location.pathname === "/" ? "text-accent-primary bg-accent-primary/10" : "text-text-secondary hover:text-text-primary hover:bg-white/5"}`}
                 >
                   {t("layout.dashboard")}
                 </Link>
@@ -65,14 +65,14 @@ export default function Layout() {
               <li>
                 <Link
                   to="/decks"
-                  className={`px-4 py-2 rounded-sm font-medium text-sm font-display transition-colors ${isActive("/decks") ? "text-accent-primary bg-accent-primary/10" : "text-text-secondary hover:text-text-primary hover:bg-white/5"}`}
+                  className={`px-4 py-2 max-sm:px-2.5 max-sm:py-1.5 rounded-sm font-medium text-sm font-display transition-colors ${isActive("/decks") ? "text-accent-primary bg-accent-primary/10" : "text-text-secondary hover:text-text-primary hover:bg-white/5"}`}
                 >
                   {t("layout.decks")}
                 </Link>
               </li>
               <li>
                 <button
-                  className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-bold text-[0.75rem] font-display transition-all whitespace-nowrap tracking-widest uppercase bg-white/5 text-text-secondary hover:text-accent-primary hover:bg-accent-primary/10 border border-border hover:border-accent-primary/30"
+                  className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-sm font-bold text-[0.75rem] font-display transition-all whitespace-nowrap tracking-widest uppercase bg-white/5 text-text-secondary hover:text-accent-primary hover:bg-accent-primary/10 border border-border hover:border-accent-primary/30"
                   onClick={toggleLocale}
                   aria-label={`Switch language to ${localeLabel === "EN" ? "Portuguese" : "English"}`}
                   id="locale-toggle"
@@ -83,7 +83,7 @@ export default function Layout() {
               <li>
                 <div className="relative" ref={menuRef}>
                   <button
-                    className="w-8 h-8 rounded-full bg-accent-primary/20 text-accent-primary font-bold text-sm flex items-center justify-center transition-colors hover:bg-accent-primary/30 cursor-pointer"
+                    className="w-9 h-9 rounded-full bg-accent-primary/20 text-accent-primary font-bold text-sm flex items-center justify-center transition-colors hover:bg-accent-primary/30 cursor-pointer"
                     onClick={() => setMenuOpen((v) => !v)}
                     aria-label="User menu"
                     aria-expanded={menuOpen}
@@ -118,7 +118,7 @@ export default function Layout() {
             <>
               <li>
                 <button
-                  className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-bold text-[0.75rem] font-display transition-all whitespace-nowrap tracking-widest uppercase bg-white/5 text-text-secondary hover:text-accent-primary hover:bg-accent-primary/10 border border-border hover:border-accent-primary/30"
+                  className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-sm font-bold text-[0.75rem] font-display transition-all whitespace-nowrap tracking-widest uppercase bg-white/5 text-text-secondary hover:text-accent-primary hover:bg-accent-primary/10 border border-border hover:border-accent-primary/30"
                   onClick={toggleLocale}
                   aria-label={`Switch language to ${localeLabel === "EN" ? "Portuguese" : "English"}`}
                   id="locale-toggle"

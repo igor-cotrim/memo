@@ -29,10 +29,11 @@ const CardItem = memo(function CardItem({
         <span className="inline-flex items-center px-2.5 py-1 rounded-full font-display text-[0.7rem] font-semibold tracking-wide bg-accent-primary/10 text-accent-primary">
           {card.reps === 0 ? t("cards.new") : `${t("cards.rep")} ${card.reps}`}
         </span>
-        <div className="flex gap-1">
+        <div className="flex gap-2">
           <Button
             variant="ghost"
             size="sm"
+            className="w-9 h-9 p-0! rounded-full bg-[#000000]/20! text-base"
             onClick={() => onEdit(card)}
             aria-label="Edit card"
           >
@@ -41,6 +42,7 @@ const CardItem = memo(function CardItem({
           <Button
             variant="danger-ghost"
             size="sm"
+            className="w-9 h-9 p-0! rounded-full bg-[#000000]/20! text-base"
             onClick={() => onDelete(card.id)}
             aria-label="Delete card"
           >
