@@ -33,7 +33,7 @@ const CardItem = memo(function CardItem({
           <Button
             variant="ghost"
             size="sm"
-            className="w-9 h-9 p-0! rounded-full bg-[#000000]/20! text-base"
+            className="w-9 h-9 p-0! rounded-full bg-[#ffffff]/10! text-base"
             onClick={() => onEdit(card)}
             aria-label="Edit card"
           >
@@ -42,7 +42,7 @@ const CardItem = memo(function CardItem({
           <Button
             variant="danger-ghost"
             size="sm"
-            className="w-9 h-9 p-0! rounded-full bg-[#000000]/20! text-base"
+            className="w-9 h-9 p-0! rounded-full bg-[#ffffff]/10! text-base"
             onClick={() => onDelete(card.id)}
             aria-label="Delete card"
           >

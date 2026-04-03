@@ -75,7 +75,7 @@ function Modal({ children, onClose, ariaLabelledBy }: ModalProps) {
     >
       <div
         ref={panelRef}
-        className="bg-bg-secondary border border-border rounded-lg w-full max-w-[500px] p-8 shadow-lg animate-modal-slide-up"
+        className="bg-bg-secondary border border-border rounded-lg w-full max-w-[500px] max-h-[90vh] overflow-y-auto p-8 shadow-lg animate-modal-slide-up"
         role="dialog"
         aria-modal="true"
         aria-labelledby={ariaLabelledBy}

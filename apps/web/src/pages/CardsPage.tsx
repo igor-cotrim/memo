@@ -7,6 +7,7 @@ import * as api from "../services/api";
 import { Button, Spinner } from "../components/ui";
 import CardItem from "../components/CardItem";
 import CardModal from "../components/CardModal";
+import ImportCardsModal from "../components/ImportCardsModal";
 import EmptyState from "../components/EmptyState";
 
 export default function CardsPage() {
@@ -17,6 +18,7 @@ export default function CardsPage() {
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
 
   useEffect(() => {
@@ -95,16 +97,23 @@ export default function CardsPage() {
             {deck?.description ? ` · ${deck.description}` : ""}
           </p>
         </div>
-        <div className="flex gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button
             variant="secondary"
-            className="flex-1 sm:flex-none"
+            className="w-full sm:w-auto"
             onClick={() => navigate(`/review/${deckId}`)}
           >
             {t("cards.studyNow")}
           </Button>
           <Button
-            className="flex-1 sm:flex-none"
+            variant="secondary"
+            className="w-full sm:w-auto"
+            onClick={() => setShowImportModal(true)}
+          >
+            {t("cards.importCards")}
+          </Button>
+          <Button
+            className="w-full sm:w-auto"
             onClick={openCreate}
             id="create-card-btn"
           >
@@ -139,6 +148,17 @@ export default function CardsPage() {
           card={editingCard}
           onClose={() => setShowModal(false)}
           onSave={handleSave}
+        />
+      )}
+
+      {showImportModal && deckId && (
+        <ImportCardsModal
+          deckId={deckId}
+          onClose={() => setShowImportModal(false)}
+          onSuccess={() => {
+            setShowImportModal(false);
+            loadData();
+          }}
         />
       )}
     </div>

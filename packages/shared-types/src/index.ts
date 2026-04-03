@@ -118,6 +118,30 @@ export interface ReviewSession {
   totalDue: number;
 }
 
+// ─── Import ─────────────────────────────────────────────────────────────────
+
+export interface ImportCardRow {
+  front: string;
+  back: string;
+  notes?: string;
+}
+
+export interface ImportRowError {
+  row: number;
+  message: string;
+}
+
+export interface ImportDeckResponse {
+  deck: Deck;
+  cardsCreated: number;
+  errors: ImportRowError[];
+}
+
+export interface ImportCardsResponse {
+  cardsCreated: number;
+  errors: ImportRowError[];
+}
+
 // ─── Stats ───────────────────────────────────────────────────────────────────
 
 export interface DailyReviewCount {

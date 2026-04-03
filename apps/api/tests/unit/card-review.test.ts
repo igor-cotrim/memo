@@ -43,6 +43,10 @@ function createMockCardRepo(): ICardRepository {
       cards.push(card);
       return card;
     },
+    async createMany(newCards) {
+      cards.push(...newCards);
+      return newCards;
+    },
     async update(id, data) {
       const idx = cards.findIndex((c) => c.id === id);
       if (idx < 0) return null;

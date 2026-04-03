@@ -22,6 +22,7 @@ import { createCardRoutes } from "./infra/http/routes/card.routes";
 import { createReviewRoutes } from "./infra/http/routes/review.routes";
 import { createStatsRoutes } from "./infra/http/routes/stats.routes";
 import { createUserRoutes } from "./infra/http/routes/user.routes";
+import { createImportRoutes } from "./infra/http/routes/import.routes";
 
 export function createApp(
   db: PostgresJsDatabase<typeof schema>,
@@ -77,6 +78,7 @@ export function createApp(
 
   // Protected routes
   const auth = authMiddleware(jwtSecret);
+  app.use("/decks", auth, createImportRoutes(db));
   app.use("/decks", auth, createDeckRoutes(deckRepo));
   app.use("/decks/:deckId/cards", auth, createCardRoutes(cardRepo, deckRepo));
   app.use(

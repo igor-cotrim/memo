@@ -6,6 +6,7 @@ export interface ICardRepository {
   findDueCards(deckId: string, now: string): Promise<Flashcard[]>;
   findAllDueCardsByUserId(userId: string, now: string): Promise<Flashcard[]>;
   create(card: Flashcard): Promise<Flashcard>;
+  createMany(cards: Flashcard[]): Promise<Flashcard[]>;
   update(id: string, data: Partial<Flashcard>): Promise<Flashcard | null>;
   delete(id: string): Promise<boolean>;
   countByDeckId(deckId: string): Promise<number>;

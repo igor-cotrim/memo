@@ -72,6 +72,36 @@ export class PgCardRepository implements ICardRepository {
     return card;
   }
 
+  async createMany(cards: Flashcard[]): Promise<Flashcard[]> {
+    if (cards.length === 0) return [];
+
+    const BATCH_SIZE = 500;
+    for (let i = 0; i < cards.length; i += BATCH_SIZE) {
+      const batch = cards.slice(i, i + BATCH_SIZE);
+      await this.db.insert(schema.flashcards).values(
+        batch.map((card) => ({
+          id: card.id,
+          deckId: card.deckId,
+          front: card.front,
+          back: card.back,
+          notes: card.notes ?? null,
+          state: card.state,
+          due: card.due,
+          stability: card.stability,
+          difficulty: card.difficulty,
+          elapsedDays: card.elapsedDays,
+          scheduledDays: card.scheduledDays,
+          reps: card.reps,
+          lapses: card.lapses,
+          lastReviewAt: card.lastReviewAt,
+          createdAt: card.createdAt,
+        })),
+      );
+    }
+
+    return cards;
+  }
+
   async update(
     id: string,
     data: Partial<Flashcard>,

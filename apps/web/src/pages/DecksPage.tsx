@@ -7,6 +7,7 @@ import * as api from "../services/api";
 import { Button, PageHeader, Spinner } from "../components/ui";
 import DeckItem from "../components/DeckItem";
 import DeckModal from "../components/DeckModal";
+import ImportDeckModal from "../components/ImportDeckModal";
 import EmptyState from "../components/EmptyState";
 
 export default function DecksPage() {
@@ -15,6 +16,7 @@ export default function DecksPage() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
 
   useEffect(() => {
@@ -83,9 +85,18 @@ export default function DecksPage() {
         title={t("decks.title")}
         subtitle={t("decks.subtitle")}
         action={
-          <Button onClick={openCreate} id="create-deck-btn">
-            {t("decks.newDeck")}
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button
+              variant="secondary"
+              className="w-full sm:w-auto"
+              onClick={() => setShowImportModal(true)}
+            >
+              {t("decks.importDeck")}
+            </Button>
+            <Button className="w-full sm:w-auto" onClick={openCreate} id="create-deck-btn">
+              {t("decks.newDeck")}
+            </Button>
+          </div>
         }
       />
 
@@ -117,6 +128,16 @@ export default function DecksPage() {
           deck={editingDeck}
           onClose={() => setShowModal(false)}
           onSave={handleSave}
+        />
+      )}
+
+      {showImportModal && (
+        <ImportDeckModal
+          onClose={() => setShowImportModal(false)}
+          onSuccess={(deck) => {
+            setShowImportModal(false);
+            navigate(`/decks/${deck.id}`);
+          }}
         />
       )}
     </div>

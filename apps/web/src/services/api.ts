@@ -17,6 +17,8 @@ import type {
   UpdateProfileRequest,
   UpdateProfileResponse,
   ChangePasswordRequest,
+  ImportDeckResponse,
+  ImportCardsResponse,
 } from "@flashcard-app/shared-types";
 
 const baseURL =
@@ -178,6 +180,36 @@ export async function deleteCard(
   cardId: string,
 ): Promise<void> {
   await api.delete(`/decks/${deckId}/cards/${cardId}`);
+}
+
+// ─── Import ─────────────────────────────────────────────────────────────────
+
+export async function importDeck(
+  file: File,
+  meta: { name?: string; description?: string },
+): Promise<ImportDeckResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  if (meta.name) formData.append("name", meta.name);
+  if (meta.description) formData.append("description", meta.description);
+  const res = await api.post<ImportDeckResponse>("/decks/import", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+}
+
+export async function importCards(
+  deckId: string,
+  file: File,
+): Promise<ImportCardsResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await api.post<ImportCardsResponse>(
+    `/decks/${deckId}/cards/import`,
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } },
+  );
+  return res.data;
 }
 
 // ─── Review ──────────────────────────────────────────────────────────────────
