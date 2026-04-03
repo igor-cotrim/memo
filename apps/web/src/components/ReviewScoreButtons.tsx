@@ -6,11 +6,13 @@ import { useLocale } from "../hooks/useLocale";
 type ReviewScoreButtonsProps = {
   onRate: (quality: ReviewQuality) => void;
   disabled: boolean;
+  activeQuality: ReviewQuality | null;
 };
 
 const ReviewScoreButtons = memo(function ReviewScoreButtons({
   onRate,
   disabled,
+  activeQuality,
 }: ReviewScoreButtonsProps) {
   const { t } = useLocale();
 
@@ -30,7 +32,7 @@ const ReviewScoreButtons = memo(function ReviewScoreButtons({
       {qualityOptions.map(({ quality, label, emoji }) => (
         <button
           key={quality}
-          className={`flex flex-col items-center justify-center p-3 sm:p-4 border rounded-md bg-bg-card text-text-primary font-display cursor-pointer transition-all text-center hover:-translate-y-[3px] hover:shadow-md active:-translate-y-px ${
+          className={`relative flex flex-col items-center justify-center p-3 sm:p-4 border rounded-md bg-bg-card text-text-primary font-display cursor-pointer transition-all text-center hover:-translate-y-[3px] hover:shadow-md active:-translate-y-px ${
             quality === 1
               ? "border-accent-danger hover:bg-accent-danger/10 text-accent-danger"
               : quality === 2
@@ -42,8 +44,15 @@ const ReviewScoreButtons = memo(function ReviewScoreButtons({
           onClick={() => onRate(quality)}
           disabled={disabled}
         >
-          <span style={{ fontSize: "1.5rem" }}>{emoji}</span>
+          {activeQuality === quality ? (
+            <div className="w-6 h-6 border-3 border-current border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <span style={{ fontSize: "1.5rem" }}>{emoji}</span>
+          )}
           <span className="block text-xs mt-1 font-medium">{label}</span>
+          <kbd className="absolute top-1.5 right-1.5 hidden sm:inline-flex items-center justify-center w-5 h-5 text-[0.6rem] font-mono rounded border border-current/20 bg-current/5 opacity-50">
+            {quality}
+          </kbd>
         </button>
       ))}
     </div>

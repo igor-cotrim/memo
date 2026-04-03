@@ -18,6 +18,9 @@ export default function ReviewPage() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [activeQuality, setActiveQuality] = useState<ReviewQuality | null>(
+    null,
+  );
   const [totalCards, setTotalCards] = useState(0);
   const [completed, setCompleted] = useState(0);
 
@@ -45,6 +48,7 @@ export default function ReviewPage() {
     if (!card || submitting) return;
 
     setSubmitting(true);
+    setActiveQuality(quality);
     try {
       await api.submitReview({
         cardId: card.id,
@@ -61,6 +65,7 @@ export default function ReviewPage() {
       }
     } finally {
       setSubmitting(false);
+      setActiveQuality(null);
     }
   }
 
@@ -68,7 +73,24 @@ export default function ReviewPage() {
 
   useEffect(() => {
     handleKeyRef.current = (e: KeyboardEvent) => {
-      if (e.key === " " || e.key === "Enter") {
+      const currentCard = cards[currentIndex];
+      const isComplete = !currentCard || currentIndex >= cards.length;
+
+      if (isComplete && cards.length > 0) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          navigate("/");
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          navigate("/decks");
+        }
+        return;
+      }
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        navigate(`/decks/${deckId}`);
+      } else if (e.key === " " || e.key === "Enter") {
         e.preventDefault();
         handleFlip();
       } else if (isFlipped && ["1", "2", "3", "4"].includes(e.key)) {
@@ -124,22 +146,30 @@ export default function ReviewPage() {
           title={t("review.sessionCompleteTitle")}
           description={`${t("review.youReviewed")} ${completed} ${completed !== 1 ? t("review.cards") : t("review.card")}`}
           action={
-            <div className="flex gap-3 justify-center w-full max-w-sm mx-auto">
-              <Button
-                variant="secondary"
-                size="lg"
-                className="flex-1"
-                onClick={() => navigate("/decks")}
-              >
-                {t("review.backToDecks")}
-              </Button>
-              <Button
-                size="lg"
-                className="flex-1"
-                onClick={() => navigate("/")}
-              >
-                {t("layout.dashboard")}
-              </Button>
+            <div className="flex flex-col items-center gap-3 w-full max-w-sm mx-auto">
+              <div className="flex gap-3 justify-center w-full">
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="flex-1"
+                  onClick={() => navigate("/decks")}
+                >
+                  {t("review.backToDecks")}
+                  <kbd className="hidden sm:inline ml-2 px-1.5 py-0.5 text-[0.6rem] font-mono rounded border border-current/20 bg-current/5 opacity-50">
+                    Esc
+                  </kbd>
+                </Button>
+                <Button
+                  size="lg"
+                  className="flex-1"
+                  onClick={() => navigate("/")}
+                >
+                  {t("layout.dashboard")}
+                  <kbd className="hidden sm:inline ml-2 px-1.5 py-0.5 text-[0.6rem] font-mono rounded border border-current/20 bg-current/5 opacity-50">
+                    Enter
+                  </kbd>
+                </Button>
+              </div>
             </div>
           }
         />
@@ -169,7 +199,11 @@ export default function ReviewPage() {
           />
 
           {isFlipped && (
-            <ReviewScoreButtons onRate={handleRate} disabled={submitting} />
+            <ReviewScoreButtons
+              onRate={handleRate}
+              disabled={submitting}
+              activeQuality={activeQuality}
+            />
           )}
         </>
       )}
