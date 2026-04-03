@@ -13,6 +13,7 @@ const testUser = {
   id: "u-1",
   name: "John Doe",
   email: "john@example.com",
+  createdAt: "2026-01-01T00:00:00.000Z",
 };
 
 describe("SettingsPage", () => {
@@ -59,7 +60,9 @@ describe("SettingsPage", () => {
     await user.click(screen.getByText("Save Profile"));
 
     await waitFor(() => {
-      expect(mockedApi.updateProfile).toHaveBeenCalledWith({ name: "Jane Doe" });
+      expect(mockedApi.updateProfile).toHaveBeenCalledWith({
+        name: "Jane Doe",
+      });
     });
   });
 
@@ -116,8 +119,13 @@ describe("SettingsPage", () => {
 
     await user.type(screen.getByLabelText("Current Password"), "oldpass");
     await user.type(screen.getByLabelText("New Password"), "newpass123");
-    await user.type(screen.getByLabelText("Confirm New Password"), "newpass123");
-    await user.click(screen.getByText("Change Password", { selector: "button" }));
+    await user.type(
+      screen.getByLabelText("Confirm New Password"),
+      "newpass123",
+    );
+    await user.click(
+      screen.getByText("Change Password", { selector: "button" }),
+    );
 
     await waitFor(() => {
       expect(mockedApi.changePassword).toHaveBeenCalledWith({
@@ -132,7 +140,9 @@ describe("SettingsPage", () => {
 
     renderWithProviders(<SettingsPage />, { auth: { user: testUser } });
 
-    await user.click(screen.getByText("Change Password", { selector: "button" }));
+    await user.click(
+      screen.getByText("Change Password", { selector: "button" }),
+    );
 
     const alerts = screen.getAllByRole("alert");
     expect(alerts.some((a) => a.textContent === "This field is required")).toBe(
@@ -149,7 +159,9 @@ describe("SettingsPage", () => {
     await user.type(screen.getByLabelText("Current Password"), "oldpass");
     await user.type(screen.getByLabelText("New Password"), "abc");
     await user.type(screen.getByLabelText("Confirm New Password"), "abc");
-    await user.click(screen.getByText("Change Password", { selector: "button" }));
+    await user.click(
+      screen.getByText("Change Password", { selector: "button" }),
+    );
 
     expect(
       screen.getAllByText("Must be at least 6 characters").length,
@@ -164,12 +176,15 @@ describe("SettingsPage", () => {
 
     await user.type(screen.getByLabelText("Current Password"), "oldpass");
     await user.type(screen.getByLabelText("New Password"), "newpass123");
-    await user.type(screen.getByLabelText("Confirm New Password"), "different123");
-    await user.click(screen.getByText("Change Password", { selector: "button" }));
+    await user.type(
+      screen.getByLabelText("Confirm New Password"),
+      "different123",
+    );
+    await user.click(
+      screen.getByText("Change Password", { selector: "button" }),
+    );
 
-    expect(
-      screen.getByText("Passwords do not match"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Passwords do not match")).toBeInTheDocument();
     expect(mockedApi.changePassword).not.toHaveBeenCalled();
   });
 
@@ -181,8 +196,13 @@ describe("SettingsPage", () => {
 
     await user.type(screen.getByLabelText("Current Password"), "oldpass");
     await user.type(screen.getByLabelText("New Password"), "newpass123");
-    await user.type(screen.getByLabelText("Confirm New Password"), "newpass123");
-    await user.click(screen.getByText("Change Password", { selector: "button" }));
+    await user.type(
+      screen.getByLabelText("Confirm New Password"),
+      "newpass123",
+    );
+    await user.click(
+      screen.getByText("Change Password", { selector: "button" }),
+    );
 
     await waitFor(() => {
       expect(
@@ -201,8 +221,13 @@ describe("SettingsPage", () => {
 
     await user.type(screen.getByLabelText("Current Password"), "wrong");
     await user.type(screen.getByLabelText("New Password"), "newpass123");
-    await user.type(screen.getByLabelText("Confirm New Password"), "newpass123");
-    await user.click(screen.getByText("Change Password", { selector: "button" }));
+    await user.type(
+      screen.getByLabelText("Confirm New Password"),
+      "newpass123",
+    );
+    await user.click(
+      screen.getByText("Change Password", { selector: "button" }),
+    );
 
     await waitFor(() => {
       expect(
@@ -226,6 +251,8 @@ describe("SettingsPage", () => {
     // Start typing to clear error
     await user.type(nameInput, "J");
 
-    expect(screen.queryByText("This field is required")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("This field is required"),
+    ).not.toBeInTheDocument();
   });
 });
