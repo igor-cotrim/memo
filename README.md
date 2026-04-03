@@ -1,4 +1,4 @@
-# FlashMind - A modern flashcard application
+# Memô - A modern flashcard application
 
 A modern, high-performance flashcard application built with a focus on efficient learning using the **FSRS (Free Spaced Repetition Scheduler)** algorithm.
 

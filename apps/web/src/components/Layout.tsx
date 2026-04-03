@@ -49,7 +49,7 @@ export default function Layout() {
           to="/"
           className="font-display text-[1.3rem] max-sm:text-base font-extrabold text-accent-primary flex items-center gap-2 max-sm:gap-1.5 tracking-tight"
         >
-          <span className="text-[1.5rem] max-sm:text-[1.2rem] text-current!">⚡</span> FlashMind
+          <span className="text-[1.5rem] max-sm:text-[1.2rem] text-current!">⚡</span> Memô
         </Link>
         <ul className="flex items-center gap-1 max-sm:gap-0.5 list-none">
           {user ? (

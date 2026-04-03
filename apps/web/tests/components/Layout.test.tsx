@@ -36,12 +36,12 @@ describe("Layout", () => {
     expect(screen.getByText("EN")).toBeInTheDocument();
   });
 
-  it("renders FlashMind logo link", () => {
+  it("renders Memô logo link", () => {
     renderWithProviders(<Layout />, {
       auth: { user: null, isLoading: false },
     });
 
-    expect(screen.getByText("FlashMind")).toBeInTheDocument();
+    expect(screen.getByText("Memô")).toBeInTheDocument();
   });
 
   it("calls logout and navigates on sign out", async () => {

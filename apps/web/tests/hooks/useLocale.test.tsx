@@ -76,7 +76,7 @@ describe("useLocale", () => {
 
     expect(result.current.locale).toBe("pt-BR");
     expect(localStorage.setItem).toHaveBeenCalledWith(
-      "flashmind-locale",
+      "memo-locale",
       "pt-BR",
     );
   });

@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 import { locales, defaultLocale, localeLabels } from "../locale";
 import type { Locale, Translations } from "../locale";
 
-const STORAGE_KEY = "flashmind-locale";
+const STORAGE_KEY = "memo-locale";
 
 function getInitialLocale(): Locale {
   try {
