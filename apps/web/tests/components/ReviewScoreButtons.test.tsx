@@ -8,7 +8,11 @@ import { renderWithProviders } from "../test-utils";
 describe("ReviewScoreButtons", () => {
   it("renders 4 quality buttons", () => {
     renderWithProviders(
-      <ReviewScoreButtons onRate={vi.fn()} disabled={false} />,
+      <ReviewScoreButtons
+        onRate={vi.fn()}
+        disabled={false}
+        activeQuality={null}
+      />,
     );
 
     expect(screen.getByText("😵")).toBeInTheDocument();
@@ -19,7 +23,11 @@ describe("ReviewScoreButtons", () => {
 
   it("renders quality labels", () => {
     renderWithProviders(
-      <ReviewScoreButtons onRate={vi.fn()} disabled={false} />,
+      <ReviewScoreButtons
+        onRate={vi.fn()}
+        disabled={false}
+        activeQuality={null}
+      />,
     );
 
     expect(screen.getByText("Blackout")).toBeInTheDocument();
@@ -33,7 +41,11 @@ describe("ReviewScoreButtons", () => {
     const onRate = vi.fn();
 
     renderWithProviders(
-      <ReviewScoreButtons onRate={onRate} disabled={false} />,
+      <ReviewScoreButtons
+        onRate={onRate}
+        disabled={false}
+        activeQuality={null}
+      />,
     );
 
     await user.click(screen.getByText("😵"));
@@ -51,7 +63,11 @@ describe("ReviewScoreButtons", () => {
 
   it("disables buttons when disabled prop is true", () => {
     renderWithProviders(
-      <ReviewScoreButtons onRate={vi.fn()} disabled={true} />,
+      <ReviewScoreButtons
+        onRate={vi.fn()}
+        disabled={true}
+        activeQuality={null}
+      />,
     );
 
     const buttons = screen.getAllByRole("button");
