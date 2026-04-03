@@ -9,6 +9,7 @@
     "test": "pnpm -r run test",
     "test:api": "pnpm --filter api run test",
     "test:web": "pnpm --filter web run test",
+    "test:coverage": "pnpm -r run test:coverage",
     "lint": "pnpm -r run lint"
   },
   "devDependencies": {
