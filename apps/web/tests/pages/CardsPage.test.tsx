@@ -141,6 +141,14 @@ describe("CardsPage", () => {
     });
 
     await user.click(screen.getByLabelText("Delete card"));
+
+    // Click the "Delete" button in the confirmation dialog
+    const dialog = screen.getByRole("dialog");
+    await user.click(
+      Array.from(dialog.querySelectorAll("button")).find(
+        (btn) => btn.textContent === "Delete",
+      )!,
+    );
     expect(mockedApi.deleteCard).toHaveBeenCalledWith("deck-1", "card-1");
   });
 });

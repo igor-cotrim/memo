@@ -2,7 +2,8 @@ import { useState } from "react";
 
 import type { Deck } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
-import { Modal, Button, Input, Label, Textarea } from "./ui";
+import { useFormValidation } from "../hooks/useFormValidation";
+import { Modal, Button, Input, Label, Textarea, FieldError } from "./ui";
 
 const DECK_COLORS = [
   "#e2a83e",
@@ -34,10 +35,22 @@ export default function DeckModal({ deck, onClose, onSave }: DeckModalProps) {
     description: deck?.description ?? "",
     color: deck?.color ?? "#e2a83e",
   });
+  const [saving, setSaving] = useState(false);
+  const { errors, validate, clearFieldError } = useFormValidation(
+    { name: { required: true } },
+    t,
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSave(form);
+    if (saving) return;
+    if (!validate({ name: form.name })) return;
+    setSaving(true);
+    try {
+      await onSave(form);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -57,7 +70,7 @@ export default function DeckModal({ deck, onClose, onSave }: DeckModalProps) {
           ✕
         </button>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="deck-name">{t("decks.nameLabel")}</Label>
@@ -65,13 +78,15 @@ export default function DeckModal({ deck, onClose, onSave }: DeckModalProps) {
               id="deck-name"
               placeholder={t("decks.namePlaceholder")}
               value={form.name}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, name: e.target.value }))
-              }
-              required
+              onChange={(e) => {
+                setForm((prev) => ({ ...prev, name: e.target.value }));
+                clearFieldError("name");
+              }}
+              error={!!errors.name}
               autoFocus
               autoComplete="off"
             />
+            <FieldError message={errors.name} />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="deck-desc">{t("decks.descriptionLabel")}</Label>
@@ -116,7 +131,7 @@ export default function DeckModal({ deck, onClose, onSave }: DeckModalProps) {
           <Button variant="secondary" type="button" onClick={onClose}>
             {t("common.cancel")}
           </Button>
-          <Button type="submit">
+          <Button type="submit" disabled={saving}>
             {deck ? t("common.save") : t("decks.createDeckSubmit")}
           </Button>
         </div>

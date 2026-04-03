@@ -6,3 +6,5 @@ export { Alert } from "./Alert";
 export { Spinner } from "./Spinner";
 export { PageHeader } from "./PageHeader";
 export { Modal } from "./Modal";
+export { ConfirmDialog } from "./ConfirmDialog";
+export { FieldError } from "./FieldError";

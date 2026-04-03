@@ -72,4 +72,53 @@ describe("LoginPage", () => {
     // en locale: "Create one"
     expect(screen.getByText("Create one")).toBeInTheDocument();
   });
+
+  it("shows validation errors when submitting empty form", async () => {
+    const user = userEvent.setup();
+    const login = vi.fn();
+
+    renderWithProviders(<LoginPage />, { auth: { login } });
+
+    await user.click(screen.getByText("Sign In"));
+
+    const alerts = screen.getAllByRole("alert");
+    expect(alerts.some((a) => a.textContent === "This field is required")).toBe(
+      true,
+    );
+    expect(login).not.toHaveBeenCalled();
+  });
+
+  it("shows email validation error for invalid email", async () => {
+    const user = userEvent.setup();
+    const login = vi.fn();
+
+    renderWithProviders(<LoginPage />, { auth: { login } });
+
+    await user.type(screen.getByLabelText("Email"), "not-an-email");
+    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.click(screen.getByText("Sign In"));
+
+    expect(
+      screen.getByText("Please enter a valid email address"),
+    ).toBeInTheDocument();
+    expect(login).not.toHaveBeenCalled();
+  });
+
+  it("clears field error when user starts typing", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<LoginPage />);
+
+    // Submit empty to trigger errors
+    await user.click(screen.getByText("Sign In"));
+    expect(screen.getAllByRole("alert").length).toBeGreaterThan(0);
+
+    // Type in email field to clear its error
+    await user.type(screen.getByLabelText("Email"), "a");
+
+    // The email field error should be cleared
+    const emailField = screen.getByLabelText("Email");
+    const emailGroup = emailField.closest(".flex.flex-col")!;
+    expect(emailGroup.querySelector('[role="alert"]')).toBeNull();
+  });
 });

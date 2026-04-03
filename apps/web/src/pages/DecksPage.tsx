@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import type { Deck } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
 import * as api from "../services/api";
-import { Button, PageHeader, Spinner } from "../components/ui";
+import { Button, PageHeader, Spinner, ConfirmDialog } from "../components/ui";
 import DeckItem from "../components/DeckItem";
 import DeckModal from "../components/DeckModal";
 import ImportDeckModal from "../components/ImportDeckModal";
@@ -18,6 +18,7 @@ export default function DecksPage() {
   const [showModal, setShowModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
+  const [deletingDeckId, setDeletingDeckId] = useState<string | null>(null);
 
   useEffect(() => {
     loadDecks();
@@ -58,9 +59,14 @@ export default function DecksPage() {
     }
   }
 
-  async function handleDelete(id: string) {
-    if (confirm(t("decks.confirmDelete"))) {
-      await api.deleteDeck(id);
+  function handleDelete(id: string) {
+    setDeletingDeckId(id);
+  }
+
+  async function confirmDelete() {
+    if (deletingDeckId) {
+      await api.deleteDeck(deletingDeckId);
+      setDeletingDeckId(null);
       loadDecks();
     }
   }
@@ -93,7 +99,11 @@ export default function DecksPage() {
             >
               {t("decks.importDeck")}
             </Button>
-            <Button className="w-full sm:w-auto" onClick={openCreate} id="create-deck-btn">
+            <Button
+              className="w-full sm:w-auto"
+              onClick={openCreate}
+              id="create-deck-btn"
+            >
               {t("decks.newDeck")}
             </Button>
           </div>
@@ -128,6 +138,17 @@ export default function DecksPage() {
           deck={editingDeck}
           onClose={() => setShowModal(false)}
           onSave={handleSave}
+        />
+      )}
+
+      {deletingDeckId && (
+        <ConfirmDialog
+          title={t("common.delete")}
+          message={t("decks.confirmDelete")}
+          confirmLabel={t("common.delete")}
+          cancelLabel={t("common.cancel")}
+          onConfirm={confirmDelete}
+          onCancel={() => setDeletingDeckId(null)}
         />
       )}
 

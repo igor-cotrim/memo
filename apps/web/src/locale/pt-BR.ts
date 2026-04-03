@@ -201,4 +201,10 @@ export const ptBR: Translations = {
     profileFailed: "Falha ao atualizar perfil",
     passwordFailed: "Falha ao alterar senha",
   },
+  validation: {
+    required: "Este campo é obrigatório",
+    email: "Digite um endereço de e-mail válido",
+    minLength: "Deve ter pelo menos {min} caracteres",
+    passwordMismatch: "As senhas não coincidem",
+  },
 } as const;

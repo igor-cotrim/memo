@@ -116,8 +116,16 @@ describe("DecksPage", () => {
       expect(screen.getByText("ToDelete")).toBeInTheDocument();
     });
 
-    // Button text: "✕ Delete"
+    // Button text: "✕ Delete" — opens confirmation dialog
     await user.click(screen.getByText("✕ Delete"));
+
+    // Click the "Delete" button in the confirmation dialog
+    const dialog = screen.getByRole("dialog");
+    await user.click(
+      Array.from(dialog.querySelectorAll("button")).find(
+        (btn) => btn.textContent === "Delete",
+      )!,
+    );
     expect(mockedApi.deleteDeck).toHaveBeenCalledWith("d-1");
   });
 });

@@ -85,6 +85,40 @@ describe("DeckModal", () => {
     );
   });
 
+  it("shows validation error when name is empty", async () => {
+    const user = userEvent.setup();
+    const onSave = vi.fn();
+
+    renderWithProviders(<DeckModal onClose={vi.fn()} onSave={onSave} />);
+
+    await user.click(screen.getByText("Create Deck"));
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "This field is required",
+    );
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("disables submit button while saving", async () => {
+    const user = userEvent.setup();
+    let resolveSave!: () => void;
+    const onSave = vi.fn(() => new Promise<void>((r) => (resolveSave = r)));
+
+    renderWithProviders(<DeckModal onClose={vi.fn()} onSave={onSave} />);
+
+    await user.type(
+      screen.getByPlaceholderText("e.g. Spanish Vocabulary…"),
+      "Test",
+    );
+    await user.click(screen.getByText("Create Deck"));
+
+    expect(
+      screen.getByText("Create Deck", { selector: "button" }),
+    ).toBeDisabled();
+
+    resolveSave();
+  });
+
   it("supports keyboard selection of color", async () => {
     const user = userEvent.setup();
     const onSave = vi.fn().mockResolvedValue(undefined);

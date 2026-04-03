@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import type { Deck, Flashcard } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
 import * as api from "../services/api";
-import { Button, Spinner } from "../components/ui";
+import { Button, Spinner, ConfirmDialog } from "../components/ui";
 import CardItem from "../components/CardItem";
 import CardModal from "../components/CardModal";
 import ImportCardsModal from "../components/ImportCardsModal";
@@ -20,6 +20,7 @@ export default function CardsPage() {
   const [showModal, setShowModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
+  const [deletingCardId, setDeletingCardId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!deckId) return;
@@ -63,9 +64,14 @@ export default function CardsPage() {
     loadData();
   }
 
-  async function handleDelete(cardId: string) {
-    if (confirm(t("cards.confirmDelete"))) {
-      await api.deleteCard(deckId!, cardId);
+  function handleDelete(cardId: string) {
+    setDeletingCardId(cardId);
+  }
+
+  async function confirmDelete() {
+    if (deletingCardId) {
+      await api.deleteCard(deckId!, deletingCardId);
+      setDeletingCardId(null);
       loadData();
     }
   }
@@ -141,6 +147,17 @@ export default function CardsPage() {
             />
           ))}
         </div>
+      )}
+
+      {deletingCardId && (
+        <ConfirmDialog
+          title={t("common.delete")}
+          message={t("cards.confirmDelete")}
+          confirmLabel={t("common.delete")}
+          cancelLabel={t("common.cancel")}
+          onConfirm={confirmDelete}
+          onCancel={() => setDeletingCardId(null)}
+        />
       )}
 
       {showModal && (

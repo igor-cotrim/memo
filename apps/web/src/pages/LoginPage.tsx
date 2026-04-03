@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { Button, Input, Label, Alert } from "../components/ui";
+import { Button, Input, Label, Alert, FieldError } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { useLocale } from "../hooks/useLocale";
+import { useFormValidation } from "../hooks/useFormValidation";
 import { getErrorMessage } from "../utils/error";
 
 export default function LoginPage() {
@@ -14,10 +15,22 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const {
+    errors: fieldErrors,
+    validate,
+    clearFieldError,
+  } = useFormValidation(
+    {
+      email: { required: true, email: true },
+      password: { required: true },
+    },
+    t,
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    if (!validate({ email, password })) return;
     setLoading(true);
     try {
       await login(email, password);
@@ -51,7 +64,11 @@ export default function LoginPage() {
           {t("login.subtitle")}
         </p>
 
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col gap-5"
+          onSubmit={handleSubmit}
+          noValidate
+        >
           {error && <Alert variant="danger">{error}</Alert>}
           <div className="flex flex-col gap-1.5 stagger-1">
             <Label htmlFor="login-email">{t("login.emailLabel")}</Label>
@@ -60,11 +77,15 @@ export default function LoginPage() {
               type="email"
               placeholder={t("login.emailPlaceholder")}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              onChange={(e) => {
+                setEmail(e.target.value);
+                clearFieldError("email");
+              }}
+              error={!!fieldErrors.email}
               autoComplete="email"
               spellCheck={false}
             />
+            <FieldError message={fieldErrors.email} />
           </div>
           <div className="flex flex-col gap-1.5 stagger-2">
             <Label htmlFor="login-password">{t("login.passwordLabel")}</Label>
@@ -73,10 +94,14 @@ export default function LoginPage() {
               type="password"
               placeholder={t("login.passwordPlaceholder")}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+              onChange={(e) => {
+                setPassword(e.target.value);
+                clearFieldError("password");
+              }}
+              error={!!fieldErrors.password}
               autoComplete="current-password"
             />
+            <FieldError message={fieldErrors.password} />
           </div>
           <Button
             className="w-full stagger-3"

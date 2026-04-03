@@ -68,6 +68,61 @@ describe("RegisterPage", () => {
     expect(screen.getByText("Sign in")).toBeInTheDocument();
   });
 
+  it("shows validation errors when submitting empty form", async () => {
+    const user = userEvent.setup();
+    const register = vi.fn();
+
+    renderWithProviders(<RegisterPage />, { auth: { register } });
+
+    await user.click(
+      screen.getByText("Create Account", { selector: "button" }),
+    );
+
+    const alerts = screen.getAllByRole("alert");
+    expect(alerts.some((a) => a.textContent === "This field is required")).toBe(
+      true,
+    );
+    expect(register).not.toHaveBeenCalled();
+  });
+
+  it("shows email validation error for invalid email", async () => {
+    const user = userEvent.setup();
+    const register = vi.fn();
+
+    renderWithProviders(<RegisterPage />, { auth: { register } });
+
+    await user.type(screen.getByLabelText("Name"), "John");
+    await user.type(screen.getByLabelText("Email"), "bad-email");
+    await user.type(screen.getByLabelText("Password"), "123456");
+    await user.click(
+      screen.getByText("Create Account", { selector: "button" }),
+    );
+
+    expect(
+      screen.getByText("Please enter a valid email address"),
+    ).toBeInTheDocument();
+    expect(register).not.toHaveBeenCalled();
+  });
+
+  it("shows minLength validation error for short password", async () => {
+    const user = userEvent.setup();
+    const register = vi.fn();
+
+    renderWithProviders(<RegisterPage />, { auth: { register } });
+
+    await user.type(screen.getByLabelText("Name"), "John");
+    await user.type(screen.getByLabelText("Email"), "john@example.com");
+    await user.type(screen.getByLabelText("Password"), "abc");
+    await user.click(
+      screen.getByText("Create Account", { selector: "button" }),
+    );
+
+    expect(
+      screen.getByText("Must be at least 6 characters"),
+    ).toBeInTheDocument();
+    expect(register).not.toHaveBeenCalled();
+  });
+
   it("shows loading state while submitting", async () => {
     const user = userEvent.setup();
     let resolveRegister!: () => void;

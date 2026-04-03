@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { Button, Input, Label, Alert } from "../components/ui";
+import { Button, Input, Label, Alert, FieldError } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { useLocale } from "../hooks/useLocale";
+import { useFormValidation } from "../hooks/useFormValidation";
 import { getErrorMessage } from "../utils/error";
 
 export default function RegisterPage() {
@@ -15,10 +16,23 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const {
+    errors: fieldErrors,
+    validate,
+    clearFieldError,
+  } = useFormValidation(
+    {
+      name: { required: true },
+      email: { required: true, email: true },
+      password: { required: true, minLength: 6 },
+    },
+    t,
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    if (!validate({ name, email, password })) return;
     setLoading(true);
     try {
       await register(email, name, password);
@@ -52,7 +66,11 @@ export default function RegisterPage() {
           {t("register.subtitle")}
         </p>
 
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col gap-5"
+          onSubmit={handleSubmit}
+          noValidate
+        >
           {error && <Alert variant="danger">{error}</Alert>}
           <div className="flex flex-col gap-1.5 stagger-1">
             <Label htmlFor="register-name">{t("register.nameLabel")}</Label>
@@ -61,10 +79,14 @@ export default function RegisterPage() {
               type="text"
               placeholder={t("register.namePlaceholder")}
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
+              onChange={(e) => {
+                setName(e.target.value);
+                clearFieldError("name");
+              }}
+              error={!!fieldErrors.name}
               autoComplete="name"
             />
+            <FieldError message={fieldErrors.name} />
           </div>
           <div className="flex flex-col gap-1.5 stagger-2">
             <Label htmlFor="register-email">{t("register.emailLabel")}</Label>
@@ -73,11 +95,15 @@ export default function RegisterPage() {
               type="email"
               placeholder={t("register.emailPlaceholder")}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              onChange={(e) => {
+                setEmail(e.target.value);
+                clearFieldError("email");
+              }}
+              error={!!fieldErrors.email}
               autoComplete="email"
               spellCheck={false}
             />
+            <FieldError message={fieldErrors.email} />
           </div>
           <div className="flex flex-col gap-1.5 stagger-3">
             <Label htmlFor="register-password">
@@ -88,11 +114,14 @@ export default function RegisterPage() {
               type="password"
               placeholder={t("register.passwordPlaceholder")}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                clearFieldError("password");
+              }}
+              error={!!fieldErrors.password}
               autoComplete="new-password"
             />
+            <FieldError message={fieldErrors.password} />
           </div>
           <Button
             className="w-full stagger-4"

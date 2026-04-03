@@ -2,7 +2,8 @@ import { useState } from "react";
 
 import type { Flashcard } from "@flashcard-app/shared-types";
 import { useLocale } from "../hooks/useLocale";
-import { Modal, Button, Label, Textarea } from "./ui";
+import { useFormValidation } from "../hooks/useFormValidation";
+import { Modal, Button, Label, Textarea, FieldError } from "./ui";
 
 type CardModalProps = {
   card?: Flashcard | null;
@@ -21,10 +22,22 @@ export default function CardModal({ card, onClose, onSave }: CardModalProps) {
     back: card?.back ?? "",
     notes: card?.notes ?? "",
   });
+  const [saving, setSaving] = useState(false);
+  const { errors, validate, clearFieldError } = useFormValidation(
+    { front: { required: true }, back: { required: true } },
+    t,
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSave(form);
+    if (saving) return;
+    if (!validate({ front: form.front, back: form.back })) return;
+    setSaving(true);
+    try {
+      await onSave(form);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -44,7 +57,7 @@ export default function CardModal({ card, onClose, onSave }: CardModalProps) {
           ✕
         </button>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="card-front">{t("cards.frontLabel")}</Label>
@@ -52,13 +65,15 @@ export default function CardModal({ card, onClose, onSave }: CardModalProps) {
               id="card-front"
               placeholder={t("cards.frontPlaceholder")}
               value={form.front}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, front: e.target.value }))
-              }
-              required
+              onChange={(e) => {
+                setForm((prev) => ({ ...prev, front: e.target.value }));
+                clearFieldError("front");
+              }}
+              error={!!errors.front}
               autoFocus
               autoComplete="off"
             />
+            <FieldError message={errors.front} />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="card-back">{t("cards.backLabel")}</Label>
@@ -66,12 +81,14 @@ export default function CardModal({ card, onClose, onSave }: CardModalProps) {
               id="card-back"
               placeholder={t("cards.backPlaceholder")}
               value={form.back}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, back: e.target.value }))
-              }
-              required
+              onChange={(e) => {
+                setForm((prev) => ({ ...prev, back: e.target.value }));
+                clearFieldError("back");
+              }}
+              error={!!errors.back}
               autoComplete="off"
             />
+            <FieldError message={errors.back} />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="card-notes">{t("cards.notesLabel")}</Label>
@@ -90,7 +107,7 @@ export default function CardModal({ card, onClose, onSave }: CardModalProps) {
           <Button variant="secondary" type="button" onClick={onClose}>
             {t("common.cancel")}
           </Button>
-          <Button type="submit">
+          <Button type="submit" disabled={saving}>
             {card ? t("common.save") : t("cards.addCardSubmit")}
           </Button>
         </div>

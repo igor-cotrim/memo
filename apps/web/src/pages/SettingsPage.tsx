@@ -1,8 +1,9 @@
 import { useState } from "react";
 
-import { Button, Input, Label, Alert } from "../components/ui";
+import { Button, Input, Label, Alert, FieldError } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { useLocale } from "../hooks/useLocale";
+import { useFormValidation } from "../hooks/useFormValidation";
 import * as api from "../services/api";
 import { getErrorMessage } from "../utils/error";
 
@@ -16,6 +17,12 @@ export default function SettingsPage() {
   const [profileSuccess, setProfileSuccess] = useState("");
   const [profileLoading, setProfileLoading] = useState(false);
 
+  const {
+    errors: profileFieldErrors,
+    validate: validateProfile,
+    clearFieldError: clearProfileField,
+  } = useFormValidation({ name: { required: true } }, t);
+
   // Password state
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -24,10 +31,29 @@ export default function SettingsPage() {
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
 
+  const {
+    errors: passwordFieldErrors,
+    validate: validatePassword,
+    clearFieldError: clearPasswordField,
+  } = useFormValidation(
+    {
+      currentPassword: { required: true },
+      newPassword: { required: true, minLength: 6 },
+      confirmPassword: {
+        required: true,
+        minLength: 6,
+        custom: (val, fields) =>
+          val !== fields.newPassword ? t("validation.passwordMismatch") : null,
+      },
+    },
+    t,
+  );
+
   async function handleProfileSubmit(e: React.FormEvent) {
     e.preventDefault();
     setProfileError("");
     setProfileSuccess("");
+    if (!validateProfile({ name })) return;
     setProfileLoading(true);
     try {
       const result = await api.updateProfile({ name });
@@ -45,11 +71,8 @@ export default function SettingsPage() {
     e.preventDefault();
     setPasswordError("");
     setPasswordSuccess("");
-
-    if (newPassword !== confirmPassword) {
-      setPasswordError(t("settings.passwordMismatch"));
+    if (!validatePassword({ currentPassword, newPassword, confirmPassword }))
       return;
-    }
 
     setPasswordLoading(true);
     try {
@@ -82,7 +105,11 @@ export default function SettingsPage() {
             {t("settings.profileSection")}
           </h2>
 
-          <form className="flex flex-col gap-5" onSubmit={handleProfileSubmit}>
+          <form
+            className="flex flex-col gap-5"
+            onSubmit={handleProfileSubmit}
+            noValidate
+          >
             {profileError && <Alert variant="danger">{profileError}</Alert>}
             {profileSuccess && (
               <Alert variant="success">{profileSuccess}</Alert>
@@ -109,9 +136,13 @@ export default function SettingsPage() {
                 type="text"
                 placeholder={t("settings.namePlaceholder")}
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
+                onChange={(e) => {
+                  setName(e.target.value);
+                  clearProfileField("name");
+                }}
+                error={!!profileFieldErrors.name}
               />
+              <FieldError message={profileFieldErrors.name} />
             </div>
 
             <Button type="submit" disabled={profileLoading}>
@@ -128,7 +159,11 @@ export default function SettingsPage() {
             {t("settings.passwordSection")}
           </h2>
 
-          <form className="flex flex-col gap-5" onSubmit={handlePasswordSubmit}>
+          <form
+            className="flex flex-col gap-5"
+            onSubmit={handlePasswordSubmit}
+            noValidate
+          >
             {passwordError && <Alert variant="danger">{passwordError}</Alert>}
             {passwordSuccess && (
               <Alert variant="success">{passwordSuccess}</Alert>
@@ -143,10 +178,14 @@ export default function SettingsPage() {
                 type="password"
                 placeholder={t("settings.currentPasswordPlaceholder")}
                 value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                required
+                onChange={(e) => {
+                  setCurrentPassword(e.target.value);
+                  clearPasswordField("currentPassword");
+                }}
+                error={!!passwordFieldErrors.currentPassword}
                 autoComplete="current-password"
               />
+              <FieldError message={passwordFieldErrors.currentPassword} />
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -158,11 +197,14 @@ export default function SettingsPage() {
                 type="password"
                 placeholder={t("settings.newPasswordPlaceholder")}
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                minLength={6}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  clearPasswordField("newPassword");
+                }}
+                error={!!passwordFieldErrors.newPassword}
                 autoComplete="new-password"
               />
+              <FieldError message={passwordFieldErrors.newPassword} />
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -174,11 +216,14 @@ export default function SettingsPage() {
                 type="password"
                 placeholder={t("settings.confirmPasswordPlaceholder")}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                minLength={6}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  clearPasswordField("confirmPassword");
+                }}
+                error={!!passwordFieldErrors.confirmPassword}
                 autoComplete="new-password"
               />
+              <FieldError message={passwordFieldErrors.confirmPassword} />
             </div>
 
             <Button type="submit" disabled={passwordLoading}>

@@ -199,6 +199,12 @@ export const en = {
     profileFailed: "Failed to update profile",
     passwordFailed: "Failed to change password",
   },
+  validation: {
+    required: "This field is required",
+    email: "Please enter a valid email address",
+    minLength: "Must be at least {min} characters",
+    passwordMismatch: "Passwords do not match",
+  },
 } as const;
 
 export type Translations = {

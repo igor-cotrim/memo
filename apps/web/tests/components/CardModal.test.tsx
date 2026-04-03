@@ -70,6 +70,48 @@ describe("CardModal", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  it("shows validation error when front is empty", async () => {
+    const user = userEvent.setup();
+    const onSave = vi.fn();
+
+    renderWithProviders(<CardModal onClose={vi.fn()} onSave={onSave} />);
+
+    await user.type(screen.getByLabelText("Back (Answer)"), "A1");
+    await user.click(screen.getByText("Add Card"));
+
+    expect(screen.getByText("This field is required")).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("shows validation error when back is empty", async () => {
+    const user = userEvent.setup();
+    const onSave = vi.fn();
+
+    renderWithProviders(<CardModal onClose={vi.fn()} onSave={onSave} />);
+
+    await user.type(screen.getByLabelText("Front (Question)"), "Q1");
+    await user.click(screen.getByText("Add Card"));
+
+    expect(screen.getByText("This field is required")).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("disables submit button while saving", async () => {
+    const user = userEvent.setup();
+    let resolveSave!: () => void;
+    const onSave = vi.fn(() => new Promise<void>((r) => (resolveSave = r)));
+
+    renderWithProviders(<CardModal onClose={vi.fn()} onSave={onSave} />);
+
+    await user.type(screen.getByLabelText("Front (Question)"), "Q1");
+    await user.type(screen.getByLabelText("Back (Answer)"), "A1");
+    await user.click(screen.getByText("Add Card"));
+
+    expect(screen.getByText("Add Card", { selector: "button" })).toBeDisabled();
+
+    resolveSave();
+  });
+
   it("calls onClose when backdrop is clicked", async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
