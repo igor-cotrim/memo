@@ -19,6 +19,7 @@ import type {
   ChangePasswordRequest,
   ImportDeckResponse,
   ImportCardsResponse,
+  DueCountResponse,
 } from "@flashcard-app/shared-types";
 
 const baseURL =
@@ -220,6 +221,11 @@ export async function importCards(
 }
 
 // ─── Review ──────────────────────────────────────────────────────────────────
+
+export async function getDueCount(): Promise<DueCountResponse> {
+  const res = await api.get<DueCountResponse>("/review/due-count");
+  return res.data;
+}
 
 export async function getDueCards(deckId: string): Promise<ReviewSession> {
   const res = await api.get<ReviewSession>(`/review/${deckId}`);

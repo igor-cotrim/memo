@@ -25,11 +25,13 @@ const baseStats = {
 describe("DashboardPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockedApi.getDueCount.mockResolvedValue({ totalDue: 0 });
   });
 
   it("shows loading spinner initially", () => {
     mockedApi.getStats.mockReturnValue(new Promise(() => {}));
     mockedApi.getDecks.mockReturnValue(new Promise(() => {}));
+    mockedApi.getDueCount.mockReturnValue(new Promise(() => {}));
     renderWithProviders(<DashboardPage />);
 
     expect(document.querySelector(".animate-spin")).toBeInTheDocument();
@@ -120,5 +122,48 @@ describe("DashboardPage", () => {
         screen.getByText("Your learning progress at a glance"),
       ).toBeInTheDocument();
     });
+  });
+
+  it("shows due cards banner when there are due cards", async () => {
+    mockedApi.getStats.mockResolvedValue(baseStats);
+    mockedApi.getDecks.mockResolvedValue([]);
+    mockedApi.getDueCount.mockResolvedValue({ totalDue: 5 });
+
+    renderWithProviders(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("You have 5 cards ready for review!"),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Review Now")).toBeInTheDocument();
+    });
+  });
+
+  it("shows singular banner when there is 1 due card", async () => {
+    mockedApi.getStats.mockResolvedValue(baseStats);
+    mockedApi.getDecks.mockResolvedValue([]);
+    mockedApi.getDueCount.mockResolvedValue({ totalDue: 1 });
+
+    renderWithProviders(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("You have 1 card ready for review!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("does not show due cards banner when count is zero", async () => {
+    mockedApi.getStats.mockResolvedValue(baseStats);
+    mockedApi.getDecks.mockResolvedValue([]);
+    mockedApi.getDueCount.mockResolvedValue({ totalDue: 0 });
+
+    renderWithProviders(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText("Review Now")).not.toBeInTheDocument();
   });
 });

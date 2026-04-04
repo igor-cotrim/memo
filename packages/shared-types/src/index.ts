@@ -119,6 +119,10 @@ export interface ReviewSession {
   totalDue: number;
 }
 
+export interface DueCountResponse {
+  totalDue: number;
+}
+
 // ─── Import ─────────────────────────────────────────────────────────────────
 
 export interface ImportCardRow {

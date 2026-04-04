@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 import type {
+  DueCountResponse,
   Flashcard,
   ReviewResult,
   ReviewSession,
@@ -30,6 +31,16 @@ export class GetDueCardsUseCase {
       cards: dueCards,
       totalDue: dueCards.length,
     };
+  }
+}
+
+export class GetDueCountUseCase {
+  constructor(private readonly cardRepo: ICardRepository) {}
+
+  async execute(userId: string): Promise<DueCountResponse> {
+    const now = new Date().toISOString();
+    const totalDue = await this.cardRepo.countAllDueByUserId(userId, now);
+    return { totalDue };
   }
 }
 

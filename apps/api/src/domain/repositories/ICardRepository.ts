@@ -10,4 +10,5 @@ export interface ICardRepository {
   update(id: string, data: Partial<Flashcard>): Promise<Flashcard | null>;
   delete(id: string): Promise<boolean>;
   countByDeckId(deckId: string): Promise<number>;
+  countAllDueByUserId(userId: string, now: string): Promise<number>;
 }

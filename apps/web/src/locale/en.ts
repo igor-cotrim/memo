@@ -54,6 +54,9 @@ export const en = {
     createFirstDeck: "Create your first deck",
     createFirstDeckText: "Start your learning journey by creating a deck",
     createDeck: "Create a Deck",
+    dueCardsBanner: "You have {count} cards ready for review!",
+    dueCardsBannerSingular: "You have 1 card ready for review!",
+    startReview: "Review Now",
   },
   decks: {
     title: "My Decks",

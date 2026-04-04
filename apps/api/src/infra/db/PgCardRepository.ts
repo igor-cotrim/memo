@@ -1,4 +1,4 @@
-import { eq, and, lte } from "drizzle-orm";
+import { eq, and, lte, count } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import type { Flashcard } from "@flashcard-app/shared-types";
@@ -145,6 +145,17 @@ export class PgCardRepository implements ICardRepository {
       .from(schema.flashcards)
       .where(eq(schema.flashcards.deckId, deckId));
     return rows.length;
+  }
+
+  async countAllDueByUserId(userId: string, now: string): Promise<number> {
+    const rows = await this.db
+      .select({ count: count() })
+      .from(schema.flashcards)
+      .innerJoin(schema.decks, eq(schema.flashcards.deckId, schema.decks.id))
+      .where(
+        and(eq(schema.decks.userId, userId), lte(schema.flashcards.due, now)),
+      );
+    return rows[0]?.count ?? 0;
   }
 
   private toCard(row: typeof schema.flashcards.$inferSelect): Flashcard {

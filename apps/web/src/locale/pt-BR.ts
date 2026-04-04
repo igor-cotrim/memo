@@ -56,6 +56,9 @@ export const ptBR: Translations = {
     createFirstDeck: "Crie seu primeiro baralho",
     createFirstDeckText: "Comece sua jornada de aprendizado criando um baralho",
     createDeck: "Criar um Baralho",
+    dueCardsBanner: "Você tem {count} cartões prontos para revisão!",
+    dueCardsBannerSingular: "Você tem 1 cartão pronto para revisão!",
+    startReview: "Revisar Agora",
   },
   decks: {
     title: "Meus Baralhos",

@@ -39,6 +39,9 @@ function createMockCardRepo(): ICardRepository {
     async findAllDueCardsByUserId() {
       return [];
     },
+    async countAllDueByUserId() {
+      return 0;
+    },
     async create(card) {
       cards.push(card);
       return card;

@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const { user, updateUser } = useAuth();
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [decks, setDecks] = useState<Deck[]>([]);
+  const [dueCount, setDueCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(
     () => user?.onboardingCompletedAt === null,
@@ -37,12 +38,14 @@ export default function DashboardPage() {
 
   async function loadData() {
     try {
-      const [statsData, decksData] = await Promise.all([
+      const [statsData, decksData, dueCountData] = await Promise.all([
         api.getStats(),
         api.getDecks(),
+        api.getDueCount(),
       ]);
       setStats(statsData);
       setDecks(decksData);
+      setDueCount(dueCountData.totalDue);
     } finally {
       setLoading(false);
     }
@@ -74,6 +77,28 @@ export default function DashboardPage() {
         title={t("dashboard.title")}
         subtitle={t("dashboard.subtitle")}
       />
+
+      {/* Due Cards Banner */}
+      {dueCount > 0 && (
+        <div className="mb-4 p-4 bg-accent-primary/10 border border-accent-primary/30 rounded-md flex items-center justify-between gap-4 max-sm:flex-col">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl" aria-hidden="true">
+              📝
+            </span>
+            <p className="font-display font-semibold text-text-primary text-sm">
+              {dueCount === 1
+                ? t("dashboard.dueCardsBannerSingular")
+                : t("dashboard.dueCardsBanner").replace(
+                    "{count}",
+                    String(dueCount),
+                  )}
+            </p>
+          </div>
+          <Button onClick={() => navigate("/decks")} className="shrink-0">
+            {t("dashboard.startReview")}
+          </Button>
+        </div>
+      )}
 
       {/* Stats Overview */}
       <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-4">

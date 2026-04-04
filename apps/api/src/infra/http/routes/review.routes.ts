@@ -7,6 +7,7 @@ import type { IDeckRepository } from "../../../domain/repositories/IDeckReposito
 import type { IReviewLogRepository } from "../../../domain/repositories/IReviewLogRepository";
 import {
   GetDueCardsUseCase,
+  GetDueCountUseCase,
   SubmitReviewUseCase,
 } from "../../../usecases/ReviewUseCases";
 
@@ -18,10 +19,24 @@ export function createReviewRoutes(
   const router = Router();
 
   const getDueCards = new GetDueCardsUseCase(cardRepo, deckRepo);
+  const getDueCount = new GetDueCountUseCase(cardRepo);
   const submitReview = new SubmitReviewUseCase(
     cardRepo,
     deckRepo,
     reviewLogRepo,
+  );
+
+  // GET /review/due-count — get total due cards count across all decks
+  router.get(
+    "/due-count",
+    async (req: AuthRequest, res: Response, next: NextFunction) => {
+      try {
+        const result = await getDueCount.execute(req.userId!);
+        res.json(result);
+      } catch (err) {
+        next(err);
+      }
+    },
   );
 
   // GET /review/:deckId — get due cards for a deck
