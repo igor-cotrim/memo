@@ -95,7 +95,7 @@ export default function SettingsPage() {
       </h1>
       <p className="text-text-secondary text-[0.9375rem] mb-8">{t('settings.subtitle')}</p>
 
-      <div className="flex flex-col gap-8 max-w-[520px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[520px] md:max-w-full">
         {/* Profile Section */}
         <div className="bg-bg-card border border-border rounded-xl p-8">
           <h2 className="font-display text-lg font-bold mb-6">{t('settings.profileSection')}</h2>
