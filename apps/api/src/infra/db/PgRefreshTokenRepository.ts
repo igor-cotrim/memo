@@ -1,11 +1,11 @@
-import { eq } from "drizzle-orm";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { eq } from 'drizzle-orm';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import type {
   IRefreshTokenRepository,
   RefreshTokenData,
-} from "../../domain/repositories/IRefreshTokenRepository";
-import * as schema from "./schema";
+} from '../../domain/repositories/IRefreshTokenRepository';
+import * as schema from './schema';
 
 export class PgRefreshTokenRepository implements IRefreshTokenRepository {
   constructor(private readonly db: PostgresJsDatabase<typeof schema>) {}
@@ -48,8 +48,6 @@ export class PgRefreshTokenRepository implements IRefreshTokenRepository {
   }
 
   async deleteAllByUserId(userId: string): Promise<void> {
-    await this.db
-      .delete(schema.refreshTokens)
-      .where(eq(schema.refreshTokens.userId, userId));
+    await this.db.delete(schema.refreshTokens).where(eq(schema.refreshTokens.userId, userId));
   }
 }

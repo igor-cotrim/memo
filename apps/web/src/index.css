@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-bg-primary: #0d0d12;
@@ -23,8 +23,8 @@
   --color-border-light: #3a3350;
   --color-border-accent: rgba(58, 166, 223, 0.25);
 
-  --font-display: "Sora", sans-serif;
-  --font-body: "DM Sans", sans-serif;
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
 
   --radius-sm: 10px;
   --radius-md: 14px;
@@ -54,7 +54,7 @@
 
   /* Noise / grain texture overlay */
   body::after {
-    content: "";
+    content: '';
     @apply fixed inset-0 z-9999 pointer-events-none opacity-[0.028];
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     background-repeat: repeat;
@@ -68,12 +68,24 @@
 }
 
 @layer utilities {
-  .stagger-1 { animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both; }
-  .stagger-2 { animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
-  .stagger-3 { animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
-  .stagger-4 { animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
-  .stagger-5 { animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both; }
-  .stagger-6 { animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+  .stagger-1 {
+    animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+  }
+  .stagger-2 {
+    animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  }
+  .stagger-3 {
+    animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+  }
+  .stagger-4 {
+    animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  }
+  .stagger-5 {
+    animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+  }
+  .stagger-6 {
+    animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  }
 }
 
 /* Animations Keyframes */

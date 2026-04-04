@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
-import type { Deck, Flashcard } from "@flashcard-app/shared-types";
-import { useLocale } from "../hooks/useLocale";
-import * as api from "../services/api";
-import { Button, Spinner, ConfirmDialog } from "../components/ui";
-import CardItem from "../components/CardItem";
-import CardModal from "../components/CardModal";
-import ImportCardsModal from "../components/ImportCardsModal";
-import EmptyState from "../components/EmptyState";
+import type { Deck, Flashcard } from '@flashcard-app/shared-types';
+import { useLocale } from '../hooks/useLocale';
+import * as api from '../services/api';
+import { Button, Spinner, ConfirmDialog } from '../components/ui';
+import CardItem from '../components/CardItem';
+import CardModal from '../components/CardModal';
+import ImportCardsModal from '../components/ImportCardsModal';
+import EmptyState from '../components/EmptyState';
 
 export default function CardsPage() {
   const { deckId } = useParams<{ deckId: string }>();
@@ -50,11 +50,7 @@ export default function CardsPage() {
     setShowModal(true);
   }
 
-  async function handleSave(form: {
-    front: string;
-    back: string;
-    notes: string;
-  }) {
+  async function handleSave(form: { front: string; back: string; notes: string }) {
     if (editingCard) {
       await api.updateCard(deckId!, editingCard.id, form);
     } else {
@@ -88,9 +84,9 @@ export default function CardsPage() {
             variant="ghost"
             size="sm"
             className="mb-2 -ml-3"
-            onClick={() => navigate("/decks")}
+            onClick={() => navigate('/decks')}
           >
-            {t("cards.backToDecks")}
+            {t('cards.backToDecks')}
           </Button>
           <h1
             className="font-display text-[1.85rem] font-extrabold tracking-tight text-balance wrap-break-word truncate max-w-full"
@@ -99,8 +95,8 @@ export default function CardsPage() {
             {deck?.name}
           </h1>
           <p className="text-text-secondary text-[0.9375rem] mt-1 line-clamp-2">
-            {cards.length} {t("cards.cardsCount")}
-            {deck?.description ? ` · ${deck.description}` : ""}
+            {cards.length} {t('cards.cardsCount')}
+            {deck?.description ? ` · ${deck.description}` : ''}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -109,21 +105,17 @@ export default function CardsPage() {
             className="w-full sm:w-auto"
             onClick={() => navigate(`/review/${deckId}`)}
           >
-            {t("cards.studyNow")}
+            {t('cards.studyNow')}
           </Button>
           <Button
             variant="secondary"
             className="w-full sm:w-auto"
             onClick={() => setShowImportModal(true)}
           >
-            {t("cards.importCards")}
+            {t('cards.importCards')}
           </Button>
-          <Button
-            className="w-full sm:w-auto"
-            onClick={openCreate}
-            id="create-card-btn"
-          >
-            {t("cards.addCard")}
+          <Button className="w-full sm:w-auto" onClick={openCreate} id="create-card-btn">
+            {t('cards.addCard')}
           </Button>
         </div>
       </div>
@@ -131,9 +123,9 @@ export default function CardsPage() {
       {cards.length === 0 ? (
         <EmptyState
           icon="🃏"
-          title={t("cards.noCardsTitle")}
-          description={t("cards.noCardsText")}
-          action={<Button onClick={openCreate}>{t("cards.addACard")}</Button>}
+          title={t('cards.noCardsTitle')}
+          description={t('cards.noCardsText')}
+          action={<Button onClick={openCreate}>{t('cards.addACard')}</Button>}
         />
       ) : (
         <div className="grid gap-5 grid-cols-1 md:grid-cols-2">
@@ -151,21 +143,17 @@ export default function CardsPage() {
 
       {deletingCardId && (
         <ConfirmDialog
-          title={t("common.delete")}
-          message={t("cards.confirmDelete")}
-          confirmLabel={t("common.delete")}
-          cancelLabel={t("common.cancel")}
+          title={t('common.delete')}
+          message={t('cards.confirmDelete')}
+          confirmLabel={t('common.delete')}
+          cancelLabel={t('common.cancel')}
           onConfirm={confirmDelete}
           onCancel={() => setDeletingCardId(null)}
         />
       )}
 
       {showModal && (
-        <CardModal
-          card={editingCard}
-          onClose={() => setShowModal(false)}
-          onSave={handleSave}
-        />
+        <CardModal card={editingCard} onClose={() => setShowModal(false)} onSave={handleSave} />
       )}
 
       {showImportModal && deckId && (

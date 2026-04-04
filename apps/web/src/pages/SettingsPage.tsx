@@ -1,20 +1,20 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import { Button, Input, Label, Alert, FieldError } from "../components/ui";
-import { useAuth } from "../hooks/useAuth";
-import { useLocale } from "../hooks/useLocale";
-import { useFormValidation } from "../hooks/useFormValidation";
-import * as api from "../services/api";
-import { getErrorMessage } from "../utils/error";
+import { Button, Input, Label, Alert, FieldError } from '../components/ui';
+import { useAuth } from '../hooks/useAuth';
+import { useLocale } from '../hooks/useLocale';
+import { useFormValidation } from '../hooks/useFormValidation';
+import * as api from '../services/api';
+import { getErrorMessage } from '../utils/error';
 
 export default function SettingsPage() {
   const { user, updateUser } = useAuth();
   const { t } = useLocale();
 
   // Profile state
-  const [name, setName] = useState(user?.name ?? "");
-  const [profileError, setProfileError] = useState("");
-  const [profileSuccess, setProfileSuccess] = useState("");
+  const [name, setName] = useState(user?.name ?? '');
+  const [profileError, setProfileError] = useState('');
+  const [profileSuccess, setProfileSuccess] = useState('');
   const [profileLoading, setProfileLoading] = useState(false);
 
   const {
@@ -24,11 +24,11 @@ export default function SettingsPage() {
   } = useFormValidation({ name: { required: true } }, t);
 
   // Password state
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   const {
@@ -43,7 +43,7 @@ export default function SettingsPage() {
         required: true,
         minLength: 6,
         custom: (val, fields) =>
-          val !== fields.newPassword ? t("validation.passwordMismatch") : null,
+          val !== fields.newPassword ? t('validation.passwordMismatch') : null,
       },
     },
     t,
@@ -51,17 +51,17 @@ export default function SettingsPage() {
 
   async function handleProfileSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setProfileError("");
-    setProfileSuccess("");
+    setProfileError('');
+    setProfileSuccess('');
     if (!validateProfile({ name })) return;
     setProfileLoading(true);
     try {
       const result = await api.updateProfile({ name });
       updateUser(result.user);
-      setProfileSuccess(t("settings.profileUpdated"));
-      setTimeout(() => setProfileSuccess(""), 3000);
+      setProfileSuccess(t('settings.profileUpdated'));
+      setTimeout(() => setProfileSuccess(''), 3000);
     } catch (err: unknown) {
-      setProfileError(getErrorMessage(err, t("settings.profileFailed")));
+      setProfileError(getErrorMessage(err, t('settings.profileFailed')));
     } finally {
       setProfileLoading(false);
     }
@@ -69,21 +69,20 @@ export default function SettingsPage() {
 
   async function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setPasswordError("");
-    setPasswordSuccess("");
-    if (!validatePassword({ currentPassword, newPassword, confirmPassword }))
-      return;
+    setPasswordError('');
+    setPasswordSuccess('');
+    if (!validatePassword({ currentPassword, newPassword, confirmPassword })) return;
 
     setPasswordLoading(true);
     try {
       await api.changePassword({ currentPassword, newPassword });
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-      setPasswordSuccess(t("settings.passwordChanged"));
-      setTimeout(() => setPasswordSuccess(""), 3000);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setPasswordSuccess(t('settings.passwordChanged'));
+      setTimeout(() => setPasswordSuccess(''), 3000);
     } catch (err: unknown) {
-      setPasswordError(getErrorMessage(err, t("settings.passwordFailed")));
+      setPasswordError(getErrorMessage(err, t('settings.passwordFailed')));
     } finally {
       setPasswordLoading(false);
     }
@@ -92,53 +91,41 @@ export default function SettingsPage() {
   return (
     <div className="animate-fade-slide-up">
       <h1 className="font-display text-[1.75rem] font-extrabold tracking-tight mb-1">
-        {t("settings.title")}
+        {t('settings.title')}
       </h1>
-      <p className="text-text-secondary text-[0.9375rem] mb-8">
-        {t("settings.subtitle")}
-      </p>
+      <p className="text-text-secondary text-[0.9375rem] mb-8">{t('settings.subtitle')}</p>
 
       <div className="flex flex-col gap-8 max-w-[520px]">
         {/* Profile Section */}
         <div className="bg-bg-card border border-border rounded-xl p-8">
-          <h2 className="font-display text-lg font-bold mb-6">
-            {t("settings.profileSection")}
-          </h2>
+          <h2 className="font-display text-lg font-bold mb-6">{t('settings.profileSection')}</h2>
 
-          <form
-            className="flex flex-col gap-5"
-            onSubmit={handleProfileSubmit}
-            noValidate
-          >
+          <form className="flex flex-col gap-5" onSubmit={handleProfileSubmit} noValidate>
             {profileError && <Alert variant="danger">{profileError}</Alert>}
-            {profileSuccess && (
-              <Alert variant="success">{profileSuccess}</Alert>
-            )}
+            {profileSuccess && <Alert variant="success">{profileSuccess}</Alert>}
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="settings-email">{t("settings.emailLabel")}</Label>
+              <Label htmlFor="settings-email">{t('settings.emailLabel')}</Label>
               <Input
                 id="settings-email"
                 className="opacity-60 cursor-not-allowed"
                 type="email"
-                value={user?.email ?? ""}
+                value={user?.email ?? ''}
                 disabled
               />
-              <span className="text-text-muted text-xs">
-                {t("settings.emailReadOnly")}
-              </span>
+              <span className="text-text-muted text-xs">{t('settings.emailReadOnly')}</span>
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="settings-name">{t("settings.nameLabel")}</Label>
+              <Label htmlFor="settings-name">{t('settings.nameLabel')}</Label>
               <Input
                 id="settings-name"
                 type="text"
-                placeholder={t("settings.namePlaceholder")}
+                placeholder={t('settings.namePlaceholder')}
                 value={name}
                 onChange={(e) => {
                   setName(e.target.value);
-                  clearProfileField("name");
+                  clearProfileField('name');
                 }}
                 error={!!profileFieldErrors.name}
               />
@@ -146,41 +133,31 @@ export default function SettingsPage() {
             </div>
 
             <Button type="submit" disabled={profileLoading}>
-              {profileLoading
-                ? t("settings.savingProfile")
-                : t("settings.saveProfile")}
+              {profileLoading ? t('settings.savingProfile') : t('settings.saveProfile')}
             </Button>
           </form>
         </div>
 
         {/* Password Section */}
         <div className="bg-bg-card border border-border rounded-xl p-8">
-          <h2 className="font-display text-lg font-bold mb-6">
-            {t("settings.passwordSection")}
-          </h2>
+          <h2 className="font-display text-lg font-bold mb-6">{t('settings.passwordSection')}</h2>
 
-          <form
-            className="flex flex-col gap-5"
-            onSubmit={handlePasswordSubmit}
-            noValidate
-          >
+          <form className="flex flex-col gap-5" onSubmit={handlePasswordSubmit} noValidate>
             {passwordError && <Alert variant="danger">{passwordError}</Alert>}
-            {passwordSuccess && (
-              <Alert variant="success">{passwordSuccess}</Alert>
-            )}
+            {passwordSuccess && <Alert variant="success">{passwordSuccess}</Alert>}
 
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="settings-current-password">
-                {t("settings.currentPasswordLabel")}
+                {t('settings.currentPasswordLabel')}
               </Label>
               <Input
                 id="settings-current-password"
                 type="password"
-                placeholder={t("settings.currentPasswordPlaceholder")}
+                placeholder={t('settings.currentPasswordPlaceholder')}
                 value={currentPassword}
                 onChange={(e) => {
                   setCurrentPassword(e.target.value);
-                  clearPasswordField("currentPassword");
+                  clearPasswordField('currentPassword');
                 }}
                 error={!!passwordFieldErrors.currentPassword}
                 autoComplete="current-password"
@@ -189,17 +166,15 @@ export default function SettingsPage() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="settings-new-password">
-                {t("settings.newPasswordLabel")}
-              </Label>
+              <Label htmlFor="settings-new-password">{t('settings.newPasswordLabel')}</Label>
               <Input
                 id="settings-new-password"
                 type="password"
-                placeholder={t("settings.newPasswordPlaceholder")}
+                placeholder={t('settings.newPasswordPlaceholder')}
                 value={newPassword}
                 onChange={(e) => {
                   setNewPassword(e.target.value);
-                  clearPasswordField("newPassword");
+                  clearPasswordField('newPassword');
                 }}
                 error={!!passwordFieldErrors.newPassword}
                 autoComplete="new-password"
@@ -209,16 +184,16 @@ export default function SettingsPage() {
 
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="settings-confirm-password">
-                {t("settings.confirmPasswordLabel")}
+                {t('settings.confirmPasswordLabel')}
               </Label>
               <Input
                 id="settings-confirm-password"
                 type="password"
-                placeholder={t("settings.confirmPasswordPlaceholder")}
+                placeholder={t('settings.confirmPasswordPlaceholder')}
                 value={confirmPassword}
                 onChange={(e) => {
                   setConfirmPassword(e.target.value);
-                  clearPasswordField("confirmPassword");
+                  clearPasswordField('confirmPassword');
                 }}
                 error={!!passwordFieldErrors.confirmPassword}
                 autoComplete="new-password"
@@ -227,9 +202,7 @@ export default function SettingsPage() {
             </div>
 
             <Button type="submit" disabled={passwordLoading}>
-              {passwordLoading
-                ? t("settings.changingPassword")
-                : t("settings.changePassword")}
+              {passwordLoading ? t('settings.changingPassword') : t('settings.changePassword')}
             </Button>
           </form>
         </div>

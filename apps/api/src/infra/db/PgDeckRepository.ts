@@ -1,26 +1,20 @@
-import { eq } from "drizzle-orm";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { eq } from 'drizzle-orm';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
-import type { Deck } from "@flashcard-app/shared-types";
-import type { IDeckRepository } from "../../domain/repositories/IDeckRepository";
-import * as schema from "./schema";
+import type { Deck } from '@flashcard-app/shared-types';
+import type { IDeckRepository } from '../../domain/repositories/IDeckRepository';
+import * as schema from './schema';
 
 export class PgDeckRepository implements IDeckRepository {
   constructor(private readonly db: PostgresJsDatabase<typeof schema>) {}
 
   async findById(id: string): Promise<Deck | null> {
-    const rows = await this.db
-      .select()
-      .from(schema.decks)
-      .where(eq(schema.decks.id, id));
+    const rows = await this.db.select().from(schema.decks).where(eq(schema.decks.id, id));
     return rows[0] ? this.toDeck(rows[0]) : null;
   }
 
   async findAllByUserId(userId: string): Promise<Deck[]> {
-    const rows = await this.db
-      .select()
-      .from(schema.decks)
-      .where(eq(schema.decks.userId, userId));
+    const rows = await this.db.select().from(schema.decks).where(eq(schema.decks.userId, userId));
     return rows.map(this.toDeck);
   }
 
@@ -38,7 +32,7 @@ export class PgDeckRepository implements IDeckRepository {
 
   async update(
     id: string,
-    data: Partial<Pick<Deck, "name" | "description" | "color">>,
+    data: Partial<Pick<Deck, 'name' | 'description' | 'color'>>,
   ): Promise<Deck | null> {
     await this.db.update(schema.decks).set(data).where(eq(schema.decks.id, id));
     return this.findById(id);

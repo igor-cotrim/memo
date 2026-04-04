@@ -7,7 +7,9 @@ A modern, high-performance flashcard application built with a focus on efficient
 - **Spaced Repetition**: Optimized review cycles powered by the FSRS algorithm.
 - **Decks & Cards**: Organize your flashcards into decks with custom colors and descriptions.
 - **Authentication**: Secure JWT-based authentication with high-entropy hashing (bcrypt) and refresh token rotation.
+- **Import/Export**: Import flashcards from CSV files to quickly build your decks.
 - **Statistics**: Track your progress with detailed review logs and performance metrics.
+- **Internationalization**: Available in English and Brazilian Portuguese (PT-BR).
 - **Responsive Design**: Modern UI built with React and Tailwind CSS v4, optimized for both desktop and mobile.
 - **Dark Mode Support**: Deeply integrated dark mode for comfortable late-night study sessions.
 
@@ -22,7 +24,7 @@ A modern, high-performance flashcard application built with a focus on efficient
 
 - **Node.js & Express**: Fast and minimalist web framework.
 - **Drizzle ORM**: Type-safe ORM for interacting with the database.
-- **SQLite**: Reliable, file-based database (using `better-sqlite3`).
+- **PostgreSQL**: Hosted on Supabase, accessed via `postgres` (postgres.js) driver.
 - **TS-FSRS**: Modern implementation of the Free Spaced Repetition Scheduler.
 - **Security**: Hardened with `helmet`, `express-rate-limit`, and VPC-optimized CORS.
 
@@ -58,7 +60,7 @@ A modern, high-performance flashcard application built with a focus on efficient
 
 3. Set up environment variables:
    - Copy `.env.example` to `.env` in the root directory.
-   - Adjust the values as needed (especially `JWT_SECRET`).
+   - Adjust the values as needed (especially `DATABASE_URL` and `JWT_SECRET`).
 
 ### Development
 
@@ -75,10 +77,28 @@ Or run them individually:
 
 ### Database Management
 
-The API uses Drizzle for database migrations and schema management.
+The API uses Drizzle ORM for database migrations and schema management.
 
 - Generate migrations: `pnpm --filter api run db:generate`
+- Run migrations: `pnpm --filter api run db:migrate`
 - Push schema directly (dev): `pnpm --filter api run db:push`
+
+### Linting & Formatting
+
+```bash
+pnpm lint            # Lint all workspaces (ESLint)
+pnpm format          # Format all files (Prettier)
+pnpm format:check    # Check formatting without writing
+```
+
+### Testing
+
+```bash
+pnpm test            # Run all tests
+pnpm test:api        # API tests only
+pnpm test:web        # Web tests only
+pnpm test:coverage   # All tests with coverage
+```
 
 ## Project Structure
 
@@ -88,7 +108,7 @@ The API uses Drizzle for database migrations and schema management.
 │   └── web          # React frontend
 ├── packages
 │   └── shared-types # Shared TypeScript interfaces
-├── data             # SQLite database files (generated)
+├── .env.example     # Environment variables template
 └── pnpm-workspace.yaml
 ```
 

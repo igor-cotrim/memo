@@ -1,21 +1,18 @@
-import { Router } from "express";
-import type { Response, NextFunction } from "express";
+import { Router } from 'express';
+import type { Response, NextFunction } from 'express';
 
-import type { AuthRequest } from "../middleware/auth";
-import type { ICardRepository } from "../../../domain/repositories/ICardRepository";
-import type { IDeckRepository } from "../../../domain/repositories/IDeckRepository";
+import type { AuthRequest } from '../middleware/auth';
+import type { ICardRepository } from '../../../domain/repositories/ICardRepository';
+import type { IDeckRepository } from '../../../domain/repositories/IDeckRepository';
 import {
   CreateCardUseCase,
   ListCardsUseCase,
   GetCardUseCase,
   UpdateCardUseCase,
   DeleteCardUseCase,
-} from "../../../usecases/CardUseCases";
+} from '../../../usecases/CardUseCases';
 
-export function createCardRoutes(
-  cardRepo: ICardRepository,
-  deckRepo: IDeckRepository,
-): Router {
+export function createCardRoutes(cardRepo: ICardRepository, deckRepo: IDeckRepository): Router {
   const router = Router({ mergeParams: true });
 
   const createCard = new CreateCardUseCase(cardRepo, deckRepo);
@@ -26,18 +23,10 @@ export function createCardRoutes(
 
   // POST /decks/:deckId/cards
   router.post(
-    "/",
-    async (
-      req: AuthRequest<{ deckId: string }>,
-      res: Response,
-      next: NextFunction,
-    ) => {
+    '/',
+    async (req: AuthRequest<{ deckId: string }>, res: Response, next: NextFunction) => {
       try {
-        const card = await createCard.execute(
-          req.userId!,
-          req.params.deckId!,
-          req.body,
-        );
+        const card = await createCard.execute(req.userId!, req.params.deckId!, req.body);
         res.status(201).json(card);
       } catch (err) {
         next(err);
@@ -47,12 +36,8 @@ export function createCardRoutes(
 
   // GET /decks/:deckId/cards
   router.get(
-    "/",
-    async (
-      req: AuthRequest<{ deckId: string }>,
-      res: Response,
-      next: NextFunction,
-    ) => {
+    '/',
+    async (req: AuthRequest<{ deckId: string }>, res: Response, next: NextFunction) => {
       try {
         const cards = await listCards.execute(req.userId!, req.params.deckId!);
         res.json(cards);
@@ -64,7 +49,7 @@ export function createCardRoutes(
 
   // GET /decks/:deckId/cards/:cardId
   router.get(
-    "/:cardId",
+    '/:cardId',
     async (
       req: AuthRequest<{ deckId: string; cardId: string }>,
       res: Response,
@@ -81,18 +66,14 @@ export function createCardRoutes(
 
   // PUT /decks/:deckId/cards/:cardId
   router.put(
-    "/:cardId",
+    '/:cardId',
     async (
       req: AuthRequest<{ deckId: string; cardId: string }>,
       res: Response,
       next: NextFunction,
     ) => {
       try {
-        const card = await updateCard.execute(
-          req.userId!,
-          req.params.cardId!,
-          req.body,
-        );
+        const card = await updateCard.execute(req.userId!, req.params.cardId!, req.body);
         res.json(card);
       } catch (err) {
         next(err);
@@ -102,7 +83,7 @@ export function createCardRoutes(
 
   // DELETE /decks/:deckId/cards/:cardId
   router.delete(
-    "/:cardId",
+    '/:cardId',
     async (
       req: AuthRequest<{ deckId: string; cardId: string }>,
       res: Response,

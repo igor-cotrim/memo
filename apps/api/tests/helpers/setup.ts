@@ -1,12 +1,12 @@
-import { PGlite } from "@electric-sql/pglite";
-import { drizzle } from "drizzle-orm/pglite";
-import type { Express } from "express";
-import pino from "pino";
+import { PGlite } from '@electric-sql/pglite';
+import { drizzle } from 'drizzle-orm/pglite';
+import type { Express } from 'express';
+import pino from 'pino';
 
-import * as schema from "../../src/infra/db/schema";
-import { createApp } from "../../src/app";
+import * as schema from '../../src/infra/db/schema';
+import { createApp } from '../../src/app';
 
-export const TEST_JWT_SECRET = "test-secret-key";
+export const TEST_JWT_SECRET = 'test-secret-key';
 
 export async function createTestApp(): Promise<{
   app: Express;
@@ -69,7 +69,7 @@ export async function createTestApp(): Promise<{
     revoked_at TEXT
   )`);
 
-  const logger = pino({ level: "silent" });
+  const logger = pino({ level: 'silent' });
   const app = createApp(db as any, TEST_JWT_SECRET, logger);
 
   return {

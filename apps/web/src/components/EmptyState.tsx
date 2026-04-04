@@ -1,4 +1,4 @@
-import { memo, type ReactNode } from "react";
+import { memo, type ReactNode } from 'react';
 
 type EmptyStateProps = {
   icon: string | ReactNode;
@@ -7,12 +7,7 @@ type EmptyStateProps = {
   action?: ReactNode;
 };
 
-const EmptyState = memo(function EmptyState({
-  icon,
-  title,
-  description,
-  action,
-}: EmptyStateProps) {
+const EmptyState = memo(function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center flex-1 text-center py-20 px-4 sm:px-8 text-text-secondary animate-fade-slide-up">
       <div className="text-[3.5rem] sm:text-[4rem] mb-4 sm:mb-6">{icon}</div>

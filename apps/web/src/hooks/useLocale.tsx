@@ -1,16 +1,10 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
-import type { ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import type { ReactNode } from 'react';
 
-import { locales, defaultLocale, localeLabels } from "../locale";
-import type { Locale, Translations } from "../locale";
+import { locales, defaultLocale, localeLabels } from '../locale';
+import type { Locale, Translations } from '../locale';
 
-const STORAGE_KEY = "memo-locale";
+const STORAGE_KEY = 'memo-locale';
 
 function getInitialLocale(): Locale {
   try {
@@ -38,12 +32,8 @@ type TranslationKey = NestedKeyOf<Translations>;
 
 function getNestedValue(obj: Translations, path: string): unknown {
   let current: unknown = obj;
-  for (const key of path.split(".")) {
-    if (
-      current === null ||
-      current === undefined ||
-      typeof current !== "object"
-    ) {
+  for (const key of path.split('.')) {
+    if (current === null || current === undefined || typeof current !== 'object') {
       return path;
     }
     current = (current as Record<string, unknown>)[key];
@@ -75,7 +65,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const toggleLocale = useCallback(() => {
-    setLocale(locale === "en" ? "pt-BR" : "en");
+    setLocale(locale === 'en' ? 'pt-BR' : 'en');
   }, [locale, setLocale]);
 
   const translations = locales[locale];
@@ -83,7 +73,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const t = useCallback(
     (key: TranslationKey): string => {
       const value = getNestedValue(translations, key);
-      return typeof value === "string" ? value : key;
+      return typeof value === 'string' ? value : key;
     },
     [translations],
   );
@@ -108,15 +98,13 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     [locale, setLocale, t, tArray, toggleLocale],
   );
 
-  return (
-    <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>
-  );
+  return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }
 
 export function useLocale(): LocaleContextValue {
   const context = useContext(LocaleContext);
   if (!context) {
-    throw new Error("useLocale must be used within a LocaleProvider");
+    throw new Error('useLocale must be used within a LocaleProvider');
   }
   return context;
 }

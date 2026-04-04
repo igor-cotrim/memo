@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from 'react';
 
-import { useLocale } from "../hooks/useLocale";
-import { Button } from "./ui";
+import { useLocale } from '../hooks/useLocale';
+import { Button } from './ui';
 
 interface OnboardingWizardProps {
   onComplete: () => void;
@@ -9,9 +9,7 @@ interface OnboardingWizardProps {
 
 const TOTAL_STEPS = 3;
 
-export default function OnboardingWizard({
-  onComplete,
-}: OnboardingWizardProps) {
+export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const { t } = useLocale();
   const [step, setStep] = useState(0);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -19,7 +17,7 @@ export default function OnboardingWizard({
 
   useEffect(() => {
     const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = original;
     };
@@ -27,27 +25,25 @@ export default function OnboardingWizard({
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onComplete();
+      if (e.key === 'Escape') onComplete();
     }
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
   }, [onComplete]);
 
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
 
-    const focusableSelector =
-      'button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-    const focusableElements =
-      panel.querySelectorAll<HTMLElement>(focusableSelector);
+    const focusableSelector = 'button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusableElements = panel.querySelectorAll<HTMLElement>(focusableSelector);
     const firstFocusable = focusableElements[0];
     const lastFocusable = focusableElements[focusableElements.length - 1];
 
     firstFocusable?.focus();
 
     function handleTab(e: KeyboardEvent) {
-      if (e.key !== "Tab") return;
+      if (e.key !== 'Tab') return;
       if (!firstFocusable || !lastFocusable) return;
 
       if (e.shiftKey) {
@@ -63,8 +59,8 @@ export default function OnboardingWizard({
       }
     }
 
-    panel.addEventListener("keydown", handleTab);
-    return () => panel.removeEventListener("keydown", handleTab);
+    panel.addEventListener('keydown', handleTab);
+    return () => panel.removeEventListener('keydown', handleTab);
   }, [step]);
 
   const handleOverlayClick = useCallback(
@@ -77,15 +73,15 @@ export default function OnboardingWizard({
   const isLastStep = step === TOTAL_STEPS - 1;
 
   const howItWorksSteps = [
-    { icon: "📚", text: t("onboarding.step2CreateDecks") },
-    { icon: "✍️", text: t("onboarding.step2AddCards") },
-    { icon: "🔄", text: t("onboarding.step2Review") },
+    { icon: '📚', text: t('onboarding.step2CreateDecks') },
+    { icon: '✍️', text: t('onboarding.step2AddCards') },
+    { icon: '🔄', text: t('onboarding.step2Review') },
   ];
 
   const benefits = [
-    t("onboarding.step3Benefit1"),
-    t("onboarding.step3Benefit2"),
-    t("onboarding.step3Benefit3"),
+    t('onboarding.step3Benefit1'),
+    t('onboarding.step3Benefit2'),
+    t('onboarding.step3Benefit3'),
   ];
 
   return (
@@ -107,7 +103,7 @@ export default function OnboardingWizard({
             <div
               key={i}
               className={`h-2 rounded-full transition-all duration-300 ${
-                i === step ? "w-8 bg-accent-primary" : "w-2 bg-border"
+                i === step ? 'w-8 bg-accent-primary' : 'w-2 bg-border'
               }`}
             />
           ))}
@@ -122,10 +118,10 @@ export default function OnboardingWizard({
                 id="onboarding-title"
                 className="font-display text-2xl font-bold text-text-primary mb-3 stagger-2"
               >
-                {t("onboarding.step1Title")}
+                {t('onboarding.step1Title')}
               </h2>
               <p className="text-text-secondary text-base leading-relaxed max-w-sm mx-auto stagger-3">
-                {t("onboarding.step1Text")}
+                {t('onboarding.step1Text')}
               </p>
             </div>
           )}
@@ -136,7 +132,7 @@ export default function OnboardingWizard({
                 id="onboarding-title"
                 className="font-display text-2xl font-bold text-text-primary mb-6 text-center stagger-1"
               >
-                {t("onboarding.step2Title")}
+                {t('onboarding.step2Title')}
               </h2>
               <div className="flex flex-col gap-4">
                 {howItWorksSteps.map((s, i) => (
@@ -163,21 +159,16 @@ export default function OnboardingWizard({
                 id="onboarding-title"
                 className="font-display text-2xl font-bold text-text-primary mb-4 text-center stagger-1"
               >
-                {t("onboarding.step3Title")}
+                {t('onboarding.step3Title')}
               </h2>
               <p className="text-text-secondary text-sm leading-relaxed mb-6 text-center stagger-2">
-                {t("onboarding.step3Text")}
+                {t('onboarding.step3Text')}
               </p>
               <div className="flex flex-col gap-3">
                 {benefits.map((benefit, i) => (
-                  <div
-                    key={i}
-                    className={`flex items-center gap-3 stagger-${i + 3}`}
-                  >
+                  <div key={i} className={`flex items-center gap-3 stagger-${i + 3}`}>
                     <span className="text-accent-primary text-lg">✓</span>
-                    <span className="text-text-primary font-medium">
-                      {benefit}
-                    </span>
+                    <span className="text-text-primary font-medium">{benefit}</span>
                   </div>
                 ))}
               </div>
@@ -189,16 +180,12 @@ export default function OnboardingWizard({
         <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
           <div>
             {step > 0 ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setStep((s) => s - 1)}
-              >
-                {t("onboarding.back")}
+              <Button variant="ghost" size="sm" onClick={() => setStep((s) => s - 1)}>
+                {t('onboarding.back')}
               </Button>
             ) : (
               <Button variant="ghost" size="sm" onClick={onComplete}>
-                {t("onboarding.skip")}
+                {t('onboarding.skip')}
               </Button>
             )}
           </div>
@@ -211,7 +198,7 @@ export default function OnboardingWizard({
               }
             }}
           >
-            {isLastStep ? t("onboarding.getStarted") : t("onboarding.next")}
+            {isLastStep ? t('onboarding.getStarted') : t('onboarding.next')}
           </Button>
         </div>
       </div>

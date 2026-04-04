@@ -1,12 +1,12 @@
-import { type LabelHTMLAttributes } from "react";
+import { type LabelHTMLAttributes } from 'react';
 
-interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {}
+type LabelProps = LabelHTMLAttributes<HTMLLabelElement>;
 
 const labelClasses =
-  "font-display text-xs font-semibold text-text-secondary uppercase tracking-widest";
+  'font-display text-xs font-semibold text-text-secondary uppercase tracking-widest';
 
 function Label({ className, ...props }: LabelProps) {
-  return <label className={`${labelClasses} ${className ?? ""}`} {...props} />;
+  return <label className={`${labelClasses} ${className ?? ''}`} {...props} />;
 }
 
 export { Label, type LabelProps };

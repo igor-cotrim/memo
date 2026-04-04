@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback } from 'react';
 
 type ValidationRule = {
   required?: boolean;
@@ -28,33 +28,27 @@ export function useFormValidation<T extends Record<string, string>>(
 
       for (const key of Object.keys(rules) as (keyof T)[]) {
         const rule = rules[key];
-        const value = fields[key] ?? "";
+        const value = fields[key] ?? '';
 
         if (!rule) continue;
 
-        if (rule.required && value.trim() === "") {
-          newErrors[key] = t("validation.required");
+        if (rule.required && value.trim() === '') {
+          newErrors[key] = t('validation.required');
           continue;
         }
 
         if (rule.email && value && !EMAIL_REGEX.test(value)) {
-          newErrors[key] = t("validation.email");
+          newErrors[key] = t('validation.email');
           continue;
         }
 
         if (rule.minLength && value.length < rule.minLength) {
-          newErrors[key] = t("validation.minLength").replace(
-            "{min}",
-            String(rule.minLength),
-          );
+          newErrors[key] = t('validation.minLength').replace('{min}', String(rule.minLength));
           continue;
         }
 
         if (rule.custom) {
-          const customError = rule.custom(
-            value,
-            fields as Record<string, string>,
-          );
+          const customError = rule.custom(value, fields as Record<string, string>);
           if (customError) {
             newErrors[key] = customError;
             continue;

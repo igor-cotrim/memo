@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
-import type { DailyReviewCount } from "@flashcard-app/shared-types";
-import { useLocale } from "../hooks/useLocale";
+import type { DailyReviewCount } from '@flashcard-app/shared-types';
+import { useLocale } from '../hooks/useLocale';
 
 interface ActivityGraphProps {
   data: DailyReviewCount[];
@@ -35,19 +35,19 @@ function getMonthLabels(
 }
 
 function getIntensityClass(count: number, maxCount: number): string {
-  if (count === 0) return "bg-white/5";
+  if (count === 0) return 'bg-white/5';
   const ratio = count / maxCount;
-  if (ratio <= 0.25) return "bg-accent-primary/25";
-  if (ratio <= 0.5) return "bg-accent-primary/50";
-  if (ratio <= 0.75) return "bg-accent-primary/75";
-  return "bg-accent-primary";
+  if (ratio <= 0.25) return 'bg-accent-primary/25';
+  if (ratio <= 0.5) return 'bg-accent-primary/50';
+  if (ratio <= 0.75) return 'bg-accent-primary/75';
+  return 'bg-accent-primary';
 }
 
 export default function ActivityGraph({ data }: ActivityGraphProps) {
   const { t, tArray } = useLocale();
 
-  const monthNames = tArray("activity.months");
-  const dayLabels = tArray("activity.days");
+  const monthNames = tArray('activity.months');
+  const dayLabels = tArray('activity.days');
 
   const { grid, startDate, maxCount, totalReviews } = useMemo(() => {
     const countMap = new Map<string, number>();
@@ -66,7 +66,7 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
     const start = new Date(today);
     start.setDate(today.getDate() - today.getDay() - (WEEKS - 1) * 7);
 
-    const pad = (n: number) => n.toString().padStart(2, "0");
+    const pad = (n: number) => n.toString().padStart(2, '0');
     const formatDate = (date: Date) =>
       `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
@@ -94,19 +94,13 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
     };
   }, [data]);
 
-  const monthLabels = useMemo(
-    () => getMonthLabels(startDate, monthNames),
-    [startDate, monthNames],
-  );
+  const monthLabels = useMemo(() => getMonthLabels(startDate, monthNames), [startDate, monthNames]);
 
   return (
     <div className="flex flex-col gap-2 w-full overflow-x-auto pb-4 overflow-y-hidden">
       <div className="min-w-max mx-auto">
         {/* Month labels */}
-        <div
-          className="relative h-4"
-          style={{ marginLeft: DAY_LABEL_WIDTH + 6 }}
-        >
+        <div className="relative h-4" style={{ marginLeft: DAY_LABEL_WIDTH + 6 }}>
           {monthLabels.map(({ label, col }) => (
             <span
               key={`${label}-${col}`}
@@ -160,7 +154,7 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
 
                 const d = new Date(startDate);
                 d.setDate(d.getDate() + weekIdx * 7 + dayIdx);
-                const pad = (n: number) => n.toString().padStart(2, "0");
+                const pad = (n: number) => n.toString().padStart(2, '0');
                 const dateStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 
                 return (
@@ -173,7 +167,7 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
                       width: CELL_SIZE,
                       height: CELL_SIZE,
                     }}
-                    title={`${dateStr}: ${count} ${count !== 1 ? t("activity.reviews") : t("activity.review")}`}
+                    title={`${dateStr}: ${count} ${count !== 1 ? t('activity.reviews') : t('activity.review')}`}
                   />
                 );
               }),
@@ -184,11 +178,11 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
         {/* Footer legend */}
         <div className="flex items-center justify-between flex-wrap gap-3 mt-4 w-full">
           <span className="font-display text-[0.8125rem] font-semibold text-text-secondary">
-            {totalReviews} {t("activity.reviewsInYear")}
+            {totalReviews} {t('activity.reviewsInYear')}
           </span>
           <div className="flex items-center gap-1">
             <span className="font-display text-[0.625rem] font-medium text-text-muted mx-[3px]">
-              {t("activity.less")}
+              {t('activity.less')}
             </span>
             <div className="w-[12px] h-[12px] rounded-[3px] bg-white/5" />
             <div className="w-[12px] h-[12px] rounded-[3px] bg-accent-primary/25" />
@@ -196,7 +190,7 @@ export default function ActivityGraph({ data }: ActivityGraphProps) {
             <div className="w-[12px] h-[12px] rounded-[3px] bg-accent-primary/75" />
             <div className="w-[12px] h-[12px] rounded-[3px] bg-accent-primary" />
             <span className="font-display text-[0.625rem] font-medium text-text-muted mx-[3px]">
-              {t("activity.more")}
+              {t('activity.more')}
             </span>
           </div>
         </div>

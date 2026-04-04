@@ -1,16 +1,16 @@
-import { useState, useEffect, useCallback } from "react";
-import type { ReactNode } from "react";
+import { useState, useEffect, useCallback } from 'react';
+import type { ReactNode } from 'react';
 
-import type { PublicUser } from "@flashcard-app/shared-types";
-import * as api from "../services/api";
-import { AuthContext } from "./authContext";
+import type { PublicUser } from '@flashcard-app/shared-types';
+import * as api from '../services/api';
+import { AuthContext } from './authContext';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<PublicUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem('accessToken');
     if (!token) {
       setIsLoading(false);
       return;
@@ -22,7 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(data.user);
       })
       .catch(() => {
-        localStorage.removeItem("accessToken");
+        localStorage.removeItem('accessToken');
       })
       .finally(() => {
         setIsLoading(false);
@@ -34,13 +34,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(result.user);
   }, []);
 
-  const register = useCallback(
-    async (email: string, name: string, password: string) => {
-      const result = await api.register({ email, name, password });
-      setUser(result.user);
-    },
-    [],
-  );
+  const register = useCallback(async (email: string, name: string, password: string) => {
+    const result = await api.register({ email, name, password });
+    setUser(result.user);
+  }, []);
 
   const logout = useCallback(async () => {
     await api.logout();
@@ -52,9 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider
-      value={{ user, isLoading, login, register, logout, updateUser }}
-    >
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

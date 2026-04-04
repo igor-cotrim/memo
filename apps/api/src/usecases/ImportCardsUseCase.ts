@@ -1,16 +1,16 @@
-import { v4 as uuidv4 } from "uuid";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { v4 as uuidv4 } from 'uuid';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import type {
   Flashcard,
   ImportCardRow,
   ImportCardsResponse,
   ImportRowError,
-} from "@flashcard-app/shared-types";
-import type * as schema from "../infra/db/schema";
-import { PgDeckRepository } from "../infra/db/PgDeckRepository";
-import { PgCardRepository } from "../infra/db/PgCardRepository";
-import { NotFoundError, ForbiddenError, ValidationError } from "../shared/errors";
+} from '@flashcard-app/shared-types';
+import type * as schema from '../infra/db/schema';
+import { PgDeckRepository } from '../infra/db/PgDeckRepository';
+import { PgCardRepository } from '../infra/db/PgCardRepository';
+import { NotFoundError, ForbiddenError, ValidationError } from '../shared/errors';
 
 export class ImportCardsUseCase {
   constructor(private readonly db: PostgresJsDatabase<typeof schema>) {}
@@ -22,12 +22,12 @@ export class ImportCardsUseCase {
     errors: ImportRowError[],
   ): Promise<ImportCardsResponse> {
     if (cards.length === 0) {
-      throw new ValidationError("At least one valid card is required");
+      throw new ValidationError('At least one valid card is required');
     }
 
     const deckRepo = new PgDeckRepository(this.db);
     const deck = await deckRepo.findById(deckId);
-    if (!deck) throw new NotFoundError("Deck", deckId);
+    if (!deck) throw new NotFoundError('Deck', deckId);
     if (deck.userId !== userId) throw new ForbiddenError();
 
     const now = new Date().toISOString();

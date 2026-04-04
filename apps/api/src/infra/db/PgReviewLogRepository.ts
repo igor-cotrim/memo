@@ -1,11 +1,11 @@
-import { eq, and, gte } from "drizzle-orm";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { eq, and, gte } from 'drizzle-orm';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import type {
   IReviewLogRepository,
   ReviewLog,
-} from "../../domain/repositories/IReviewLogRepository";
-import * as schema from "./schema";
+} from '../../domain/repositories/IReviewLogRepository';
+import * as schema from './schema';
 
 export class PgReviewLogRepository implements IReviewLogRepository {
   constructor(private readonly db: PostgresJsDatabase<typeof schema>) {}
@@ -25,12 +25,7 @@ export class PgReviewLogRepository implements IReviewLogRepository {
     const rows = await this.db
       .select()
       .from(schema.reviewLogs)
-      .where(
-        and(
-          eq(schema.reviewLogs.userId, userId),
-          gte(schema.reviewLogs.reviewedAt, since),
-        ),
-      );
+      .where(and(eq(schema.reviewLogs.userId, userId), gte(schema.reviewLogs.reviewedAt, since)));
     return rows.map(this.toLog);
   }
 
@@ -38,23 +33,12 @@ export class PgReviewLogRepository implements IReviewLogRepository {
     const rows = await this.db
       .select({ log: schema.reviewLogs })
       .from(schema.reviewLogs)
-      .innerJoin(
-        schema.flashcards,
-        eq(schema.reviewLogs.cardId, schema.flashcards.id),
-      )
-      .where(
-        and(
-          eq(schema.flashcards.deckId, deckId),
-          gte(schema.reviewLogs.reviewedAt, since),
-        ),
-      );
+      .innerJoin(schema.flashcards, eq(schema.reviewLogs.cardId, schema.flashcards.id))
+      .where(and(eq(schema.flashcards.deckId, deckId), gte(schema.reviewLogs.reviewedAt, since)));
     return rows.map((r) => this.toLog(r.log));
   }
 
-  async getReviewDates(
-    userId: string,
-    timezoneOffset: number = 0,
-  ): Promise<string[]> {
+  async getReviewDates(userId: string, timezoneOffset: number = 0): Promise<string[]> {
     const rows = await this.db
       .select({ reviewedAt: schema.reviewLogs.reviewedAt })
       .from(schema.reviewLogs)
@@ -62,7 +46,7 @@ export class PgReviewLogRepository implements IReviewLogRepository {
     return rows.map((r) => {
       const date = new Date(r.reviewedAt);
       const localMs = date.getTime() - timezoneOffset * 60 * 1000;
-      return new Date(localMs).toISOString().split("T")[0]!;
+      return new Date(localMs).toISOString().split('T')[0]!;
     });
   }
 

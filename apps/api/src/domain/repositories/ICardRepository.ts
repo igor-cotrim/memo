@@ -1,4 +1,4 @@
-import type { Flashcard } from "@flashcard-app/shared-types";
+import type { Flashcard } from '@flashcard-app/shared-types';
 
 export interface ICardRepository {
   findById(id: string): Promise<Flashcard | null>;

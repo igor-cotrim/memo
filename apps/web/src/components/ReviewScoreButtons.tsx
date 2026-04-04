@@ -1,7 +1,7 @@
-import { memo } from "react";
+import { memo } from 'react';
 
-import type { ReviewQuality } from "@flashcard-app/shared-types";
-import { useLocale } from "../hooks/useLocale";
+import type { ReviewQuality } from '@flashcard-app/shared-types';
+import { useLocale } from '../hooks/useLocale';
 
 type ReviewScoreButtonsProps = {
   onRate: (quality: ReviewQuality) => void;
@@ -21,10 +21,10 @@ const ReviewScoreButtons = memo(function ReviewScoreButtons({
     label: string;
     emoji: string;
   }[] = [
-    { quality: 1, label: t("review.qualityBlackout"), emoji: "😵" },
-    { quality: 2, label: t("review.qualityHard"), emoji: "😰" },
-    { quality: 3, label: t("review.qualityGood"), emoji: "🤔" },
-    { quality: 4, label: t("review.qualityEasy"), emoji: "😎" },
+    { quality: 1, label: t('review.qualityBlackout'), emoji: '😵' },
+    { quality: 2, label: t('review.qualityHard'), emoji: '😰' },
+    { quality: 3, label: t('review.qualityGood'), emoji: '🤔' },
+    { quality: 4, label: t('review.qualityEasy'), emoji: '😎' },
   ];
 
   return (
@@ -34,12 +34,12 @@ const ReviewScoreButtons = memo(function ReviewScoreButtons({
           key={quality}
           className={`relative flex flex-col items-center justify-center p-3 sm:p-4 border rounded-md bg-bg-card text-text-primary font-display cursor-pointer transition-all text-center hover:-translate-y-[3px] hover:shadow-md active:-translate-y-px ${
             quality === 1
-              ? "border-accent-danger hover:bg-accent-danger/10 text-accent-danger"
+              ? 'border-accent-danger hover:bg-accent-danger/10 text-accent-danger'
               : quality === 2
-                ? "border-accent-warning hover:bg-accent-warning/10 text-accent-warning"
+                ? 'border-accent-warning hover:bg-accent-warning/10 text-accent-warning'
                 : quality === 3
-                  ? "border-accent-secondary hover:bg-accent-secondary/10 text-accent-secondary"
-                  : "border-accent-success hover:bg-accent-success/10 text-accent-success"
+                  ? 'border-accent-secondary hover:bg-accent-secondary/10 text-accent-secondary'
+                  : 'border-accent-success hover:bg-accent-success/10 text-accent-success'
           }`}
           onClick={() => onRate(quality)}
           disabled={disabled}
@@ -47,7 +47,7 @@ const ReviewScoreButtons = memo(function ReviewScoreButtons({
           {activeQuality === quality ? (
             <div className="w-6 h-6 border-3 border-current border-t-transparent rounded-full animate-spin" />
           ) : (
-            <span style={{ fontSize: "1.5rem" }}>{emoji}</span>
+            <span style={{ fontSize: '1.5rem' }}>{emoji}</span>
           )}
           <span className="block text-xs mt-1 font-medium">{label}</span>
           <kbd className="absolute top-1.5 right-1.5 hidden sm:inline-flex items-center justify-center w-5 h-5 text-[0.6rem] font-mono rounded border border-current/20 bg-current/5 opacity-50">

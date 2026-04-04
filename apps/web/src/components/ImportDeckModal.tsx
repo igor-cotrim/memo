@@ -1,13 +1,9 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback } from 'react';
 
-import type {
-  Deck,
-  ImportCardRow,
-  ImportRowError,
-} from "@flashcard-app/shared-types";
-import { useLocale } from "../hooks/useLocale";
-import * as api from "../services/api";
-import { Modal, Button, Input, Label, Textarea, Alert } from "./ui";
+import type { Deck, ImportCardRow, ImportRowError } from '@flashcard-app/shared-types';
+import { useLocale } from '../hooks/useLocale';
+import * as api from '../services/api';
+import { Modal, Button, Input, Label, Textarea, Alert } from './ui';
 
 const PREVIEW_LIMIT = 5;
 
@@ -29,84 +25,85 @@ type ImportDeckModalProps = {
   onSuccess: (deck: Deck) => void;
 };
 
-function parsePreview(
-  file: File,
-): Promise<{
+function parsePreview(file: File): Promise<{
   cards: ImportCardRow[];
   name?: string;
   description?: string;
-  format: "json" | "csv";
+  format: 'json' | 'csv';
 }> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
       const text = reader.result as string;
-      const ext = file.name.split(".").pop()?.toLowerCase();
+      const ext = file.name.split('.').pop()?.toLowerCase();
 
-      if (ext === "json") {
+      if (ext === 'json') {
         try {
           const data = JSON.parse(text);
           if (Array.isArray(data)) {
-            resolve({ cards: data, format: "json" });
-          } else if (data && typeof data === "object" && Array.isArray(data.cards)) {
+            resolve({ cards: data, format: 'json' });
+          } else if (data && typeof data === 'object' && Array.isArray(data.cards)) {
             resolve({
               cards: data.cards,
               name: data.name,
               description: data.description,
-              format: "json",
+              format: 'json',
             });
           } else {
-            reject(new Error("Invalid JSON structure"));
+            reject(new Error('Invalid JSON structure'));
           }
         } catch {
-          reject(new Error("Invalid JSON"));
+          reject(new Error('Invalid JSON'));
         }
       } else {
-        const lines = text.split("\n").filter((l) => l.trim());
+        const lines = text.split('\n').filter((l) => l.trim());
         if (lines.length === 0) {
-          reject(new Error("CSV file is empty"));
+          reject(new Error('CSV file is empty'));
           return;
         }
-        const headers = lines[0]!.split(",").map((h) => h.replace(/^"|"$/g, "").trim().toLowerCase());
-        if (!headers.includes("front") || !headers.includes("back")) {
+        const headers = lines[0]!
+          .split(',')
+          .map((h) => h.replace(/^"|"$/g, '').trim().toLowerCase());
+        if (!headers.includes('front') || !headers.includes('back')) {
           reject(new Error("CSV must have 'front' and 'back' columns"));
           return;
         }
-        const frontIdx = headers.indexOf("front");
-        const backIdx = headers.indexOf("back");
-        const notesIdx = headers.indexOf("notes");
+        const frontIdx = headers.indexOf('front');
+        const backIdx = headers.indexOf('back');
+        const notesIdx = headers.indexOf('notes');
         const cards: ImportCardRow[] = [];
         for (let i = 1; i < lines.length; i++) {
-          const cols = lines[i]!.split(",").map((c) => c.replace(/^"|"$/g, "").trim());
-          const front = cols[frontIdx] ?? "";
-          const back = cols[backIdx] ?? "";
+          const cols = lines[i]!.split(',').map((c) => c.replace(/^"|"$/g, '').trim());
+          const front = cols[frontIdx] ?? '';
+          const back = cols[backIdx] ?? '';
           if (front && back) {
-            cards.push({ front, back, notes: (notesIdx >= 0 ? cols[notesIdx] : undefined) || undefined });
+            cards.push({
+              front,
+              back,
+              notes: (notesIdx >= 0 ? cols[notesIdx] : undefined) || undefined,
+            });
           }
         }
-        resolve({ cards, format: "csv" });
+        resolve({ cards, format: 'csv' });
       }
     };
-    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.onerror = () => reject(new Error('Failed to read file'));
     reader.readAsText(file);
   });
 }
 
-export default function ImportDeckModal({
-  onClose,
-  onSuccess,
-}: ImportDeckModalProps) {
+export default function ImportDeckModal({ onClose, onSuccess }: ImportDeckModalProps) {
   const { t } = useLocale();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [file, setFile] = useState<File | null>(null);
   const [previewCards, setPreviewCards] = useState<ImportCardRow[]>([]);
   const [totalCards, setTotalCards] = useState(0);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [format, setFormat] = useState<"json" | "csv" | null>(null);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [format, setFormat] = useState<'json' | 'csv' | null>(null);
   const [showExample, setShowExample] = useState(true);
-  const [exampleTab, setExampleTab] = useState<"json" | "csv">("json");
+  const [exampleTab, setExampleTab] = useState<'json' | 'csv'>('json');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [rowErrors, setRowErrors] = useState<ImportRowError[]>([]);
@@ -118,13 +115,13 @@ export default function ImportDeckModal({
       setRowErrors([]);
       setSuccess(null);
 
-      const ext = f.name.split(".").pop()?.toLowerCase();
-      if (ext !== "json" && ext !== "csv") {
-        setError(t("decks.importErrorFormat"));
+      const ext = f.name.split('.').pop()?.toLowerCase();
+      if (ext !== 'json' && ext !== 'csv') {
+        setError(t('decks.importErrorFormat'));
         return;
       }
       if (f.size > 2 * 1024 * 1024) {
-        setError("File too large (max 2MB)");
+        setError('File too large (max 2MB)');
         return;
       }
 
@@ -138,7 +135,7 @@ export default function ImportDeckModal({
         if (result.name) setName(result.name);
         if (result.description) setDescription(result.description);
       } catch {
-        setError(t("decks.importErrorParse"));
+        setError(t('decks.importErrorParse'));
       }
     },
     [t],
@@ -156,7 +153,7 @@ export default function ImportDeckModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
-      setError(t("decks.importErrorFile"));
+      setError(t('decks.importErrorFile'));
       return;
     }
 
@@ -170,35 +167,30 @@ export default function ImportDeckModal({
       if (result.errors.length > 0) {
         setRowErrors(result.errors);
       }
-      setSuccess(
-        t("decks.importSuccess").replace("{count}", String(result.cardsCreated)),
-      );
+      setSuccess(t('decks.importSuccess').replace('{count}', String(result.cardsCreated)));
       setTimeout(() => onSuccess(result.deck), 1000);
     } catch (err: unknown) {
       const msg =
-        (err as { response?: { data?: { error?: string } } })?.response?.data
-          ?.error ?? t("decks.importErrorParse");
+        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??
+        t('decks.importErrorParse');
       setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
-  const needsMetaFields = format === "csv";
+  const needsMetaFields = format === 'csv';
 
   return (
     <Modal onClose={onClose} ariaLabelledBy="import-deck-modal-title">
       <div className="flex items-center justify-between mb-6">
-        <h2
-          className="font-display text-xl font-bold tracking-tight"
-          id="import-deck-modal-title"
-        >
-          {t("decks.importModalTitle")}
+        <h2 className="font-display text-xl font-bold tracking-tight" id="import-deck-modal-title">
+          {t('decks.importModalTitle')}
         </h2>
         <button
           className="inline-flex items-center justify-center w-[38px] h-[38px] rounded-sm bg-transparent text-text-secondary hover:text-text-primary hover:bg-white/5"
           onClick={onClose}
-          aria-label={t("common.close")}
+          aria-label={t('common.close')}
         >
           ✕
         </button>
@@ -210,38 +202,36 @@ export default function ImportDeckModal({
           {showExample && (
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <Label>{t("decks.importExampleTitle")}</Label>
+                <Label>{t('decks.importExampleTitle')}</Label>
                 <div className="flex gap-1">
                   <button
                     type="button"
-                    className={`px-2.5 py-1 text-xs rounded-md transition-colors ${exampleTab === "json" ? "bg-accent-primary/20 text-accent-primary font-medium" : "text-text-secondary hover:text-text-primary"}`}
-                    onClick={() => setExampleTab("json")}
+                    className={`px-2.5 py-1 text-xs rounded-md transition-colors ${exampleTab === 'json' ? 'bg-accent-primary/20 text-accent-primary font-medium' : 'text-text-secondary hover:text-text-primary'}`}
+                    onClick={() => setExampleTab('json')}
                   >
                     JSON
                   </button>
                   <button
                     type="button"
-                    className={`px-2.5 py-1 text-xs rounded-md transition-colors ${exampleTab === "csv" ? "bg-accent-primary/20 text-accent-primary font-medium" : "text-text-secondary hover:text-text-primary"}`}
-                    onClick={() => setExampleTab("csv")}
+                    className={`px-2.5 py-1 text-xs rounded-md transition-colors ${exampleTab === 'csv' ? 'bg-accent-primary/20 text-accent-primary font-medium' : 'text-text-secondary hover:text-text-primary'}`}
+                    onClick={() => setExampleTab('csv')}
                   >
                     CSV
                   </button>
                 </div>
               </div>
               <pre className="bg-bg-primary/50 border border-border rounded-lg p-3 text-xs text-text-secondary overflow-x-auto whitespace-pre font-mono">
-                {exampleTab === "json" ? JSON_EXAMPLE : CSV_EXAMPLE}
+                {exampleTab === 'json' ? JSON_EXAMPLE : CSV_EXAMPLE}
               </pre>
-              {exampleTab === "csv" && (
-                <p className="text-text-secondary text-xs">
-                  {t("decks.importCsvNote")}
-                </p>
+              {exampleTab === 'csv' && (
+                <p className="text-text-secondary text-xs">{t('decks.importCsvNote')}</p>
               )}
             </div>
           )}
 
           {/* File drop zone */}
           <div className="flex flex-col gap-1.5">
-            <Label>{t("decks.importFileLabel")}</Label>
+            <Label>{t('decks.importFileLabel')}</Label>
             <div
               className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-accent-primary/50 transition-colors"
               onClick={() => fileInputRef.current?.click()}
@@ -260,30 +250,23 @@ export default function ImportDeckModal({
               />
               {file ? (
                 <p className="text-text-primary text-sm font-medium">
-                  {file.name}{" "}
-                  <span className="text-text-secondary">
-                    ({totalCards} cards)
-                  </span>
+                  {file.name} <span className="text-text-secondary">({totalCards} cards)</span>
                 </p>
               ) : (
-                <p className="text-text-secondary text-sm">
-                  {t("decks.importDropHint")}
-                </p>
+                <p className="text-text-secondary text-sm">{t('decks.importDropHint')}</p>
               )}
             </div>
-            <p className="text-text-secondary text-xs">
-              {t("decks.importFileHint")}
-            </p>
+            <p className="text-text-secondary text-xs">{t('decks.importFileHint')}</p>
           </div>
 
           {/* Deck metadata - only for CSV (JSON already has name/description) */}
           {needsMetaFields && (
             <>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="import-deck-name">{t("decks.nameLabel")}</Label>
+                <Label htmlFor="import-deck-name">{t('decks.nameLabel')}</Label>
                 <Input
                   id="import-deck-name"
-                  placeholder={t("decks.namePlaceholder")}
+                  placeholder={t('decks.namePlaceholder')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -291,12 +274,10 @@ export default function ImportDeckModal({
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="import-deck-desc">
-                  {t("decks.descriptionLabel")}
-                </Label>
+                <Label htmlFor="import-deck-desc">{t('decks.descriptionLabel')}</Label>
                 <Textarea
                   id="import-deck-desc"
-                  placeholder={t("decks.descriptionPlaceholder")}
+                  placeholder={t('decks.descriptionPlaceholder')}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   autoComplete="off"
@@ -308,16 +289,16 @@ export default function ImportDeckModal({
           {/* Preview */}
           {previewCards.length > 0 && (
             <div className="flex flex-col gap-2">
-              <Label>{t("decks.importPreviewTitle")}</Label>
+              <Label>{t('decks.importPreviewTitle')}</Label>
               <div className="border border-border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-bg-primary/50">
                       <th className="text-left px-3 py-2 font-medium text-text-secondary">
-                        {t("cards.front")}
+                        {t('cards.front')}
                       </th>
                       <th className="text-left px-3 py-2 font-medium text-text-secondary">
-                        {t("cards.back")}
+                        {t('cards.back')}
                       </th>
                     </tr>
                   </thead>
@@ -337,9 +318,9 @@ export default function ImportDeckModal({
               </div>
               {totalCards > PREVIEW_LIMIT && (
                 <p className="text-text-secondary text-xs text-center">
-                  {t("decks.importPreviewShowing")
-                    .replace("{shown}", String(PREVIEW_LIMIT))
-                    .replace("{total}", String(totalCards))}
+                  {t('decks.importPreviewShowing')
+                    .replace('{shown}', String(PREVIEW_LIMIT))
+                    .replace('{total}', String(totalCards))}
                 </p>
               )}
             </div>
@@ -349,16 +330,14 @@ export default function ImportDeckModal({
           {success && <Alert variant="success">{success}</Alert>}
           {rowErrors.length > 0 && (
             <Alert variant="danger">
-              <p className="mb-1">{t("decks.importRowErrors")}</p>
+              <p className="mb-1">{t('decks.importRowErrors')}</p>
               <ul className="list-disc list-inside text-xs">
                 {rowErrors.slice(0, 5).map((e) => (
                   <li key={e.row}>
                     Row {e.row}: {e.message}
                   </li>
                 ))}
-                {rowErrors.length > 5 && (
-                  <li>...and {rowErrors.length - 5} more</li>
-                )}
+                {rowErrors.length > 5 && <li>...and {rowErrors.length - 5} more</li>}
               </ul>
             </Alert>
           )}
@@ -366,10 +345,10 @@ export default function ImportDeckModal({
 
         <div className="flex gap-3 justify-end mt-6">
           <Button variant="secondary" type="button" onClick={onClose}>
-            {t("common.cancel")}
+            {t('common.cancel')}
           </Button>
           <Button type="submit" disabled={loading || !file}>
-            {loading ? t("decks.importImporting") : t("decks.importSubmit")}
+            {loading ? t('decks.importImporting') : t('decks.importSubmit')}
           </Button>
         </div>
       </form>

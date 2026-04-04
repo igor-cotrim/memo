@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { v4 as uuidv4 } from 'uuid';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
 import type {
   Deck,
@@ -7,23 +7,23 @@ import type {
   ImportCardRow,
   ImportDeckResponse,
   ImportRowError,
-} from "@flashcard-app/shared-types";
-import type * as schema from "../infra/db/schema";
-import { PgDeckRepository } from "../infra/db/PgDeckRepository";
-import { PgCardRepository } from "../infra/db/PgCardRepository";
-import { ValidationError } from "../shared/errors";
+} from '@flashcard-app/shared-types';
+import type * as schema from '../infra/db/schema';
+import { PgDeckRepository } from '../infra/db/PgDeckRepository';
+import { PgCardRepository } from '../infra/db/PgCardRepository';
+import { ValidationError } from '../shared/errors';
 
 const DECK_COLORS = [
-  "#e2a83e",
-  "#2dd4bf",
-  "#34d399",
-  "#fbbf24",
-  "#f87171",
-  "#f472b6",
-  "#a78bfa",
-  "#38bdf8",
-  "#fb923c",
-  "#818cf8",
+  '#e2a83e',
+  '#2dd4bf',
+  '#34d399',
+  '#fbbf24',
+  '#f87171',
+  '#f472b6',
+  '#a78bfa',
+  '#38bdf8',
+  '#fb923c',
+  '#818cf8',
 ];
 
 export class ImportDeckUseCase {
@@ -36,15 +36,14 @@ export class ImportDeckUseCase {
     errors: ImportRowError[],
   ): Promise<ImportDeckResponse> {
     if (!deckMeta.name || deckMeta.name.trim().length === 0) {
-      throw new ValidationError("Deck name is required");
+      throw new ValidationError('Deck name is required');
     }
     if (cards.length === 0) {
-      throw new ValidationError("At least one valid card is required");
+      throw new ValidationError('At least one valid card is required');
     }
 
     const now = new Date().toISOString();
-    const randomColor =
-      DECK_COLORS[Math.floor(Math.random() * DECK_COLORS.length)]!;
+    const randomColor = DECK_COLORS[Math.floor(Math.random() * DECK_COLORS.length)]!;
 
     const deck: Deck = {
       id: uuidv4(),

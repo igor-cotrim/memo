@@ -13,7 +13,8 @@
     "test:integration": "dotenv -e ../../.env -- vitest run tests/integration",
     "db:generate": "dotenv -e ../../.env -- drizzle-kit generate",
     "db:migrate": "dotenv -e ../../.env -- drizzle-kit migrate",
-    "db:push": "dotenv -e ../../.env -- drizzle-kit push"
+    "db:push": "dotenv -e ../../.env -- drizzle-kit push",
+    "lint": "eslint src/"
   },
   "dependencies": {
     "@flashcard-app/shared-types": "workspace:*",

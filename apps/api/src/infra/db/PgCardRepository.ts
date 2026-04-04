@@ -1,18 +1,15 @@
-import { eq, and, lte, count } from "drizzle-orm";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { eq, and, lte, count } from 'drizzle-orm';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
-import type { Flashcard } from "@flashcard-app/shared-types";
-import type { ICardRepository } from "../../domain/repositories/ICardRepository";
-import * as schema from "./schema";
+import type { Flashcard } from '@flashcard-app/shared-types';
+import type { ICardRepository } from '../../domain/repositories/ICardRepository';
+import * as schema from './schema';
 
 export class PgCardRepository implements ICardRepository {
   constructor(private readonly db: PostgresJsDatabase<typeof schema>) {}
 
   async findById(id: string): Promise<Flashcard | null> {
-    const rows = await this.db
-      .select()
-      .from(schema.flashcards)
-      .where(eq(schema.flashcards.id, id));
+    const rows = await this.db.select().from(schema.flashcards).where(eq(schema.flashcards.id, id));
     return rows[0] ? this.toCard(rows[0]) : null;
   }
 
@@ -28,26 +25,16 @@ export class PgCardRepository implements ICardRepository {
     const rows = await this.db
       .select()
       .from(schema.flashcards)
-      .where(
-        and(
-          eq(schema.flashcards.deckId, deckId),
-          lte(schema.flashcards.due, now),
-        ),
-      );
+      .where(and(eq(schema.flashcards.deckId, deckId), lte(schema.flashcards.due, now)));
     return rows.map(this.toCard);
   }
 
-  async findAllDueCardsByUserId(
-    userId: string,
-    now: string,
-  ): Promise<Flashcard[]> {
+  async findAllDueCardsByUserId(userId: string, now: string): Promise<Flashcard[]> {
     const rows = await this.db
       .select({ flashcard: schema.flashcards })
       .from(schema.flashcards)
       .innerJoin(schema.decks, eq(schema.flashcards.deckId, schema.decks.id))
-      .where(
-        and(eq(schema.decks.userId, userId), lte(schema.flashcards.due, now)),
-      );
+      .where(and(eq(schema.decks.userId, userId), lte(schema.flashcards.due, now)));
     return rows.map((r) => this.toCard(r.flashcard));
   }
 
@@ -102,32 +89,22 @@ export class PgCardRepository implements ICardRepository {
     return cards;
   }
 
-  async update(
-    id: string,
-    data: Partial<Flashcard>,
-  ): Promise<Flashcard | null> {
+  async update(id: string, data: Partial<Flashcard>): Promise<Flashcard | null> {
     const updateData: Record<string, unknown> = {};
-    if (data.front !== undefined) updateData["front"] = data.front;
-    if (data.back !== undefined) updateData["back"] = data.back;
-    if (data.notes !== undefined) updateData["notes"] = data.notes;
-    if (data.state !== undefined) updateData["state"] = data.state;
-    if (data.due !== undefined) updateData["due"] = data.due;
-    if (data.stability !== undefined) updateData["stability"] = data.stability;
-    if (data.difficulty !== undefined)
-      updateData["difficulty"] = data.difficulty;
-    if (data.elapsedDays !== undefined)
-      updateData["elapsedDays"] = data.elapsedDays;
-    if (data.scheduledDays !== undefined)
-      updateData["scheduledDays"] = data.scheduledDays;
-    if (data.reps !== undefined) updateData["reps"] = data.reps;
-    if (data.lapses !== undefined) updateData["lapses"] = data.lapses;
-    if (data.lastReviewAt !== undefined)
-      updateData["lastReviewAt"] = data.lastReviewAt;
+    if (data.front !== undefined) updateData['front'] = data.front;
+    if (data.back !== undefined) updateData['back'] = data.back;
+    if (data.notes !== undefined) updateData['notes'] = data.notes;
+    if (data.state !== undefined) updateData['state'] = data.state;
+    if (data.due !== undefined) updateData['due'] = data.due;
+    if (data.stability !== undefined) updateData['stability'] = data.stability;
+    if (data.difficulty !== undefined) updateData['difficulty'] = data.difficulty;
+    if (data.elapsedDays !== undefined) updateData['elapsedDays'] = data.elapsedDays;
+    if (data.scheduledDays !== undefined) updateData['scheduledDays'] = data.scheduledDays;
+    if (data.reps !== undefined) updateData['reps'] = data.reps;
+    if (data.lapses !== undefined) updateData['lapses'] = data.lapses;
+    if (data.lastReviewAt !== undefined) updateData['lastReviewAt'] = data.lastReviewAt;
 
-    await this.db
-      .update(schema.flashcards)
-      .set(updateData)
-      .where(eq(schema.flashcards.id, id));
+    await this.db.update(schema.flashcards).set(updateData).where(eq(schema.flashcards.id, id));
     return this.findById(id);
   }
 
@@ -152,9 +129,7 @@ export class PgCardRepository implements ICardRepository {
       .select({ count: count() })
       .from(schema.flashcards)
       .innerJoin(schema.decks, eq(schema.flashcards.deckId, schema.decks.id))
-      .where(
-        and(eq(schema.decks.userId, userId), lte(schema.flashcards.due, now)),
-      );
+      .where(and(eq(schema.decks.userId, userId), lte(schema.flashcards.due, now)));
     return rows[0]?.count ?? 0;
   }
 

@@ -5,19 +5,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ### Development
+
 ```bash
 pnpm dev          # Run all apps in parallel
 pnpm dev:api      # API only (port 3333)
 pnpm dev:web      # Web only (port 5173)
 ```
 
-### Build & Lint
+### Build, Lint & Format
+
 ```bash
 pnpm build        # Build packages then apps
-pnpm lint         # Lint all workspaces
+pnpm lint         # Lint all workspaces (ESLint)
+pnpm format       # Format all files (Prettier)
+pnpm format:check # Check formatting without writing
 ```
 
 ### Testing
+
 ```bash
 pnpm test         # All tests
 pnpm test:api     # API tests only
@@ -37,16 +42,18 @@ pnpm --filter api run test -- tests/unit/card-review.test.ts
 pnpm --filter web run test -- tests/components/DeckItem.test.tsx
 ```
 
-### Database (run from apps/api)
+### Database (from repo root)
+
 ```bash
-pnpm db:generate  # Generate migration files from schema changes
-pnpm db:migrate   # Run pending migrations
-pnpm db:push      # Push schema directly (dev only)
+pnpm --filter api run db:generate  # Generate migration files from schema changes
+pnpm --filter api run db:migrate   # Run pending migrations
+pnpm --filter api run db:push      # Push schema directly (dev only)
 ```
 
 ## Architecture
 
 **Monorepo** managed with pnpm workspaces:
+
 - `apps/api` — Express backend
 - `apps/web` — React frontend
 - `packages/shared-types` — Shared TypeScript interfaces used by both apps
@@ -54,6 +61,7 @@ pnpm db:push      # Push schema directly (dev only)
 ### Backend (`apps/api`)
 
 Layered architecture:
+
 - `src/domain/` — Business logic and FSRS (spaced repetition) algorithm
 - `src/usecases/` — Application use cases orchestrating domain logic
 - `src/infra/db/` — Drizzle ORM schema and PostgreSQL repositories
@@ -82,11 +90,12 @@ All API request/response types are defined here and imported by both apps, ensur
 ## Environment
 
 Copy `.env.example` to `.env` at the repo root. Required variables:
+
 - `JWT_SECRET` — signing key for access tokens
 - `DATABASE_URL` — PostgreSQL connection string (e.g. Supabase)
 - `CLIENT_ORIGIN` — frontend origin for CORS
 - `PORT` — API port (default `3333`)
-- `VITE_API_URL` — frontend API base URL (dev proxy defaults to `http://localhost:3001`)
+- `VITE_API_URL` — frontend API base URL (dev proxy defaults to `http://localhost:3333`)
 
 ## Key Dependencies
 

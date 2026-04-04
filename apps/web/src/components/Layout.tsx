@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from "react";
-import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
+import { useState, useRef, useEffect } from 'react';
+import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 
-import { useAuth } from "../hooks/useAuth";
-import { useLocale } from "../hooks/useLocale";
+import { useAuth } from '../hooks/useAuth';
+import { useLocale } from '../hooks/useLocale';
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -18,19 +18,17 @@ export default function Layout() {
         setMenuOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   function isActive(path: string) {
-    return (
-      location.pathname === path || location.pathname.startsWith(path + "/")
-    );
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   }
 
   async function handleLogout() {
     await logout();
-    navigate("/login");
+    navigate('/login');
   }
 
   return (
@@ -39,7 +37,7 @@ export default function Layout() {
         href="#main-content"
         className="absolute -top-full left-4 z-10000 px-5 py-3 bg-accent-primary text-bg-primary font-bold rounded-sm font-display transition-[top] duration-200 focus:top-4"
       >
-        {t("layout.skipToContent")}
+        {t('layout.skipToContent')}
       </a>
       <nav
         className="bg-bg-glass backdrop-blur-xl border-b border-border px-8 max-sm:px-4 h-[68px] flex items-center justify-between sticky top-0 z-50 after:content-[''] after:absolute after:-bottom-px after:left-0 after:right-0 after:h-px after:bg-border-accent"
@@ -49,10 +47,7 @@ export default function Layout() {
           to="/"
           className="font-display text-[1.3rem] max-sm:text-base font-extrabold text-accent-primary flex items-center gap-2 max-sm:gap-1.5 tracking-tight"
         >
-          <span className="text-[1.5rem] max-sm:text-[1.2rem] text-current!">
-            ⚡
-          </span>{" "}
-          Memô
+          <span className="text-[1.5rem] max-sm:text-[1.2rem] text-current!">⚡</span> Memô
         </Link>
         <ul className="flex items-center gap-1 max-sm:gap-0.5 list-none">
           {user ? (
@@ -60,24 +55,24 @@ export default function Layout() {
               <li>
                 <Link
                   to="/"
-                  className={`px-4 py-2 max-sm:px-2.5 max-sm:py-1.5 rounded-sm font-medium text-sm font-display transition-colors ${isActive("/") && location.pathname === "/" ? "text-accent-primary bg-accent-primary/10" : "text-text-secondary hover:text-text-primary hover:bg-white/5"}`}
+                  className={`px-4 py-2 max-sm:px-2.5 max-sm:py-1.5 rounded-sm font-medium text-sm font-display transition-colors ${isActive('/') && location.pathname === '/' ? 'text-accent-primary bg-accent-primary/10' : 'text-text-secondary hover:text-text-primary hover:bg-white/5'}`}
                 >
-                  {t("layout.dashboard")}
+                  {t('layout.dashboard')}
                 </Link>
               </li>
               <li>
                 <Link
                   to="/decks"
-                  className={`px-4 py-2 max-sm:px-2.5 max-sm:py-1.5 rounded-sm font-medium text-sm font-display transition-colors ${isActive("/decks") ? "text-accent-primary bg-accent-primary/10" : "text-text-secondary hover:text-text-primary hover:bg-white/5"}`}
+                  className={`px-4 py-2 max-sm:px-2.5 max-sm:py-1.5 rounded-sm font-medium text-sm font-display transition-colors ${isActive('/decks') ? 'text-accent-primary bg-accent-primary/10' : 'text-text-secondary hover:text-text-primary hover:bg-white/5'}`}
                 >
-                  {t("layout.decks")}
+                  {t('layout.decks')}
                 </Link>
               </li>
               <li>
                 <button
                   className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-sm font-bold text-[0.75rem] font-display transition-all whitespace-nowrap tracking-widest uppercase bg-white/5 text-text-secondary hover:text-accent-primary hover:bg-accent-primary/10 border border-border hover:border-accent-primary/30"
                   onClick={toggleLocale}
-                  aria-label={`Switch language to ${localeLabel === "EN" ? "Portuguese" : "English"}`}
+                  aria-label={`Switch language to ${localeLabel === 'EN' ? 'Portuguese' : 'English'}`}
                   id="locale-toggle"
                 >
                   {localeLabel}
@@ -91,7 +86,7 @@ export default function Layout() {
                     aria-label="User menu"
                     aria-expanded={menuOpen}
                   >
-                    {user?.name?.charAt(0).toUpperCase() || "?"}
+                    {user?.name?.charAt(0).toUpperCase() || '?'}
                   </button>
                   {menuOpen && (
                     <div className="absolute right-0 top-full mt-2 bg-bg-secondary border border-border rounded-lg shadow-lg min-w-[180px] py-1 z-50 animate-fade-in">
@@ -100,7 +95,7 @@ export default function Layout() {
                         className="block px-4 py-2.5 text-sm font-display text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
                         onClick={() => setMenuOpen(false)}
                       >
-                        {t("layout.settings")}
+                        {t('layout.settings')}
                       </Link>
                       <div className="h-px bg-border mx-2" />
                       <button
@@ -110,7 +105,7 @@ export default function Layout() {
                           handleLogout();
                         }}
                       >
-                        {t("layout.signOut")}
+                        {t('layout.signOut')}
                       </button>
                     </div>
                   )}
@@ -123,7 +118,7 @@ export default function Layout() {
                 <button
                   className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-sm font-bold text-[0.75rem] font-display transition-all whitespace-nowrap tracking-widest uppercase bg-white/5 text-text-secondary hover:text-accent-primary hover:bg-accent-primary/10 border border-border hover:border-accent-primary/30"
                   onClick={toggleLocale}
-                  aria-label={`Switch language to ${localeLabel === "EN" ? "Portuguese" : "English"}`}
+                  aria-label={`Switch language to ${localeLabel === 'EN' ? 'Portuguese' : 'English'}`}
                   id="locale-toggle"
                 >
                   {localeLabel}
@@ -149,13 +144,7 @@ export default function Layout() {
           rel="noopener noreferrer"
           className="flex items-center gap-2 text-text-muted hover:text-text-primary text-xs font-display transition-colors"
         >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            aria-hidden="true"
-          >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z" />
           </svg>
           igor-cotrim/memo

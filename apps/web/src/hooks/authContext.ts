@@ -1,6 +1,6 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
-import type { PublicUser } from "@flashcard-app/shared-types";
+import type { PublicUser } from '@flashcard-app/shared-types';
 
 export interface AuthContextType {
   user: PublicUser | null;

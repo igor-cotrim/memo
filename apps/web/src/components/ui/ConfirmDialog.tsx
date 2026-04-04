@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import { Modal } from "./Modal";
-import { Button } from "./Button";
+import { Modal } from './Modal';
+import { Button } from './Button';
 
 interface ConfirmDialogProps {
   title: string;
@@ -34,10 +34,7 @@ function ConfirmDialog({
 
   return (
     <Modal onClose={onCancel} ariaLabelledBy="confirm-dialog-title">
-      <h2
-        className="font-display text-xl font-bold tracking-tight mb-3"
-        id="confirm-dialog-title"
-      >
+      <h2 className="font-display text-xl font-bold tracking-tight mb-3" id="confirm-dialog-title">
         {title}
       </h2>
       <p className="text-text-secondary text-[0.9375rem] mb-6">{message}</p>

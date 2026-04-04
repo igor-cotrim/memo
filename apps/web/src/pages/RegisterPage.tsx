@@ -1,20 +1,20 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { Button, Input, Label, Alert, FieldError } from "../components/ui";
-import { useAuth } from "../hooks/useAuth";
-import { useLocale } from "../hooks/useLocale";
-import { useFormValidation } from "../hooks/useFormValidation";
-import { getErrorMessage } from "../utils/error";
+import { Button, Input, Label, Alert, FieldError } from '../components/ui';
+import { useAuth } from '../hooks/useAuth';
+import { useLocale } from '../hooks/useLocale';
+import { useFormValidation } from '../hooks/useFormValidation';
+import { getErrorMessage } from '../utils/error';
 
 export default function RegisterPage() {
   const { register } = useAuth();
   const { t, localeLabel, toggleLocale } = useLocale();
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const {
     errors: fieldErrors,
@@ -31,14 +31,14 @@ export default function RegisterPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setError('');
     if (!validate({ name, email, password })) return;
     setLoading(true);
     try {
       await register(email, name, password);
-      navigate("/");
+      navigate('/');
     } catch (err: unknown) {
-      setError(getErrorMessage(err, t("register.failed")));
+      setError(getErrorMessage(err, t('register.failed')));
     } finally {
       setLoading(false);
     }
@@ -54,34 +54,30 @@ export default function RegisterPage() {
           <button
             className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm font-bold text-[0.75rem] font-display transition-all whitespace-nowrap tracking-widest uppercase bg-white/5 text-text-secondary hover:text-accent-primary hover:bg-accent-primary/10 border border-border hover:border-accent-primary/30"
             onClick={toggleLocale}
-            aria-label={`Switch language to ${localeLabel === "EN" ? "Portuguese" : "English"}`}
+            aria-label={`Switch language to ${localeLabel === 'EN' ? 'Portuguese' : 'English'}`}
           >
             {localeLabel}
           </button>
         </div>
         <h1 className="font-display text-[1.75rem] font-extrabold text-center mb-2 tracking-tight text-balance">
-          {t("register.title")}
+          {t('register.title')}
         </h1>
         <p className="text-center text-text-secondary text-[0.9375rem] mb-8">
-          {t("register.subtitle")}
+          {t('register.subtitle')}
         </p>
 
-        <form
-          className="flex flex-col gap-5"
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate>
           {error && <Alert variant="danger">{error}</Alert>}
           <div className="flex flex-col gap-1.5 stagger-1">
-            <Label htmlFor="register-name">{t("register.nameLabel")}</Label>
+            <Label htmlFor="register-name">{t('register.nameLabel')}</Label>
             <Input
               id="register-name"
               type="text"
-              placeholder={t("register.namePlaceholder")}
+              placeholder={t('register.namePlaceholder')}
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
-                clearFieldError("name");
+                clearFieldError('name');
               }}
               error={!!fieldErrors.name}
               autoComplete="name"
@@ -89,15 +85,15 @@ export default function RegisterPage() {
             <FieldError message={fieldErrors.name} />
           </div>
           <div className="flex flex-col gap-1.5 stagger-2">
-            <Label htmlFor="register-email">{t("register.emailLabel")}</Label>
+            <Label htmlFor="register-email">{t('register.emailLabel')}</Label>
             <Input
               id="register-email"
               type="email"
-              placeholder={t("register.emailPlaceholder")}
+              placeholder={t('register.emailPlaceholder')}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                clearFieldError("email");
+                clearFieldError('email');
               }}
               error={!!fieldErrors.email}
               autoComplete="email"
@@ -106,40 +102,33 @@ export default function RegisterPage() {
             <FieldError message={fieldErrors.email} />
           </div>
           <div className="flex flex-col gap-1.5 stagger-3">
-            <Label htmlFor="register-password">
-              {t("register.passwordLabel")}
-            </Label>
+            <Label htmlFor="register-password">{t('register.passwordLabel')}</Label>
             <Input
               id="register-password"
               type="password"
-              placeholder={t("register.passwordPlaceholder")}
+              placeholder={t('register.passwordPlaceholder')}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                clearFieldError("password");
+                clearFieldError('password');
               }}
               error={!!fieldErrors.password}
               autoComplete="new-password"
             />
             <FieldError message={fieldErrors.password} />
           </div>
-          <Button
-            className="w-full stagger-4"
-            size="lg"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? t("register.submitting") : t("register.submit")}
+          <Button className="w-full stagger-4" size="lg" type="submit" disabled={loading}>
+            {loading ? t('register.submitting') : t('register.submit')}
           </Button>
         </form>
 
         <div className="text-center mt-7 text-text-secondary text-sm stagger-5">
-          {t("register.hasAccount")}{" "}
+          {t('register.hasAccount')}{' '}
           <Link
             to="/login"
             className="text-accent-primary hover:text-accent-secondary transition-colors"
           >
-            {t("register.signIn")}
+            {t('register.signIn')}
           </Link>
         </div>
       </div>

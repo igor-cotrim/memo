@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import axios from "axios";
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import axios from 'axios';
 
 // Mock axios at module level
-vi.mock("axios", () => {
+vi.mock('axios', () => {
   const mockAxios = {
     create: vi.fn(),
     interceptors: {
@@ -27,207 +27,204 @@ const api = mockedAxios.create();
 // But since they use the module-level axios instance, we need a different approach:
 // We'll test the functions by importing them and the mock that was injected.
 // Let's re-import the api module, which will use the mocked axios
-import * as apiModule from "../../src/services/api";
+import * as apiModule from '../../src/services/api';
 
-describe("API Service", () => {
+describe('API Service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe("Auth endpoints", () => {
-    it("register calls POST /auth/register and stores token", async () => {
+  describe('Auth endpoints', () => {
+    it('register calls POST /auth/register and stores token', async () => {
       const response = {
         data: {
-          user: { id: "1", email: "a@b.com", name: "Test" },
-          accessToken: "token123",
+          user: { id: '1', email: 'a@b.com', name: 'Test' },
+          accessToken: 'token123',
         },
       };
       (api.post as ReturnType<typeof vi.fn>).mockResolvedValue(response);
 
       const result = await apiModule.register({
-        email: "a@b.com",
-        name: "Test",
-        password: "pass",
+        email: 'a@b.com',
+        name: 'Test',
+        password: 'pass',
       });
 
-      expect(api.post).toHaveBeenCalledWith("/auth/register", {
-        email: "a@b.com",
-        name: "Test",
-        password: "pass",
+      expect(api.post).toHaveBeenCalledWith('/auth/register', {
+        email: 'a@b.com',
+        name: 'Test',
+        password: 'pass',
       });
-      expect(result.user.email).toBe("a@b.com");
-      expect(localStorage.setItem).toHaveBeenCalledWith(
-        "accessToken",
-        "token123",
-      );
+      expect(result.user.email).toBe('a@b.com');
+      expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', 'token123');
     });
 
-    it("login calls POST /auth/login and stores token", async () => {
+    it('login calls POST /auth/login and stores token', async () => {
       const response = {
         data: {
-          user: { id: "1", email: "a@b.com", name: "Test" },
-          accessToken: "token456",
+          user: { id: '1', email: 'a@b.com', name: 'Test' },
+          accessToken: 'token456',
         },
       };
       (api.post as ReturnType<typeof vi.fn>).mockResolvedValue(response);
 
       const result = await apiModule.login({
-        email: "a@b.com",
-        password: "pass",
+        email: 'a@b.com',
+        password: 'pass',
       });
 
-      expect(api.post).toHaveBeenCalledWith("/auth/login", {
-        email: "a@b.com",
-        password: "pass",
+      expect(api.post).toHaveBeenCalledWith('/auth/login', {
+        email: 'a@b.com',
+        password: 'pass',
       });
-      expect(result.accessToken).toBe("token456");
+      expect(result.accessToken).toBe('token456');
     });
 
-    it("logout calls POST /auth/logout and removes token", async () => {
+    it('logout calls POST /auth/logout and removes token', async () => {
       (api.post as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
       await apiModule.logout();
 
-      expect(api.post).toHaveBeenCalledWith("/auth/logout");
-      expect(localStorage.removeItem).toHaveBeenCalledWith("accessToken");
+      expect(api.post).toHaveBeenCalledWith('/auth/logout');
+      expect(localStorage.removeItem).toHaveBeenCalledWith('accessToken');
     });
 
-    it("getMe calls GET /auth/me", async () => {
+    it('getMe calls GET /auth/me', async () => {
       const response = {
-        data: { user: { id: "1", email: "a@b.com", name: "Test" } },
+        data: { user: { id: '1', email: 'a@b.com', name: 'Test' } },
       };
       (api.get as ReturnType<typeof vi.fn>).mockResolvedValue(response);
 
       const result = await apiModule.getMe();
-      expect(api.get).toHaveBeenCalledWith("/auth/me");
-      expect(result.user.name).toBe("Test");
+      expect(api.get).toHaveBeenCalledWith('/auth/me');
+      expect(result.user.name).toBe('Test');
     });
   });
 
-  describe("Deck endpoints", () => {
-    it("getDecks calls GET /decks", async () => {
+  describe('Deck endpoints', () => {
+    it('getDecks calls GET /decks', async () => {
       (api.get as ReturnType<typeof vi.fn>).mockResolvedValue({ data: [] });
 
       const result = await apiModule.getDecks();
-      expect(api.get).toHaveBeenCalledWith("/decks");
+      expect(api.get).toHaveBeenCalledWith('/decks');
       expect(result).toEqual([]);
     });
 
-    it("getDeck calls GET /decks/:id", async () => {
-      const deck = { id: "d1", name: "Test", userId: "u1", createdAt: "" };
+    it('getDeck calls GET /decks/:id', async () => {
+      const deck = { id: 'd1', name: 'Test', userId: 'u1', createdAt: '' };
       (api.get as ReturnType<typeof vi.fn>).mockResolvedValue({ data: deck });
 
-      const result = await apiModule.getDeck("d1");
-      expect(api.get).toHaveBeenCalledWith("/decks/d1");
-      expect(result.name).toBe("Test");
+      const result = await apiModule.getDeck('d1');
+      expect(api.get).toHaveBeenCalledWith('/decks/d1');
+      expect(result.name).toBe('Test');
     });
 
-    it("createDeck calls POST /decks", async () => {
-      const deck = { id: "d1", name: "New", userId: "u1", createdAt: "" };
+    it('createDeck calls POST /decks', async () => {
+      const deck = { id: 'd1', name: 'New', userId: 'u1', createdAt: '' };
       (api.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: deck });
 
-      const result = await apiModule.createDeck({ name: "New" });
-      expect(api.post).toHaveBeenCalledWith("/decks", { name: "New" });
-      expect(result.name).toBe("New");
+      const result = await apiModule.createDeck({ name: 'New' });
+      expect(api.post).toHaveBeenCalledWith('/decks', { name: 'New' });
+      expect(result.name).toBe('New');
     });
 
-    it("updateDeck calls PUT /decks/:id", async () => {
-      const deck = { id: "d1", name: "Updated", userId: "u1", createdAt: "" };
+    it('updateDeck calls PUT /decks/:id', async () => {
+      const deck = { id: 'd1', name: 'Updated', userId: 'u1', createdAt: '' };
       (api.put as ReturnType<typeof vi.fn>).mockResolvedValue({ data: deck });
 
-      const result = await apiModule.updateDeck("d1", { name: "Updated" });
-      expect(api.put).toHaveBeenCalledWith("/decks/d1", { name: "Updated" });
-      expect(result.name).toBe("Updated");
+      const result = await apiModule.updateDeck('d1', { name: 'Updated' });
+      expect(api.put).toHaveBeenCalledWith('/decks/d1', { name: 'Updated' });
+      expect(result.name).toBe('Updated');
     });
 
-    it("deleteDeck calls DELETE /decks/:id", async () => {
+    it('deleteDeck calls DELETE /decks/:id', async () => {
       (api.delete as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
-      await apiModule.deleteDeck("d1");
-      expect(api.delete).toHaveBeenCalledWith("/decks/d1");
+      await apiModule.deleteDeck('d1');
+      expect(api.delete).toHaveBeenCalledWith('/decks/d1');
     });
   });
 
-  describe("Card endpoints", () => {
-    it("getCards calls GET /decks/:deckId/cards", async () => {
+  describe('Card endpoints', () => {
+    it('getCards calls GET /decks/:deckId/cards', async () => {
       (api.get as ReturnType<typeof vi.fn>).mockResolvedValue({ data: [] });
 
-      const result = await apiModule.getCards("d1");
-      expect(api.get).toHaveBeenCalledWith("/decks/d1/cards");
+      const result = await apiModule.getCards('d1');
+      expect(api.get).toHaveBeenCalledWith('/decks/d1/cards');
       expect(result).toEqual([]);
     });
 
-    it("createCard calls POST /decks/:deckId/cards", async () => {
+    it('createCard calls POST /decks/:deckId/cards', async () => {
       const card = {
-        id: "c1",
-        deckId: "d1",
-        front: "Q",
-        back: "A",
+        id: 'c1',
+        deckId: 'd1',
+        front: 'Q',
+        back: 'A',
       };
       (api.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: card });
 
-      const result = await apiModule.createCard("d1", {
-        front: "Q",
-        back: "A",
+      const result = await apiModule.createCard('d1', {
+        front: 'Q',
+        back: 'A',
       });
-      expect(api.post).toHaveBeenCalledWith("/decks/d1/cards", {
-        front: "Q",
-        back: "A",
+      expect(api.post).toHaveBeenCalledWith('/decks/d1/cards', {
+        front: 'Q',
+        back: 'A',
       });
-      expect(result.front).toBe("Q");
+      expect(result.front).toBe('Q');
     });
 
-    it("updateCard calls PUT /decks/:deckId/cards/:cardId", async () => {
-      const card = { id: "c1", deckId: "d1", front: "Updated", back: "A" };
+    it('updateCard calls PUT /decks/:deckId/cards/:cardId', async () => {
+      const card = { id: 'c1', deckId: 'd1', front: 'Updated', back: 'A' };
       (api.put as ReturnType<typeof vi.fn>).mockResolvedValue({ data: card });
 
-      const result = await apiModule.updateCard("d1", "c1", {
-        front: "Updated",
+      const result = await apiModule.updateCard('d1', 'c1', {
+        front: 'Updated',
       });
-      expect(api.put).toHaveBeenCalledWith("/decks/d1/cards/c1", {
-        front: "Updated",
+      expect(api.put).toHaveBeenCalledWith('/decks/d1/cards/c1', {
+        front: 'Updated',
       });
-      expect(result.front).toBe("Updated");
+      expect(result.front).toBe('Updated');
     });
 
-    it("deleteCard calls DELETE /decks/:deckId/cards/:cardId", async () => {
+    it('deleteCard calls DELETE /decks/:deckId/cards/:cardId', async () => {
       (api.delete as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
-      await apiModule.deleteCard("d1", "c1");
-      expect(api.delete).toHaveBeenCalledWith("/decks/d1/cards/c1");
+      await apiModule.deleteCard('d1', 'c1');
+      expect(api.delete).toHaveBeenCalledWith('/decks/d1/cards/c1');
     });
   });
 
-  describe("Review endpoints", () => {
-    it("getDueCards calls GET /review/:deckId", async () => {
-      const session = { deckId: "d1", cards: [], totalDue: 0 };
+  describe('Review endpoints', () => {
+    it('getDueCards calls GET /review/:deckId', async () => {
+      const session = { deckId: 'd1', cards: [], totalDue: 0 };
       (api.get as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: session,
       });
 
-      const result = await apiModule.getDueCards("d1");
-      expect(api.get).toHaveBeenCalledWith("/review/d1");
+      const result = await apiModule.getDueCards('d1');
+      expect(api.get).toHaveBeenCalledWith('/review/d1');
       expect(result.totalDue).toBe(0);
     });
 
-    it("submitReview calls POST /review", async () => {
-      const card = { id: "c1", reps: 1 };
+    it('submitReview calls POST /review', async () => {
+      const card = { id: 'c1', reps: 1 };
       (api.post as ReturnType<typeof vi.fn>).mockResolvedValue({ data: card });
 
       const result = await apiModule.submitReview({
-        cardId: "c1",
+        cardId: 'c1',
         quality: 4 as const,
       });
-      expect(api.post).toHaveBeenCalledWith("/review", {
-        cardId: "c1",
+      expect(api.post).toHaveBeenCalledWith('/review', {
+        cardId: 'c1',
         quality: 4,
       });
       expect(result.reps).toBe(1);
     });
   });
 
-  describe("Stats endpoints", () => {
-    it("getStats calls GET /stats", async () => {
+  describe('Stats endpoints', () => {
+    it('getStats calls GET /stats', async () => {
       const stats = {
         currentStreak: 5,
         last7Days: [],
@@ -238,7 +235,7 @@ describe("API Service", () => {
       (api.get as ReturnType<typeof vi.fn>).mockResolvedValue({ data: stats });
 
       const result = await apiModule.getStats();
-      expect(api.get).toHaveBeenCalledWith("/stats", {
+      expect(api.get).toHaveBeenCalledWith('/stats', {
         params: { timezoneOffset: expect.any(Number) },
       });
       expect(result.currentStreak).toBe(5);

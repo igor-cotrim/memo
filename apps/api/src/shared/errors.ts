@@ -15,16 +15,14 @@ export class NotFoundError extends AppError {
   readonly statusCode = 404;
 
   constructor(resource: string, id?: string) {
-    super(
-      id ? `${resource} with id '${id}' not found` : `${resource} not found`,
-    );
+    super(id ? `${resource} with id '${id}' not found` : `${resource} not found`);
   }
 }
 
 export class UnauthorizedError extends AppError {
   readonly statusCode = 401;
 
-  constructor(message = "Unauthorized") {
+  constructor(message = 'Unauthorized') {
     super(message);
   }
 }
@@ -48,7 +46,7 @@ export class ValidationError extends AppError {
 export class ForbiddenError extends AppError {
   readonly statusCode = 403;
 
-  constructor(message = "Forbidden") {
+  constructor(message = 'Forbidden') {
     super(message);
   }
 }

@@ -1,27 +1,21 @@
-import { eq } from "drizzle-orm";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { eq } from 'drizzle-orm';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
-import type { User } from "@flashcard-app/shared-types";
-import type { IUserRepository } from "../../domain/repositories/IUserRepository";
-import { NotFoundError } from "../../shared/errors";
-import * as schema from "./schema";
+import type { User } from '@flashcard-app/shared-types';
+import type { IUserRepository } from '../../domain/repositories/IUserRepository';
+import { NotFoundError } from '../../shared/errors';
+import * as schema from './schema';
 
 export class PgUserRepository implements IUserRepository {
   constructor(private readonly db: PostgresJsDatabase<typeof schema>) {}
 
   async findById(id: string): Promise<User | null> {
-    const rows = await this.db
-      .select()
-      .from(schema.users)
-      .where(eq(schema.users.id, id));
+    const rows = await this.db.select().from(schema.users).where(eq(schema.users.id, id));
     return rows[0] ? this.toUser(rows[0]) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const rows = await this.db
-      .select()
-      .from(schema.users)
-      .where(eq(schema.users.email, email));
+    const rows = await this.db.select().from(schema.users).where(eq(schema.users.email, email));
     return rows[0] ? this.toUser(rows[0]) : null;
   }
 
@@ -39,9 +33,7 @@ export class PgUserRepository implements IUserRepository {
 
   async update(
     id: string,
-    data: Partial<
-      Pick<User, "name" | "passwordHash" | "onboardingCompletedAt">
-    >,
+    data: Partial<Pick<User, 'name' | 'passwordHash' | 'onboardingCompletedAt'>>,
   ): Promise<User> {
     const rows = await this.db
       .update(schema.users)
@@ -50,7 +42,7 @@ export class PgUserRepository implements IUserRepository {
       .returning();
 
     if (!rows[0]) {
-      throw new NotFoundError("User", id);
+      throw new NotFoundError('User', id);
     }
 
     return this.toUser(rows[0]);

@@ -9,7 +9,7 @@ export interface User {
   onboardingCompletedAt: string | null;
 }
 
-export type PublicUser = Omit<User, "passwordHash">;
+export type PublicUser = Omit<User, 'passwordHash'>;
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 

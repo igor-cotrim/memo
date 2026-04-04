@@ -1,4 +1,4 @@
-import type { User } from "@flashcard-app/shared-types";
+import type { User } from '@flashcard-app/shared-types';
 
 export interface IUserRepository {
   findById(id: string): Promise<User | null>;
@@ -6,8 +6,6 @@ export interface IUserRepository {
   create(user: User): Promise<User>;
   update(
     id: string,
-    data: Partial<
-      Pick<User, "name" | "passwordHash" | "onboardingCompletedAt">
-    >,
+    data: Partial<Pick<User, 'name' | 'passwordHash' | 'onboardingCompletedAt'>>,
   ): Promise<User>;
 }

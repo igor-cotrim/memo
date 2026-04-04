@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
-import type { Flashcard, ReviewQuality } from "@flashcard-app/shared-types";
-import { useLocale } from "../hooks/useLocale";
-import * as api from "../services/api";
-import { Button, Spinner } from "../components/ui";
-import ReviewCard from "../components/ReviewCard";
-import ReviewScoreButtons from "../components/ReviewScoreButtons";
-import EmptyState from "../components/EmptyState";
+import type { Flashcard, ReviewQuality } from '@flashcard-app/shared-types';
+import { useLocale } from '../hooks/useLocale';
+import * as api from '../services/api';
+import { Button, Spinner } from '../components/ui';
+import ReviewCard from '../components/ReviewCard';
+import ReviewScoreButtons from '../components/ReviewScoreButtons';
+import EmptyState from '../components/EmptyState';
 
 export default function ReviewPage() {
   const { deckId } = useParams<{ deckId: string }>();
@@ -18,9 +18,7 @@ export default function ReviewPage() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [activeQuality, setActiveQuality] = useState<ReviewQuality | null>(
-    null,
-  );
+  const [activeQuality, setActiveQuality] = useState<ReviewQuality | null>(null);
   const [totalCards, setTotalCards] = useState(0);
   const [completed, setCompleted] = useState(0);
 
@@ -77,23 +75,23 @@ export default function ReviewPage() {
       const isComplete = !currentCard || currentIndex >= cards.length;
 
       if (isComplete && cards.length > 0) {
-        if (e.key === "Enter") {
+        if (e.key === 'Enter') {
           e.preventDefault();
-          navigate("/");
-        } else if (e.key === "Escape") {
+          navigate('/');
+        } else if (e.key === 'Escape') {
           e.preventDefault();
-          navigate("/decks");
+          navigate('/decks');
         }
         return;
       }
 
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         e.preventDefault();
         navigate(`/decks/${deckId}`);
-      } else if (e.key === " " || e.key === "Enter") {
+      } else if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
         handleFlip();
-      } else if (isFlipped && ["1", "2", "3", "4"].includes(e.key)) {
+      } else if (isFlipped && ['1', '2', '3', '4'].includes(e.key)) {
         handleRate(parseInt(e.key) as ReviewQuality);
       }
     };
@@ -103,8 +101,8 @@ export default function ReviewPage() {
     function handleKey(e: KeyboardEvent) {
       handleKeyRef.current?.(e);
     }
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
   }, []);
 
   if (loading) {
@@ -122,29 +120,25 @@ export default function ReviewPage() {
         className="mb-4 self-start"
         onClick={() => navigate(`/decks/${deckId}`)}
       >
-        {t("review.backToDeck")}
+        {t('review.backToDeck')}
       </Button>
 
       {cards.length === 0 ? (
         <EmptyState
           icon="🎉"
-          title={t("review.allCaughtUpTitle")}
-          description={t("review.allCaughtUpText")}
+          title={t('review.allCaughtUpTitle')}
+          description={t('review.allCaughtUpText')}
           action={
-            <Button
-              size="lg"
-              className="w-full md:w-auto"
-              onClick={() => navigate("/decks")}
-            >
-              {t("review.backToDecks")}
+            <Button size="lg" className="w-full md:w-auto" onClick={() => navigate('/decks')}>
+              {t('review.backToDecks')}
             </Button>
           }
         />
       ) : isComplete ? (
         <EmptyState
           icon="🏆"
-          title={t("review.sessionCompleteTitle")}
-          description={`${t("review.youReviewed")} ${completed} ${completed !== 1 ? t("review.cards") : t("review.card")}`}
+          title={t('review.sessionCompleteTitle')}
+          description={`${t('review.youReviewed')} ${completed} ${completed !== 1 ? t('review.cards') : t('review.card')}`}
           action={
             <div className="flex flex-col items-center gap-3 w-full max-w-sm mx-auto">
               <div className="flex gap-3 justify-center w-full">
@@ -152,19 +146,15 @@ export default function ReviewPage() {
                   variant="secondary"
                   size="lg"
                   className="flex-1"
-                  onClick={() => navigate("/decks")}
+                  onClick={() => navigate('/decks')}
                 >
-                  {t("review.backToDecks")}
+                  {t('review.backToDecks')}
                   <kbd className="hidden sm:inline ml-2 px-1.5 py-0.5 text-[0.6rem] font-mono rounded border border-current/20 bg-current/5 opacity-50">
                     Esc
                   </kbd>
                 </Button>
-                <Button
-                  size="lg"
-                  className="flex-1"
-                  onClick={() => navigate("/")}
-                >
-                  {t("layout.dashboard")}
+                <Button size="lg" className="flex-1" onClick={() => navigate('/')}>
+                  {t('layout.dashboard')}
                   <kbd className="hidden sm:inline ml-2 px-1.5 py-0.5 text-[0.6rem] font-mono rounded border border-current/20 bg-current/5 opacity-50">
                     Enter
                   </kbd>
@@ -178,10 +168,10 @@ export default function ReviewPage() {
           <div className="flex flex-col mt-4 mb-8">
             <div className="flex justify-between text-sm text-text-secondary font-display mb-2">
               <span>
-                {t("review.card")} {currentIndex + 1} / {totalCards}
+                {t('review.card')} {currentIndex + 1} / {totalCards}
               </span>
               <span>
-                {completed} {t("review.reviewed")}
+                {completed} {t('review.reviewed')}
               </span>
             </div>
             <div className="w-full h-1.5 bg-bg-card rounded-full overflow-hidden">
@@ -192,11 +182,7 @@ export default function ReviewPage() {
             </div>
           </div>
 
-          <ReviewCard
-            card={currentCard}
-            isFlipped={isFlipped}
-            onFlip={handleFlip}
-          />
+          <ReviewCard card={currentCard} isFlipped={isFlipped} onFlip={handleFlip} />
 
           {isFlipped && (
             <ReviewScoreButtons

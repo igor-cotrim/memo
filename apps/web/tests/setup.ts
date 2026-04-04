@@ -1,9 +1,9 @@
-import "@testing-library/jest-dom/vitest";
-import { afterEach, vi } from "vitest";
+import '@testing-library/jest-dom/vitest';
+import { afterEach, vi } from 'vitest';
 
 // Mock window.confirm
 vi.stubGlobal(
-  "confirm",
+  'confirm',
   vi.fn(() => true),
 );
 
@@ -23,7 +23,7 @@ const localStorageMock = (() => {
     }),
   };
 })();
-Object.defineProperty(window, "localStorage", { value: localStorageMock });
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 // Reset mocks between tests
 afterEach(() => {

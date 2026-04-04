@@ -1,7 +1,7 @@
-import { memo } from "react";
+import { memo } from 'react';
 
-import type { Flashcard } from "@flashcard-app/shared-types";
-import { useLocale } from "../hooks/useLocale";
+import type { Flashcard } from '@flashcard-app/shared-types';
+import { useLocale } from '../hooks/useLocale';
 
 type ReviewCardProps = {
   card: Flashcard;
@@ -9,11 +9,7 @@ type ReviewCardProps = {
   onFlip: () => void;
 };
 
-const ReviewCard = memo(function ReviewCard({
-  card,
-  isFlipped,
-  onFlip,
-}: ReviewCardProps) {
+const ReviewCard = memo(function ReviewCard({ card, isFlipped, onFlip }: ReviewCardProps) {
   const { t } = useLocale();
 
   return (
@@ -22,12 +18,12 @@ const ReviewCard = memo(function ReviewCard({
       onClick={onFlip}
     >
       <div
-        className={`w-full h-full relative transform-3d transition-transform duration-650 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isFlipped ? "transform-[rotateY(180deg)]" : ""}`}
+        className={`w-full h-full relative transform-3d transition-transform duration-650 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isFlipped ? 'transform-[rotateY(180deg)]' : ''}`}
       >
         <div className="absolute inset-0 backface-hidden flex flex-col p-6 sm:p-10 rounded-xl border border-border text-center shadow-lg bg-bg-card overflow-y-auto">
           <div className="w-full shrink-0 flex justify-start">
             <span className="font-display text-[0.7rem] font-semibold text-text-muted uppercase tracking-widest">
-              {t("review.front")}
+              {t('review.front')}
             </span>
           </div>
           <div className="flex-1 flex flex-col w-full py-6">
@@ -36,15 +32,13 @@ const ReviewCard = memo(function ReviewCard({
             </div>
           </div>
           <div className="w-full shrink-0 flex justify-center mt-auto">
-            <span className="text-xs text-text-muted">
-              {t("review.flipHint")}
-            </span>
+            <span className="text-xs text-text-muted">{t('review.flipHint')}</span>
           </div>
         </div>
         <div className="absolute inset-0 backface-hidden flex flex-col p-6 sm:p-10 rounded-xl border border-border text-center shadow-lg bg-bg-card-hover transform-[rotateY(180deg)] overflow-y-auto">
           <div className="w-full shrink-0 flex justify-start">
             <span className="font-display text-[0.7rem] font-semibold text-text-muted uppercase tracking-widest">
-              {t("review.back")}
+              {t('review.back')}
             </span>
           </div>
           <div className="flex-1 flex flex-col w-full py-6">

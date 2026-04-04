@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef, useCallback } from "react";
+import { type ReactNode, useEffect, useRef, useCallback } from 'react';
 
 interface ModalProps {
   children: ReactNode;
@@ -12,15 +12,15 @@ function Modal({ children, onClose, ariaLabelledBy }: ModalProps) {
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
+      if (e.key === 'Escape') onClose();
     }
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
   useEffect(() => {
     const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = original;
     };
@@ -32,15 +32,14 @@ function Modal({ children, onClose, ariaLabelledBy }: ModalProps) {
 
     const focusableSelector =
       'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
-    const focusableElements =
-      panel.querySelectorAll<HTMLElement>(focusableSelector);
+    const focusableElements = panel.querySelectorAll<HTMLElement>(focusableSelector);
     const firstFocusable = focusableElements[0];
     const lastFocusable = focusableElements[focusableElements.length - 1];
 
     firstFocusable?.focus();
 
     function handleTab(e: KeyboardEvent) {
-      if (e.key !== "Tab") return;
+      if (e.key !== 'Tab') return;
       if (!firstFocusable || !lastFocusable) return;
 
       if (e.shiftKey) {
@@ -56,8 +55,8 @@ function Modal({ children, onClose, ariaLabelledBy }: ModalProps) {
       }
     }
 
-    panel.addEventListener("keydown", handleTab);
-    return () => panel.removeEventListener("keydown", handleTab);
+    panel.addEventListener('keydown', handleTab);
+    return () => panel.removeEventListener('keydown', handleTab);
   }, []);
 
   const handleOverlayClick = useCallback(

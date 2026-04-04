@@ -1,50 +1,43 @@
-import { Router } from "express";
-import type { Response, NextFunction } from "express";
-import multer from "multer";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import { Router } from 'express';
+import type { Response, NextFunction } from 'express';
+import multer from 'multer';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 
-import type { AuthRequest } from "../middleware/auth";
-import type * as schema from "../../db/schema";
-import { ValidationError } from "../../../shared/errors";
+import type { AuthRequest } from '../middleware/auth';
+import type * as schema from '../../db/schema';
+import { ValidationError } from '../../../shared/errors';
 import {
   parseJsonDeckImport,
   parseJsonCardsImport,
   parseCsvImport,
   sanitizeField,
-} from "../../../services/ImportFileParser";
-import { ImportDeckUseCase } from "../../../usecases/ImportDeckUseCase";
-import { ImportCardsUseCase } from "../../../usecases/ImportCardsUseCase";
+} from '../../../services/ImportFileParser';
+import { ImportDeckUseCase } from '../../../usecases/ImportDeckUseCase';
+import { ImportCardsUseCase } from '../../../usecases/ImportCardsUseCase';
 
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    const allowed = [
-      "application/json",
-      "text/csv",
-      "text/plain",
-      "application/vnd.ms-excel",
-    ];
-    const ext = file.originalname.split(".").pop()?.toLowerCase();
-    if (allowed.includes(file.mimetype) || ext === "json" || ext === "csv") {
+    const allowed = ['application/json', 'text/csv', 'text/plain', 'application/vnd.ms-excel'];
+    const ext = file.originalname.split('.').pop()?.toLowerCase();
+    if (allowed.includes(file.mimetype) || ext === 'json' || ext === 'csv') {
       cb(null, true);
     } else {
-      cb(new ValidationError("Only .json and .csv files are accepted"));
+      cb(new ValidationError('Only .json and .csv files are accepted'));
     }
   },
 });
 
-function getFileFormat(file: Express.Multer.File): "json" | "csv" {
-  const ext = file.originalname.split(".").pop()?.toLowerCase();
-  if (ext === "json") return "json";
-  if (ext === "csv") return "csv";
-  if (file.mimetype === "application/json") return "json";
-  return "csv";
+function getFileFormat(file: Express.Multer.File): 'json' | 'csv' {
+  const ext = file.originalname.split('.').pop()?.toLowerCase();
+  if (ext === 'json') return 'json';
+  if (ext === 'csv') return 'csv';
+  if (file.mimetype === 'application/json') return 'json';
+  return 'csv';
 }
 
-export function createImportRoutes(
-  db: PostgresJsDatabase<typeof schema>,
-): Router {
+export function createImportRoutes(db: PostgresJsDatabase<typeof schema>): Router {
   const router = Router();
 
   const importDeckUseCase = new ImportDeckUseCase(db);
@@ -52,12 +45,12 @@ export function createImportRoutes(
 
   // POST /decks/import - Import a new deck with cards
   router.post(
-    "/import",
-    upload.single("file"),
+    '/import',
+    upload.single('file'),
     async (req: AuthRequest, res: Response, next: NextFunction) => {
       try {
         if (!req.file) {
-          throw new ValidationError("File is required");
+          throw new ValidationError('File is required');
         }
 
         const format = getFileFormat(req.file);
@@ -66,7 +59,7 @@ export function createImportRoutes(
         let cards;
         let errors;
 
-        if (format === "json") {
+        if (format === 'json') {
           const parsed = parseJsonDeckImport(req.file.buffer);
           name = parsed.name;
           description = parsed.description;
@@ -76,15 +69,14 @@ export function createImportRoutes(
           // CSV: deck metadata from form fields
           const rawName = req.body?.name;
           const rawDesc = req.body?.description;
-          if (!rawName || typeof rawName !== "string" || !rawName.trim()) {
-            throw new ValidationError(
-              "Deck name is required in form fields for CSV import",
-            );
+          if (!rawName || typeof rawName !== 'string' || !rawName.trim()) {
+            throw new ValidationError('Deck name is required in form fields for CSV import');
           }
           name = sanitizeField(rawName);
-          description = typeof rawDesc === "string" ? sanitizeField(rawDesc) || undefined : undefined;
+          description =
+            typeof rawDesc === 'string' ? sanitizeField(rawDesc) || undefined : undefined;
           if (!name) {
-            throw new ValidationError("Deck name is empty after sanitization");
+            throw new ValidationError('Deck name is empty after sanitization');
           }
           const parsed = parseCsvImport(req.file.buffer);
           cards = parsed.cards;
@@ -107,23 +99,19 @@ export function createImportRoutes(
 
   // POST /decks/:deckId/cards/import - Import cards into existing deck
   router.post(
-    "/:deckId/cards/import",
-    upload.single("file"),
-    async (
-      req: AuthRequest<{ deckId: string }>,
-      res: Response,
-      next: NextFunction,
-    ) => {
+    '/:deckId/cards/import',
+    upload.single('file'),
+    async (req: AuthRequest<{ deckId: string }>, res: Response, next: NextFunction) => {
       try {
         if (!req.file) {
-          throw new ValidationError("File is required");
+          throw new ValidationError('File is required');
         }
 
         const format = getFileFormat(req.file);
         let cards;
         let errors;
 
-        if (format === "json") {
+        if (format === 'json') {
           const parsed = parseJsonCardsImport(req.file.buffer);
           cards = parsed.cards;
           errors = parsed.errors;

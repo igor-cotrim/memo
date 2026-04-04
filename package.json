@@ -10,10 +10,19 @@
     "test:api": "pnpm --filter api run test",
     "test:web": "pnpm --filter web run test",
     "test:coverage": "pnpm -r run test:coverage",
-    "lint": "pnpm -r run lint"
+    "lint": "pnpm -r run lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "dotenv-cli": "^11.0.0"
+    "@eslint/js": "^9.39.4",
+    "dotenv-cli": "^11.0.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "prettier": "^3.8.1",
+    "typescript-eslint": "^8.58.0"
   },
   "pnpm": {
     "overrides": {

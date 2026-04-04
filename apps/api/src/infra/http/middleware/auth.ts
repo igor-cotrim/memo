@@ -1,21 +1,17 @@
-import type { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import type { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
-import { UnauthorizedError } from "../../../shared/errors";
+import { UnauthorizedError } from '../../../shared/errors';
 
-export interface AuthRequest<
-  Params = Record<string, string>,
-> extends Request<Params> {
+export interface AuthRequest<Params = Record<string, string>> extends Request<Params> {
   userId?: string;
 }
 
 export function authMiddleware(jwtSecret: string) {
   return (req: AuthRequest, _res: Response, next: NextFunction): void => {
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
-      return next(
-        new UnauthorizedError("Missing or invalid authorization header"),
-      );
+    if (!authHeader?.startsWith('Bearer ')) {
+      return next(new UnauthorizedError('Missing or invalid authorization header'));
     }
 
     const token = authHeader.slice(7);
@@ -25,8 +21,8 @@ export function authMiddleware(jwtSecret: string) {
       req.userId = payload.userId;
       next();
     } catch (err) {
-      console.error("JWT Verify Error:", err);
-      next(new UnauthorizedError("Invalid or expired token"));
+      console.error('JWT Verify Error:', err);
+      next(new UnauthorizedError('Invalid or expired token'));
     }
   };
 }

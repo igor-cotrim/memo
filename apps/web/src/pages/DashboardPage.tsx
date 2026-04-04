@@ -1,14 +1,14 @@
-import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import type { ReviewStats, Deck } from "@flashcard-app/shared-types";
-import { useLocale } from "../hooks/useLocale";
-import { useAuth } from "../hooks/useAuth";
-import * as api from "../services/api";
-import { Button, Spinner, PageHeader } from "../components/ui";
-import ActivityGraph from "../components/ActivityGraph";
-import EmptyState from "../components/EmptyState";
-import OnboardingWizard from "../components/OnboardingWizard";
+import type { ReviewStats, Deck } from '@flashcard-app/shared-types';
+import { useLocale } from '../hooks/useLocale';
+import { useAuth } from '../hooks/useAuth';
+import * as api from '../services/api';
+import { Button, Spinner, PageHeader } from '../components/ui';
+import ActivityGraph from '../components/ActivityGraph';
+import EmptyState from '../components/EmptyState';
+import OnboardingWizard from '../components/OnboardingWizard';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -18,9 +18,7 @@ export default function DashboardPage() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [dueCount, setDueCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [showOnboarding, setShowOnboarding] = useState(
-    () => user?.onboardingCompletedAt === null,
-  );
+  const [showOnboarding, setShowOnboarding] = useState(() => user?.onboardingCompletedAt === null);
 
   async function handleOnboardingComplete() {
     setShowOnboarding(false);
@@ -53,7 +51,7 @@ export default function DashboardPage() {
 
   const todayCount = useMemo(() => {
     const today = new Date();
-    const pad = (n: number) => n.toString().padStart(2, "0");
+    const pad = (n: number) => n.toString().padStart(2, '0');
     const dateStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
     return stats?.last7Days.find((d) => d.date === dateStr)?.count ?? 0;
   }, [stats]);
@@ -69,14 +67,9 @@ export default function DashboardPage() {
 
   return (
     <div>
-      {showOnboarding && (
-        <OnboardingWizard onComplete={handleOnboardingComplete} />
-      )}
+      {showOnboarding && <OnboardingWizard onComplete={handleOnboardingComplete} />}
 
-      <PageHeader
-        title={t("dashboard.title")}
-        subtitle={t("dashboard.subtitle")}
-      />
+      <PageHeader title={t('dashboard.title')} subtitle={t('dashboard.subtitle')} />
 
       {/* Due Cards Banner */}
       {dueCount > 0 && (
@@ -87,15 +80,12 @@ export default function DashboardPage() {
             </span>
             <p className="font-display font-semibold text-text-primary text-sm">
               {dueCount === 1
-                ? t("dashboard.dueCardsBannerSingular")
-                : t("dashboard.dueCardsBanner").replace(
-                    "{count}",
-                    String(dueCount),
-                  )}
+                ? t('dashboard.dueCardsBannerSingular')
+                : t('dashboard.dueCardsBanner').replace('{count}', String(dueCount))}
             </p>
           </div>
-          <Button onClick={() => navigate("/decks")} className="shrink-0">
-            {t("dashboard.startReview")}
+          <Button onClick={() => navigate('/decks')} className="shrink-0">
+            {t('dashboard.startReview')}
           </Button>
         </div>
       )}
@@ -107,7 +97,7 @@ export default function DashboardPage() {
             {stats?.currentStreak ?? 0}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
-            {t("dashboard.dayStreak")}
+            {t('dashboard.dayStreak')}
           </div>
         </div>
         <div className="text-center p-7 bg-bg-card border border-border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-2">
@@ -115,7 +105,7 @@ export default function DashboardPage() {
             {todayCount}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
-            {t("dashboard.reviewedToday")}
+            {t('dashboard.reviewedToday')}
           </div>
         </div>
         <div className="text-center p-7 bg-bg-card border border-border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-3">
@@ -123,7 +113,7 @@ export default function DashboardPage() {
             {weekTotal}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
-            {t("dashboard.thisWeek")}
+            {t('dashboard.thisWeek')}
           </div>
         </div>
         <div className="text-center p-7 bg-bg-card border border-border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-4">
@@ -131,7 +121,7 @@ export default function DashboardPage() {
             {decks.length}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
-            {t("dashboard.totalDecks")}
+            {t('dashboard.totalDecks')}
           </div>
         </div>
       </div>
@@ -139,7 +129,7 @@ export default function DashboardPage() {
       {/* Activity Graph */}
       <div className="bg-bg-card border border-border rounded-md p-6 transition-all hover:border-border-light hover:shadow-md mb-4 stagger-5">
         <h2 className="font-display text-[1.125rem] font-bold tracking-tight mb-4">
-          {t("dashboard.reviewActivity")}
+          {t('dashboard.reviewActivity')}
         </h2>
         <ActivityGraph data={stats?.last365Days ?? []} />
       </div>
@@ -148,15 +138,13 @@ export default function DashboardPage() {
       {stats?.deckAccuracies && stats.deckAccuracies.length > 0 && (
         <div className="bg-bg-card border border-border rounded-md p-6 transition-all hover:border-border-light hover:shadow-md mb-4 stagger-6">
           <h2 className="font-display text-[1.125rem] font-bold tracking-tight mb-2">
-            {t("dashboard.deckAccuracy")}
+            {t('dashboard.deckAccuracy')}
           </h2>
           <div className="flex flex-col gap-3">
             {stats.deckAccuracies.map((da) => (
               <div key={da.deckId}>
                 <div className="flex items-center justify-between mb-1 text-sm">
-                  <span className="font-medium text-text-primary">
-                    {da.deckName}
-                  </span>
+                  <span className="font-medium text-text-primary">{da.deckName}</span>
                   <span className="text-text-secondary font-display font-semibold">
                     {Math.round(da.accuracy * 100)}%
                   </span>
@@ -168,10 +156,10 @@ export default function DashboardPage() {
                       width: `${da.accuracy * 100}%`,
                       background:
                         da.accuracy >= 0.7
-                          ? "var(--color-accent-success)"
+                          ? 'var(--color-accent-success)'
                           : da.accuracy >= 0.4
-                            ? "var(--color-accent-warning)"
-                            : "var(--color-accent-danger)",
+                            ? 'var(--color-accent-warning)'
+                            : 'var(--color-accent-danger)',
                     }}
                   />
                 </div>
@@ -185,18 +173,14 @@ export default function DashboardPage() {
       {decks.length === 0 ? (
         <EmptyState
           icon="📚"
-          title={t("dashboard.createFirstDeck")}
-          description={t("dashboard.createFirstDeckText")}
-          action={
-            <Button onClick={() => navigate("/decks")}>
-              {t("dashboard.createDeck")}
-            </Button>
-          }
+          title={t('dashboard.createFirstDeck')}
+          description={t('dashboard.createFirstDeckText')}
+          action={<Button onClick={() => navigate('/decks')}>{t('dashboard.createDeck')}</Button>}
         />
       ) : (
         <div className="bg-bg-card border border-border rounded-md p-6 transition-all hover:border-border-light hover:shadow-md">
           <h2 className="font-display text-[1.125rem] font-bold tracking-tight mb-4">
-            {t("dashboard.quickStudy")}
+            {t('dashboard.quickStudy')}
           </h2>
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {decks.map((deck) => (
@@ -208,7 +192,7 @@ export default function DashboardPage() {
               >
                 <span
                   className="text-[0.65rem]"
-                  style={{ color: deck.color ?? "var(--color-accent-primary)" }}
+                  style={{ color: deck.color ?? 'var(--color-accent-primary)' }}
                 >
                   ●
                 </span>

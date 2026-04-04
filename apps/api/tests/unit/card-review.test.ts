@@ -1,28 +1,21 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from 'vitest';
 
-import type { Flashcard, Deck } from "@flashcard-app/shared-types";
-import type { ICardRepository } from "../../src/domain/repositories/ICardRepository";
-import type { IDeckRepository } from "../../src/domain/repositories/IDeckRepository";
+import type { Flashcard, Deck } from '@flashcard-app/shared-types';
+import type { ICardRepository } from '../../src/domain/repositories/ICardRepository';
+import type { IDeckRepository } from '../../src/domain/repositories/IDeckRepository';
 import type {
   IReviewLogRepository,
   ReviewLog,
-} from "../../src/domain/repositories/IReviewLogRepository";
+} from '../../src/domain/repositories/IReviewLogRepository';
 import {
   CreateCardUseCase,
   ListCardsUseCase,
   GetCardUseCase,
   UpdateCardUseCase,
   DeleteCardUseCase,
-} from "../../src/usecases/CardUseCases";
-import {
-  GetDueCardsUseCase,
-  SubmitReviewUseCase,
-} from "../../src/usecases/ReviewUseCases";
-import {
-  NotFoundError,
-  ForbiddenError,
-  ValidationError,
-} from "../../src/shared/errors";
+} from '../../src/usecases/CardUseCases';
+import { GetDueCardsUseCase, SubmitReviewUseCase } from '../../src/usecases/ReviewUseCases';
+import { NotFoundError, ForbiddenError, ValidationError } from '../../src/shared/errors';
 
 function createMockCardRepo(): ICardRepository {
   const cards: Flashcard[] = [];
@@ -116,13 +109,13 @@ function createMockReviewLogRepo(): IReviewLogRepository {
 }
 
 const testDeck: Deck = {
-  id: "deck-1",
-  userId: "user-1",
-  name: "Test Deck",
+  id: 'deck-1',
+  userId: 'user-1',
+  name: 'Test Deck',
   createdAt: new Date().toISOString(),
 };
 
-describe("Card Use Cases", () => {
+describe('Card Use Cases', () => {
   let cardRepo: ICardRepository;
   let deckRepo: IDeckRepository;
 
@@ -131,167 +124,159 @@ describe("Card Use Cases", () => {
     deckRepo = createMockDeckRepo([testDeck]);
   });
 
-  describe("CreateCardUseCase", () => {
-    it("should create a card in a deck", async () => {
+  describe('CreateCardUseCase', () => {
+    it('should create a card in a deck', async () => {
       const useCase = new CreateCardUseCase(cardRepo, deckRepo);
-      const card = await useCase.execute("user-1", "deck-1", {
-        front: "Hello",
-        back: "Hola",
+      const card = await useCase.execute('user-1', 'deck-1', {
+        front: 'Hello',
+        back: 'Hola',
       });
 
-      expect(card.front).toBe("Hello");
-      expect(card.back).toBe("Hola");
-      expect(card.deckId).toBe("deck-1");
+      expect(card.front).toBe('Hello');
+      expect(card.back).toBe('Hola');
+      expect(card.deckId).toBe('deck-1');
       expect(card.state).toBe(0);
       expect(card.reps).toBe(0);
     });
 
-    it("should throw ValidationError for empty front", async () => {
+    it('should throw ValidationError for empty front', async () => {
       const useCase = new CreateCardUseCase(cardRepo, deckRepo);
       await expect(
-        useCase.execute("user-1", "deck-1", { front: "", back: "Hola" }),
+        useCase.execute('user-1', 'deck-1', { front: '', back: 'Hola' }),
       ).rejects.toThrow(ValidationError);
     });
 
-    it("should throw ForbiddenError for non-owner", async () => {
+    it('should throw ForbiddenError for non-owner', async () => {
       const useCase = new CreateCardUseCase(cardRepo, deckRepo);
       await expect(
-        useCase.execute("user-2", "deck-1", { front: "Hi", back: "Hola" }),
+        useCase.execute('user-2', 'deck-1', { front: 'Hi', back: 'Hola' }),
       ).rejects.toThrow(ForbiddenError);
     });
 
-    it("should throw NotFoundError for invalid deck", async () => {
+    it('should throw NotFoundError for invalid deck', async () => {
       const useCase = new CreateCardUseCase(cardRepo, deckRepo);
       await expect(
-        useCase.execute("user-1", "nonexistent", { front: "Hi", back: "Hola" }),
+        useCase.execute('user-1', 'nonexistent', { front: 'Hi', back: 'Hola' }),
       ).rejects.toThrow(NotFoundError);
     });
   });
 
-  describe("ListCardsUseCase", () => {
-    it("should list cards in a deck", async () => {
+  describe('ListCardsUseCase', () => {
+    it('should list cards in a deck', async () => {
       const create = new CreateCardUseCase(cardRepo, deckRepo);
-      await create.execute("user-1", "deck-1", { front: "A", back: "B" });
-      await create.execute("user-1", "deck-1", { front: "C", back: "D" });
+      await create.execute('user-1', 'deck-1', { front: 'A', back: 'B' });
+      await create.execute('user-1', 'deck-1', { front: 'C', back: 'D' });
 
       const list = new ListCardsUseCase(cardRepo, deckRepo);
-      const result = await list.execute("user-1", "deck-1");
+      const result = await list.execute('user-1', 'deck-1');
       expect(result).toHaveLength(2);
     });
   });
 
-  describe("GetCardUseCase", () => {
-    it("should return a card for the owner", async () => {
+  describe('GetCardUseCase', () => {
+    it('should return a card for the owner', async () => {
       const create = new CreateCardUseCase(cardRepo, deckRepo);
-      const card = await create.execute("user-1", "deck-1", {
-        front: "Hello",
-        back: "Hola",
+      const card = await create.execute('user-1', 'deck-1', {
+        front: 'Hello',
+        back: 'Hola',
       });
 
       const get = new GetCardUseCase(cardRepo, deckRepo);
-      const result = await get.execute("user-1", card.id);
-      expect(result.front).toBe("Hello");
-      expect(result.back).toBe("Hola");
+      const result = await get.execute('user-1', card.id);
+      expect(result.front).toBe('Hello');
+      expect(result.back).toBe('Hola');
     });
 
-    it("should throw NotFoundError for invalid card id", async () => {
+    it('should throw NotFoundError for invalid card id', async () => {
       const get = new GetCardUseCase(cardRepo, deckRepo);
-      await expect(get.execute("user-1", "nonexistent")).rejects.toThrow(
+      await expect(get.execute('user-1', 'nonexistent')).rejects.toThrow(NotFoundError);
+    });
+
+    it('should throw ForbiddenError for non-owner', async () => {
+      const create = new CreateCardUseCase(cardRepo, deckRepo);
+      const card = await create.execute('user-1', 'deck-1', {
+        front: 'X',
+        back: 'Y',
+      });
+
+      const get = new GetCardUseCase(cardRepo, deckRepo);
+      await expect(get.execute('user-2', card.id)).rejects.toThrow(ForbiddenError);
+    });
+  });
+
+  describe('UpdateCardUseCase', () => {
+    it('should update card fields', async () => {
+      const create = new CreateCardUseCase(cardRepo, deckRepo);
+      const card = await create.execute('user-1', 'deck-1', {
+        front: 'Old',
+        back: 'Old',
+      });
+
+      const update = new UpdateCardUseCase(cardRepo, deckRepo);
+      const result = await update.execute('user-1', card.id, {
+        front: 'New Front',
+        back: 'New Back',
+      });
+      expect(result.front).toBe('New Front');
+      expect(result.back).toBe('New Back');
+    });
+
+    it('should throw NotFoundError for invalid card id', async () => {
+      const update = new UpdateCardUseCase(cardRepo, deckRepo);
+      await expect(update.execute('user-1', 'nonexistent', { front: 'X' })).rejects.toThrow(
         NotFoundError,
       );
     });
 
-    it("should throw ForbiddenError for non-owner", async () => {
+    it('should throw ForbiddenError for non-owner', async () => {
       const create = new CreateCardUseCase(cardRepo, deckRepo);
-      const card = await create.execute("user-1", "deck-1", {
-        front: "X",
-        back: "Y",
+      const card = await create.execute('user-1', 'deck-1', {
+        front: 'X',
+        back: 'Y',
       });
 
-      const get = new GetCardUseCase(cardRepo, deckRepo);
-      await expect(get.execute("user-2", card.id)).rejects.toThrow(
+      const update = new UpdateCardUseCase(cardRepo, deckRepo);
+      await expect(update.execute('user-2', card.id, { front: 'Z' })).rejects.toThrow(
         ForbiddenError,
       );
     });
   });
 
-  describe("UpdateCardUseCase", () => {
-    it("should update card fields", async () => {
+  describe('DeleteCardUseCase', () => {
+    it('should delete a card', async () => {
       const create = new CreateCardUseCase(cardRepo, deckRepo);
-      const card = await create.execute("user-1", "deck-1", {
-        front: "Old",
-        back: "Old",
-      });
-
-      const update = new UpdateCardUseCase(cardRepo, deckRepo);
-      const result = await update.execute("user-1", card.id, {
-        front: "New Front",
-        back: "New Back",
-      });
-      expect(result.front).toBe("New Front");
-      expect(result.back).toBe("New Back");
-    });
-
-    it("should throw NotFoundError for invalid card id", async () => {
-      const update = new UpdateCardUseCase(cardRepo, deckRepo);
-      await expect(
-        update.execute("user-1", "nonexistent", { front: "X" }),
-      ).rejects.toThrow(NotFoundError);
-    });
-
-    it("should throw ForbiddenError for non-owner", async () => {
-      const create = new CreateCardUseCase(cardRepo, deckRepo);
-      const card = await create.execute("user-1", "deck-1", {
-        front: "X",
-        back: "Y",
-      });
-
-      const update = new UpdateCardUseCase(cardRepo, deckRepo);
-      await expect(
-        update.execute("user-2", card.id, { front: "Z" }),
-      ).rejects.toThrow(ForbiddenError);
-    });
-  });
-
-  describe("DeleteCardUseCase", () => {
-    it("should delete a card", async () => {
-      const create = new CreateCardUseCase(cardRepo, deckRepo);
-      const card = await create.execute("user-1", "deck-1", {
-        front: "Delete me",
-        back: "Yes",
+      const card = await create.execute('user-1', 'deck-1', {
+        front: 'Delete me',
+        back: 'Yes',
       });
 
       const del = new DeleteCardUseCase(cardRepo, deckRepo);
-      await del.execute("user-1", card.id);
+      await del.execute('user-1', card.id);
 
       const list = new ListCardsUseCase(cardRepo, deckRepo);
-      const results = await list.execute("user-1", "deck-1");
+      const results = await list.execute('user-1', 'deck-1');
       expect(results).toHaveLength(0);
     });
 
-    it("should throw NotFoundError for invalid card id", async () => {
+    it('should throw NotFoundError for invalid card id', async () => {
       const del = new DeleteCardUseCase(cardRepo, deckRepo);
-      await expect(del.execute("user-1", "nonexistent")).rejects.toThrow(
-        NotFoundError,
-      );
+      await expect(del.execute('user-1', 'nonexistent')).rejects.toThrow(NotFoundError);
     });
 
-    it("should throw ForbiddenError for non-owner", async () => {
+    it('should throw ForbiddenError for non-owner', async () => {
       const create = new CreateCardUseCase(cardRepo, deckRepo);
-      const card = await create.execute("user-1", "deck-1", {
-        front: "X",
-        back: "Y",
+      const card = await create.execute('user-1', 'deck-1', {
+        front: 'X',
+        back: 'Y',
       });
 
       const del = new DeleteCardUseCase(cardRepo, deckRepo);
-      await expect(del.execute("user-2", card.id)).rejects.toThrow(
-        ForbiddenError,
-      );
+      await expect(del.execute('user-2', card.id)).rejects.toThrow(ForbiddenError);
     });
   });
 });
 
-describe("Review Use Cases", () => {
+describe('Review Use Cases', () => {
   let cardRepo: ICardRepository;
   let deckRepo: IDeckRepository;
   let reviewLogRepo: IReviewLogRepository;
@@ -302,30 +287,30 @@ describe("Review Use Cases", () => {
     reviewLogRepo = createMockReviewLogRepo();
   });
 
-  describe("GetDueCardsUseCase", () => {
-    it("should return due cards", async () => {
+  describe('GetDueCardsUseCase', () => {
+    it('should return due cards', async () => {
       const create = new CreateCardUseCase(cardRepo, deckRepo);
       // New cards have nextReviewAt = now, so they are immediately due
-      await create.execute("user-1", "deck-1", { front: "A", back: "B" });
-      await create.execute("user-1", "deck-1", { front: "C", back: "D" });
+      await create.execute('user-1', 'deck-1', { front: 'A', back: 'B' });
+      await create.execute('user-1', 'deck-1', { front: 'C', back: 'D' });
 
       const getDue = new GetDueCardsUseCase(cardRepo, deckRepo);
-      const session = await getDue.execute("user-1", "deck-1");
+      const session = await getDue.execute('user-1', 'deck-1');
       expect(session.totalDue).toBe(2);
       expect(session.cards).toHaveLength(2);
     });
   });
 
-  describe("SubmitReviewUseCase", () => {
-    it("should apply SM-2 and update card", async () => {
+  describe('SubmitReviewUseCase', () => {
+    it('should apply SM-2 and update card', async () => {
       const create = new CreateCardUseCase(cardRepo, deckRepo);
-      const card = await create.execute("user-1", "deck-1", {
-        front: "A",
-        back: "B",
+      const card = await create.execute('user-1', 'deck-1', {
+        front: 'A',
+        back: 'B',
       });
 
       const submit = new SubmitReviewUseCase(cardRepo, deckRepo, reviewLogRepo);
-      const result = await submit.execute("user-1", {
+      const result = await submit.execute('user-1', {
         cardId: card.id,
         quality: 4,
       });
@@ -335,19 +320,19 @@ describe("Review Use Cases", () => {
       expect(result.stability).toBeGreaterThan(0);
     });
 
-    it("should reset on quality = 1", async () => {
+    it('should reset on quality = 1', async () => {
       const create = new CreateCardUseCase(cardRepo, deckRepo);
-      const card = await create.execute("user-1", "deck-1", {
-        front: "A",
-        back: "B",
+      const card = await create.execute('user-1', 'deck-1', {
+        front: 'A',
+        back: 'B',
       });
 
       // First review to get some progress
       const submit = new SubmitReviewUseCase(cardRepo, deckRepo, reviewLogRepo);
-      await submit.execute("user-1", { cardId: card.id, quality: 4 });
+      await submit.execute('user-1', { cardId: card.id, quality: 4 });
 
       // Then fail
-      const result = await submit.execute("user-1", {
+      const result = await submit.execute('user-1', {
         cardId: card.id,
         quality: 1,
       });
@@ -355,11 +340,11 @@ describe("Review Use Cases", () => {
       expect(result.state).toBe(3); // 3 = Relearning (lapsed from Review state)
     });
 
-    it("should throw NotFoundError for invalid card", async () => {
+    it('should throw NotFoundError for invalid card', async () => {
       const submit = new SubmitReviewUseCase(cardRepo, deckRepo, reviewLogRepo);
-      await expect(
-        submit.execute("user-1", { cardId: "nonexistent", quality: 3 }),
-      ).rejects.toThrow(NotFoundError);
+      await expect(submit.execute('user-1', { cardId: 'nonexistent', quality: 3 })).rejects.toThrow(
+        NotFoundError,
+      );
     });
   });
 });

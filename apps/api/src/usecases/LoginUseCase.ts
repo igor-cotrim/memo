@@ -1,13 +1,13 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 
-import type { LoginRequest, AuthResponse } from "@flashcard-app/shared-types";
-import type { IUserRepository } from "../domain/repositories/IUserRepository";
-import type { IRefreshTokenRepository } from "../domain/repositories/IRefreshTokenRepository";
-import { UnauthorizedError } from "../shared/errors";
+import type { LoginRequest, AuthResponse } from '@flashcard-app/shared-types';
+import type { IUserRepository } from '../domain/repositories/IUserRepository';
+import type { IRefreshTokenRepository } from '../domain/repositories/IRefreshTokenRepository';
+import { UnauthorizedError } from '../shared/errors';
 
-const ACCESS_TOKEN_EXPIRY = "30m";
+const ACCESS_TOKEN_EXPIRY = '30m';
 const REFRESH_TOKEN_EXPIRY_DAYS = 7;
 
 export class LoginUseCase {
@@ -17,20 +17,15 @@ export class LoginUseCase {
     private readonly jwtSecret: string,
   ) {}
 
-  async execute(
-    input: LoginRequest,
-  ): Promise<AuthResponse & { refreshToken: string }> {
+  async execute(input: LoginRequest): Promise<AuthResponse & { refreshToken: string }> {
     const user = await this.userRepo.findByEmail(input.email);
     if (!user) {
-      throw new UnauthorizedError("Invalid email or password");
+      throw new UnauthorizedError('Invalid email or password');
     }
 
-    const passwordValid = await bcrypt.compare(
-      input.password,
-      user.passwordHash,
-    );
+    const passwordValid = await bcrypt.compare(input.password, user.passwordHash);
     if (!passwordValid) {
-      throw new UnauthorizedError("Invalid email or password");
+      throw new UnauthorizedError('Invalid email or password');
     }
 
     const accessToken = jwt.sign({ userId: user.id }, this.jwtSecret, {

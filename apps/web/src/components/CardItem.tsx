@@ -1,9 +1,9 @@
-import { memo } from "react";
+import { memo } from 'react';
 
-import type { Flashcard } from "@flashcard-app/shared-types";
-import { useLocale } from "../hooks/useLocale";
-import { getRelativeTimeString } from "../utils/date";
-import { Button } from "./ui";
+import type { Flashcard } from '@flashcard-app/shared-types';
+import { useLocale } from '../hooks/useLocale';
+import { getRelativeTimeString } from '../utils/date';
+import { Button } from './ui';
 
 type CardItemProps = {
   card: Flashcard;
@@ -12,12 +12,7 @@ type CardItemProps = {
   onDelete: (id: string) => void;
 };
 
-const CardItem = memo(function CardItem({
-  card,
-  index,
-  onEdit,
-  onDelete,
-}: CardItemProps) {
+const CardItem = memo(function CardItem({ card, index, onEdit, onDelete }: CardItemProps) {
   const { t, locale } = useLocale();
 
   return (
@@ -27,7 +22,7 @@ const CardItem = memo(function CardItem({
     >
       <div className="flex flex-row items-center justify-between mb-4">
         <span className="inline-flex items-center px-2.5 py-1 rounded-full font-display text-[0.7rem] font-semibold tracking-wide bg-accent-primary/10 text-accent-primary">
-          {card.reps === 0 ? t("cards.new") : `${t("cards.rep")} ${card.reps}`}
+          {card.reps === 0 ? t('cards.new') : `${t('cards.rep')} ${card.reps}`}
         </span>
         <div className="flex gap-2">
           <Button
@@ -51,25 +46,23 @@ const CardItem = memo(function CardItem({
         </div>
       </div>
       <div className="mb-2">
-        <div className="text-sm text-text-muted mb-2">{t("cards.front")}</div>
-        <div className="font-bold whitespace-pre-wrap wrap-break-word">
-          {card.front}
-        </div>
+        <div className="text-sm text-text-muted mb-2">{t('cards.front')}</div>
+        <div className="font-bold whitespace-pre-wrap wrap-break-word">{card.front}</div>
       </div>
       <div>
-        <div className="text-sm text-text-muted mb-2">{t("cards.back")}</div>
+        <div className="text-sm text-text-muted mb-2">{t('cards.back')}</div>
         <div className="whitespace-pre-wrap wrap-break-word">{card.back}</div>
       </div>
       {card.notes && (
         <div
           className="mt-2 text-sm text-text-muted whitespace-pre-wrap wrap-break-word"
-          style={{ fontStyle: "italic" }}
+          style={{ fontStyle: 'italic' }}
         >
           📝 {card.notes}
         </div>
       )}
       <div className="mt-4 text-sm text-text-muted">
-        {t("cards.nextReview")} {getRelativeTimeString(card.due, locale)}
+        {t('cards.nextReview')} {getRelativeTimeString(card.due, locale)}
       </div>
     </div>
   );

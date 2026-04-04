@@ -1,16 +1,16 @@
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 
 import type {
   DueCountResponse,
   Flashcard,
   ReviewResult,
   ReviewSession,
-} from "@flashcard-app/shared-types";
-import type { ICardRepository } from "../domain/repositories/ICardRepository";
-import type { IDeckRepository } from "../domain/repositories/IDeckRepository";
-import type { IReviewLogRepository } from "../domain/repositories/IReviewLogRepository";
-import { calculateFSRS } from "../domain/fsrs";
-import { NotFoundError, ForbiddenError } from "../shared/errors";
+} from '@flashcard-app/shared-types';
+import type { ICardRepository } from '../domain/repositories/ICardRepository';
+import type { IDeckRepository } from '../domain/repositories/IDeckRepository';
+import type { IReviewLogRepository } from '../domain/repositories/IReviewLogRepository';
+import { calculateFSRS } from '../domain/fsrs';
+import { NotFoundError, ForbiddenError } from '../shared/errors';
 
 export class GetDueCardsUseCase {
   constructor(
@@ -20,7 +20,7 @@ export class GetDueCardsUseCase {
 
   async execute(userId: string, deckId: string): Promise<ReviewSession> {
     const deck = await this.deckRepo.findById(deckId);
-    if (!deck) throw new NotFoundError("Deck", deckId);
+    if (!deck) throw new NotFoundError('Deck', deckId);
     if (deck.userId !== userId) throw new ForbiddenError();
 
     const now = new Date().toISOString();
@@ -53,7 +53,7 @@ export class SubmitReviewUseCase {
 
   async execute(userId: string, review: ReviewResult): Promise<Flashcard> {
     const card = await this.cardRepo.findById(review.cardId);
-    if (!card) throw new NotFoundError("Card", review.cardId);
+    if (!card) throw new NotFoundError('Card', review.cardId);
 
     const deck = await this.deckRepo.findById(card.deckId);
     if (!deck || deck.userId !== userId) throw new ForbiddenError();
@@ -69,9 +69,7 @@ export class SubmitReviewUseCase {
         lapses: card.lapses,
         state: card.state,
         learning_steps: 0,
-        last_review: card.lastReviewAt
-          ? new Date(card.lastReviewAt)
-          : undefined,
+        last_review: card.lastReviewAt ? new Date(card.lastReviewAt) : undefined,
       },
       review.quality,
       new Date().toISOString(),
@@ -91,7 +89,7 @@ export class SubmitReviewUseCase {
         : new Date().toISOString(),
     });
 
-    if (!updatedCard) throw new NotFoundError("Card", review.cardId);
+    if (!updatedCard) throw new NotFoundError('Card', review.cardId);
 
     // Log the review
     await this.reviewLogRepo.create({

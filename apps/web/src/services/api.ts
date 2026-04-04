@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 import type {
   AuthResponse,
@@ -20,12 +20,11 @@ import type {
   ImportDeckResponse,
   ImportCardsResponse,
   DueCountResponse,
-} from "@flashcard-app/shared-types";
+} from '@flashcard-app/shared-types';
 
-const baseURL =
-  import.meta.env.VITE_API_URL || (import.meta.env.PROD ? undefined : "/api");
+const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? undefined : '/api');
 if (!baseURL && import.meta.env.PROD) {
-  throw new Error("VITE_API_URL is undefined in production");
+  throw new Error('VITE_API_URL is undefined in production');
 }
 
 const api = axios.create({
@@ -37,7 +36,7 @@ let refreshPromise: Promise<string> | null = null;
 
 // Interceptor: attach token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem('accessToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -51,9 +50,9 @@ api.interceptors.response.use(
     const original = error.config;
     if (error.response?.status === 401 && !original._retry) {
       if (
-        original.url?.includes("/auth/login") ||
-        original.url?.includes("/auth/register") ||
-        original.url?.includes("/auth/refresh")
+        original.url?.includes('/auth/login') ||
+        original.url?.includes('/auth/register') ||
+        original.url?.includes('/auth/refresh')
       ) {
         return Promise.reject(error);
       }
@@ -61,20 +60,20 @@ api.interceptors.response.use(
       try {
         if (!refreshPromise) {
           refreshPromise = api
-            .post<{ accessToken: string }>("/auth/refresh")
+            .post<{ accessToken: string }>('/auth/refresh')
             .then((res) => res.data.accessToken)
             .finally(() => {
               refreshPromise = null;
             });
         }
         const accessToken = await refreshPromise;
-        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem('accessToken', accessToken);
         original.headers = original.headers ?? {};
         original.headers.Authorization = `Bearer ${accessToken}`;
         return api(original);
       } catch {
-        localStorage.removeItem("accessToken");
-        window.location.href = "/login";
+        localStorage.removeItem('accessToken');
+        window.location.href = '/login';
       }
     }
     return Promise.reject(error);
@@ -84,53 +83,47 @@ api.interceptors.response.use(
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 export async function register(data: RegisterRequest): Promise<AuthResponse> {
-  const res = await api.post<AuthResponse>("/auth/register", data);
-  localStorage.setItem("accessToken", res.data.accessToken);
+  const res = await api.post<AuthResponse>('/auth/register', data);
+  localStorage.setItem('accessToken', res.data.accessToken);
   return res.data;
 }
 
 export async function login(data: LoginRequest): Promise<AuthResponse> {
-  const res = await api.post<AuthResponse>("/auth/login", data);
-  localStorage.setItem("accessToken", res.data.accessToken);
+  const res = await api.post<AuthResponse>('/auth/login', data);
+  localStorage.setItem('accessToken', res.data.accessToken);
   return res.data;
 }
 
 export async function logout(): Promise<void> {
-  await api.post("/auth/logout");
-  localStorage.removeItem("accessToken");
+  await api.post('/auth/logout');
+  localStorage.removeItem('accessToken');
 }
 
 export async function getMe(): Promise<{ user: PublicUser }> {
-  const res = await api.get<{ user: PublicUser }>("/auth/me");
+  const res = await api.get<{ user: PublicUser }>('/auth/me');
   return res.data;
 }
 
 // ─── User Profile ───────────────────────────────────────────────────────────
 
-export async function updateProfile(
-  data: UpdateProfileRequest,
-): Promise<UpdateProfileResponse> {
-  const res = await api.put<UpdateProfileResponse>("/users/profile", data);
+export async function updateProfile(data: UpdateProfileRequest): Promise<UpdateProfileResponse> {
+  const res = await api.put<UpdateProfileResponse>('/users/profile', data);
   return res.data;
 }
 
-export async function changePassword(
-  data: ChangePasswordRequest,
-): Promise<void> {
-  await api.put("/users/password", data);
+export async function changePassword(data: ChangePasswordRequest): Promise<void> {
+  await api.put('/users/password', data);
 }
 
 export async function completeOnboarding(): Promise<UpdateProfileResponse> {
-  const res = await api.patch<UpdateProfileResponse>(
-    "/users/onboarding-complete",
-  );
+  const res = await api.patch<UpdateProfileResponse>('/users/onboarding-complete');
   return res.data;
 }
 
 // ─── Decks ───────────────────────────────────────────────────────────────────
 
 export async function getDecks(): Promise<Deck[]> {
-  const res = await api.get<Deck[]>("/decks");
+  const res = await api.get<Deck[]>('/decks');
   return res.data;
 }
 
@@ -140,14 +133,11 @@ export async function getDeck(id: string): Promise<Deck> {
 }
 
 export async function createDeck(data: CreateDeckRequest): Promise<Deck> {
-  const res = await api.post<Deck>("/decks", data);
+  const res = await api.post<Deck>('/decks', data);
   return res.data;
 }
 
-export async function updateDeck(
-  id: string,
-  data: UpdateDeckRequest,
-): Promise<Deck> {
+export async function updateDeck(id: string, data: UpdateDeckRequest): Promise<Deck> {
   const res = await api.put<Deck>(`/decks/${id}`, data);
   return res.data;
 }
@@ -163,10 +153,7 @@ export async function getCards(deckId: string): Promise<Flashcard[]> {
   return res.data;
 }
 
-export async function createCard(
-  deckId: string,
-  data: CreateCardRequest,
-): Promise<Flashcard> {
+export async function createCard(deckId: string, data: CreateCardRequest): Promise<Flashcard> {
   const res = await api.post<Flashcard>(`/decks/${deckId}/cards`, data);
   return res.data;
 }
@@ -176,17 +163,11 @@ export async function updateCard(
   cardId: string,
   data: UpdateCardRequest,
 ): Promise<Flashcard> {
-  const res = await api.put<Flashcard>(
-    `/decks/${deckId}/cards/${cardId}`,
-    data,
-  );
+  const res = await api.put<Flashcard>(`/decks/${deckId}/cards/${cardId}`, data);
   return res.data;
 }
 
-export async function deleteCard(
-  deckId: string,
-  cardId: string,
-): Promise<void> {
+export async function deleteCard(deckId: string, cardId: string): Promise<void> {
   await api.delete(`/decks/${deckId}/cards/${cardId}`);
 }
 
@@ -197,33 +178,28 @@ export async function importDeck(
   meta: { name?: string; description?: string },
 ): Promise<ImportDeckResponse> {
   const formData = new FormData();
-  formData.append("file", file);
-  if (meta.name) formData.append("name", meta.name);
-  if (meta.description) formData.append("description", meta.description);
-  const res = await api.post<ImportDeckResponse>("/decks/import", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+  formData.append('file', file);
+  if (meta.name) formData.append('name', meta.name);
+  if (meta.description) formData.append('description', meta.description);
+  const res = await api.post<ImportDeckResponse>('/decks/import', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
   });
   return res.data;
 }
 
-export async function importCards(
-  deckId: string,
-  file: File,
-): Promise<ImportCardsResponse> {
+export async function importCards(deckId: string, file: File): Promise<ImportCardsResponse> {
   const formData = new FormData();
-  formData.append("file", file);
-  const res = await api.post<ImportCardsResponse>(
-    `/decks/${deckId}/cards/import`,
-    formData,
-    { headers: { "Content-Type": "multipart/form-data" } },
-  );
+  formData.append('file', file);
+  const res = await api.post<ImportCardsResponse>(`/decks/${deckId}/cards/import`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return res.data;
 }
 
 // ─── Review ──────────────────────────────────────────────────────────────────
 
 export async function getDueCount(): Promise<DueCountResponse> {
-  const res = await api.get<DueCountResponse>("/review/due-count");
+  const res = await api.get<DueCountResponse>('/review/due-count');
   return res.data;
 }
 
@@ -233,7 +209,7 @@ export async function getDueCards(deckId: string): Promise<ReviewSession> {
 }
 
 export async function submitReview(data: ReviewResult): Promise<Flashcard> {
-  const res = await api.post<Flashcard>("/review", data);
+  const res = await api.post<Flashcard>('/review', data);
   return res.data;
 }
 
@@ -241,7 +217,7 @@ export async function submitReview(data: ReviewResult): Promise<Flashcard> {
 
 export async function getStats(): Promise<ReviewStats> {
   const timezoneOffset = new Date().getTimezoneOffset();
-  const res = await api.get<ReviewStats>("/stats", {
+  const res = await api.get<ReviewStats>('/stats', {
     params: { timezoneOffset },
   });
   return res.data;
