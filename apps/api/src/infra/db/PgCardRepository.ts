@@ -39,23 +39,7 @@ export class PgCardRepository implements ICardRepository {
   }
 
   async create(card: Flashcard): Promise<Flashcard> {
-    await this.db.insert(schema.flashcards).values({
-      id: card.id,
-      deckId: card.deckId,
-      front: card.front,
-      back: card.back,
-      notes: card.notes ?? null,
-      state: card.state,
-      due: card.due,
-      stability: card.stability,
-      difficulty: card.difficulty,
-      elapsedDays: card.elapsedDays,
-      scheduledDays: card.scheduledDays,
-      reps: card.reps,
-      lapses: card.lapses,
-      lastReviewAt: card.lastReviewAt,
-      createdAt: card.createdAt,
-    });
+    await this.db.insert(schema.flashcards).values(this.toDbValues(card));
     return card;
   }
 
@@ -65,44 +49,16 @@ export class PgCardRepository implements ICardRepository {
     const BATCH_SIZE = 500;
     for (let i = 0; i < cards.length; i += BATCH_SIZE) {
       const batch = cards.slice(i, i + BATCH_SIZE);
-      await this.db.insert(schema.flashcards).values(
-        batch.map((card) => ({
-          id: card.id,
-          deckId: card.deckId,
-          front: card.front,
-          back: card.back,
-          notes: card.notes ?? null,
-          state: card.state,
-          due: card.due,
-          stability: card.stability,
-          difficulty: card.difficulty,
-          elapsedDays: card.elapsedDays,
-          scheduledDays: card.scheduledDays,
-          reps: card.reps,
-          lapses: card.lapses,
-          lastReviewAt: card.lastReviewAt,
-          createdAt: card.createdAt,
-        })),
-      );
+      await this.db.insert(schema.flashcards).values(batch.map((card) => this.toDbValues(card)));
     }
 
     return cards;
   }
 
   async update(id: string, data: Partial<Flashcard>): Promise<Flashcard | null> {
-    const updateData: Record<string, unknown> = {};
-    if (data.front !== undefined) updateData['front'] = data.front;
-    if (data.back !== undefined) updateData['back'] = data.back;
-    if (data.notes !== undefined) updateData['notes'] = data.notes;
-    if (data.state !== undefined) updateData['state'] = data.state;
-    if (data.due !== undefined) updateData['due'] = data.due;
-    if (data.stability !== undefined) updateData['stability'] = data.stability;
-    if (data.difficulty !== undefined) updateData['difficulty'] = data.difficulty;
-    if (data.elapsedDays !== undefined) updateData['elapsedDays'] = data.elapsedDays;
-    if (data.scheduledDays !== undefined) updateData['scheduledDays'] = data.scheduledDays;
-    if (data.reps !== undefined) updateData['reps'] = data.reps;
-    if (data.lapses !== undefined) updateData['lapses'] = data.lapses;
-    if (data.lastReviewAt !== undefined) updateData['lastReviewAt'] = data.lastReviewAt;
+    const updateData = Object.fromEntries(
+      Object.entries(data).filter(([, value]) => value !== undefined),
+    );
 
     await this.db.update(schema.flashcards).set(updateData).where(eq(schema.flashcards.id, id));
     return this.findById(id);
@@ -118,10 +74,10 @@ export class PgCardRepository implements ICardRepository {
 
   async countByDeckId(deckId: string): Promise<number> {
     const rows = await this.db
-      .select()
+      .select({ count: count() })
       .from(schema.flashcards)
       .where(eq(schema.flashcards.deckId, deckId));
-    return rows.length;
+    return rows[0]?.count ?? 0;
   }
 
   async countAllDueByUserId(userId: string, now: string): Promise<number> {
@@ -131,6 +87,26 @@ export class PgCardRepository implements ICardRepository {
       .innerJoin(schema.decks, eq(schema.flashcards.deckId, schema.decks.id))
       .where(and(eq(schema.decks.userId, userId), lte(schema.flashcards.due, now)));
     return rows[0]?.count ?? 0;
+  }
+
+  private toDbValues(card: Flashcard) {
+    return {
+      id: card.id,
+      deckId: card.deckId,
+      front: card.front,
+      back: card.back,
+      notes: card.notes ?? null,
+      state: card.state,
+      due: card.due,
+      stability: card.stability,
+      difficulty: card.difficulty,
+      elapsedDays: card.elapsedDays,
+      scheduledDays: card.scheduledDays,
+      reps: card.reps,
+      lapses: card.lapses,
+      lastReviewAt: card.lastReviewAt,
+      createdAt: card.createdAt,
+    };
   }
 
   private toCard(row: typeof schema.flashcards.$inferSelect): Flashcard {

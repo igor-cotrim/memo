@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 
+import type { TranslationKey } from './useLocale';
+
 type ValidationRule = {
   required?: boolean;
   email?: boolean;
@@ -17,8 +19,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function useFormValidation<T extends Record<string, string>>(
   rules: ValidationRules<T>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: (key: any) => string,
+  t: (key: TranslationKey) => string,
 ) {
   const [errors, setErrors] = useState<FieldErrors<T>>({});
 

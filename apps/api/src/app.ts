@@ -14,7 +14,7 @@ import { PgDeckRepository } from './infra/db/PgDeckRepository';
 import { PgCardRepository } from './infra/db/PgCardRepository';
 import { PgReviewLogRepository } from './infra/db/PgReviewLogRepository';
 import { authMiddleware } from './infra/http/middleware/auth';
-import { errorHandler } from './infra/http/middleware/errorHandler';
+import { createErrorHandler } from './infra/http/middleware/errorHandler';
 import { createAuthRoutes } from './infra/http/routes/auth.routes';
 import { createDeckRoutes } from './infra/http/routes/deck.routes';
 import { createCardRoutes } from './infra/http/routes/card.routes';
@@ -83,7 +83,7 @@ export function createApp(
   app.use('/users', auth, createUserRoutes(userRepo, supabase));
 
   // Error handling
-  app.use(errorHandler);
+  app.use(createErrorHandler(logger));
 
   return app;
 }

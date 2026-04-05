@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 import { useLocale } from '../hooks/useLocale';
 import { Button } from './ui';
@@ -72,17 +72,23 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
 
   const isLastStep = step === TOTAL_STEPS - 1;
 
-  const howItWorksSteps = [
-    { icon: '📚', text: t('onboarding.step2CreateDecks') },
-    { icon: '✍️', text: t('onboarding.step2AddCards') },
-    { icon: '🔄', text: t('onboarding.step2Review') },
-  ];
+  const howItWorksSteps = useMemo(
+    () => [
+      { icon: '📚', text: t('onboarding.step2CreateDecks') },
+      { icon: '✍️', text: t('onboarding.step2AddCards') },
+      { icon: '🔄', text: t('onboarding.step2Review') },
+    ],
+    [t],
+  );
 
-  const benefits = [
-    t('onboarding.step3Benefit1'),
-    t('onboarding.step3Benefit2'),
-    t('onboarding.step3Benefit3'),
-  ];
+  const benefits = useMemo(
+    () => [
+      t('onboarding.step3Benefit1'),
+      t('onboarding.step3Benefit2'),
+      t('onboarding.step3Benefit3'),
+    ],
+    [t],
+  );
 
   return (
     <div

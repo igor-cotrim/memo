@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 import { render, type RenderResult } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-import { LocaleProvider } from '../src/hooks/useLocale';
+import { LocaleProvider } from '../src/hooks/LocaleProvider';
 import { AuthContext, type AuthContextType } from '../src/hooks/authContext';
 
 const defaultAuth: AuthContextType = {

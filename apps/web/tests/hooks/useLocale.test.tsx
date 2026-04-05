@@ -2,7 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import { LocaleProvider, useLocale } from '../../src/hooks/useLocale';
+import { LocaleProvider } from '../../src/hooks/LocaleProvider';
+import { useLocale } from '../../src/hooks/useLocale';
 
 function Wrapper({ children }: { children: ReactNode }) {
   return <LocaleProvider>{children}</LocaleProvider>;

@@ -3,6 +3,8 @@ import { useState, useRef, useCallback } from 'react';
 import type { ImportCardRow, ImportRowError } from '@flashcard-app/shared-types';
 import { useLocale } from '../hooks/useLocale';
 import * as api from '../services/api';
+import { getErrorMessage } from '../utils/error';
+import { parsePreview, MAX_FILE_SIZE } from '../utils/importParser';
 import { Modal, Button, Label, Alert } from './ui';
 
 const PREVIEW_LIMIT = 5;
@@ -21,61 +23,6 @@ type ImportCardsModalProps = {
   onClose: () => void;
   onSuccess: () => void;
 };
-
-function parsePreview(file: File): Promise<ImportCardRow[]> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const text = reader.result as string;
-      const ext = file.name.split('.').pop()?.toLowerCase();
-
-      if (ext === 'json') {
-        try {
-          const data = JSON.parse(text);
-          if (Array.isArray(data)) {
-            resolve(data);
-          } else {
-            reject(new Error('JSON must be an array'));
-          }
-        } catch {
-          reject(new Error('Invalid JSON'));
-        }
-      } else {
-        const lines = text.split('\n').filter((l) => l.trim());
-        if (lines.length === 0) {
-          reject(new Error('CSV file is empty'));
-          return;
-        }
-        const headers = lines[0]!
-          .split(',')
-          .map((h) => h.replace(/^"|"$/g, '').trim().toLowerCase());
-        if (!headers.includes('front') || !headers.includes('back')) {
-          reject(new Error("CSV must have 'front' and 'back' columns"));
-          return;
-        }
-        const frontIdx = headers.indexOf('front');
-        const backIdx = headers.indexOf('back');
-        const notesIdx = headers.indexOf('notes');
-        const cards: ImportCardRow[] = [];
-        for (let i = 1; i < lines.length; i++) {
-          const cols = lines[i]!.split(',').map((c) => c.replace(/^"|"$/g, '').trim());
-          const front = cols[frontIdx] ?? '';
-          const back = cols[backIdx] ?? '';
-          if (front && back) {
-            cards.push({
-              front,
-              back,
-              notes: (notesIdx >= 0 ? cols[notesIdx] : undefined) || undefined,
-            });
-          }
-        }
-        resolve(cards);
-      }
-    };
-    reader.onerror = () => reject(new Error('Failed to read file'));
-    reader.readAsText(file);
-  });
-}
 
 export default function ImportCardsModal({ deckId, onClose, onSuccess }: ImportCardsModalProps) {
   const { t } = useLocale();
@@ -102,16 +49,16 @@ export default function ImportCardsModal({ deckId, onClose, onSuccess }: ImportC
         setError(t('cards.importErrorFormat'));
         return;
       }
-      if (f.size > 2 * 1024 * 1024) {
+      if (f.size > MAX_FILE_SIZE) {
         setError('File too large (max 2MB)');
         return;
       }
 
       try {
-        const cards = await parsePreview(f);
+        const result = await parsePreview(f);
         setFile(f);
-        setTotalCards(cards.length);
-        setPreviewCards(cards.slice(0, PREVIEW_LIMIT));
+        setTotalCards(result.cards.length);
+        setPreviewCards(result.cards.slice(0, PREVIEW_LIMIT));
         setShowExample(false);
       } catch {
         setError(t('cards.importErrorParse'));
@@ -149,10 +96,7 @@ export default function ImportCardsModal({ deckId, onClose, onSuccess }: ImportC
       setSuccess(t('cards.importSuccess').replace('{count}', String(result.cardsCreated)));
       setTimeout(() => onSuccess(), 1000);
     } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??
-        t('cards.importErrorParse');
-      setError(msg);
+      setError(getErrorMessage(err, t('cards.importErrorParse')));
     } finally {
       setLoading(false);
     }

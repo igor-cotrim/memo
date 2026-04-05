@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import { AuthProvider } from './hooks/AuthProvider';
 import { useAuth } from './hooks/useAuth';
-import { LocaleProvider } from './hooks/useLocale';
+import { LocaleProvider } from './hooks/LocaleProvider';
 import Layout from './components/Layout';
 import { Spinner } from './components/ui';
 

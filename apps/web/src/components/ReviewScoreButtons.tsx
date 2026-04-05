@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 
 import type { ReviewQuality } from '@flashcard-app/shared-types';
 import { useLocale } from '../hooks/useLocale';
@@ -16,16 +16,15 @@ const ReviewScoreButtons = memo(function ReviewScoreButtons({
 }: ReviewScoreButtonsProps) {
   const { t } = useLocale();
 
-  const qualityOptions: {
-    quality: ReviewQuality;
-    label: string;
-    emoji: string;
-  }[] = [
-    { quality: 1, label: t('review.qualityBlackout'), emoji: '😵' },
-    { quality: 2, label: t('review.qualityHard'), emoji: '😰' },
-    { quality: 3, label: t('review.qualityGood'), emoji: '🤔' },
-    { quality: 4, label: t('review.qualityEasy'), emoji: '😎' },
-  ];
+  const qualityOptions = useMemo(
+    () => [
+      { quality: 1 as ReviewQuality, label: t('review.qualityBlackout'), emoji: '😵' },
+      { quality: 2 as ReviewQuality, label: t('review.qualityHard'), emoji: '😰' },
+      { quality: 3 as ReviewQuality, label: t('review.qualityGood'), emoji: '🤔' },
+      { quality: 4 as ReviewQuality, label: t('review.qualityEasy'), emoji: '😎' },
+    ],
+    [t],
+  );
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full mt-6 sm:mt-8 animate-fade-slide-up px-2 sm:px-0">
@@ -47,7 +46,7 @@ const ReviewScoreButtons = memo(function ReviewScoreButtons({
           {activeQuality === quality ? (
             <div className="w-6 h-6 border-3 border-current border-t-transparent rounded-full animate-spin" />
           ) : (
-            <span style={{ fontSize: '1.5rem' }}>{emoji}</span>
+            <span className="text-2xl">{emoji}</span>
           )}
           <span className="block text-xs mt-1 font-medium">{label}</span>
           <kbd className="absolute top-1.5 right-1.5 hidden sm:inline-flex items-center justify-center w-5 h-5 text-[0.6rem] font-mono rounded border border-current/20 bg-current/5 opacity-50">

@@ -54,10 +54,7 @@ const CardItem = memo(function CardItem({ card, index, onEdit, onDelete }: CardI
         <div className="whitespace-pre-wrap wrap-break-word">{card.back}</div>
       </div>
       {card.notes && (
-        <div
-          className="mt-2 text-sm text-text-muted whitespace-pre-wrap wrap-break-word"
-          style={{ fontStyle: 'italic' }}
-        >
+        <div className="mt-2 text-sm text-text-muted whitespace-pre-wrap wrap-break-word italic">
           📝 {card.notes}
         </div>
       )}
