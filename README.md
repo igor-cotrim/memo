@@ -6,7 +6,7 @@ A modern, high-performance flashcard application built with a focus on efficient
 
 - **Spaced Repetition**: Optimized review cycles powered by the FSRS algorithm.
 - **Decks & Cards**: Organize your flashcards into decks with custom colors and descriptions.
-- **Authentication**: Secure JWT-based authentication with high-entropy hashing (bcrypt) and refresh token rotation.
+- **Authentication**: Secure authentication powered by Supabase Auth, with session management and auto token refresh.
 - **Import/Export**: Import flashcards from CSV files to quickly build your decks.
 - **Statistics**: Track your progress with detailed review logs and performance metrics.
 - **Internationalization**: Available in English and Brazilian Portuguese (PT-BR).
@@ -60,7 +60,7 @@ A modern, high-performance flashcard application built with a focus on efficient
 
 3. Set up environment variables:
    - Copy `.env.example` to `.env` in the root directory.
-   - Adjust the values as needed (especially `DATABASE_URL` and `JWT_SECRET`).
+   - Adjust the values as needed (especially `DATABASE_URL`, `SUPABASE_URL`, and `SUPABASE_SECRET_KEY`).
 
 ### Development
 
