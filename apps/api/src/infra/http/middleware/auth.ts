@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { UnauthorizedError } from '../../../shared/errors';
 
@@ -7,8 +7,8 @@ export interface AuthRequest<Params = Record<string, string>> extends Request<Pa
   userId?: string;
 }
 
-export function authMiddleware(jwtSecret: string) {
-  return (req: AuthRequest, _res: Response, next: NextFunction): void => {
+export function authMiddleware(supabase: SupabaseClient) {
+  return async (req: AuthRequest, _res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith('Bearer ')) {
       return next(new UnauthorizedError('Missing or invalid authorization header'));
@@ -17,11 +17,18 @@ export function authMiddleware(jwtSecret: string) {
     const token = authHeader.slice(7);
 
     try {
-      const payload = jwt.verify(token, jwtSecret) as { userId: string };
-      req.userId = payload.userId;
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser(token);
+
+      if (error || !user) {
+        return next(new UnauthorizedError('Invalid or expired token'));
+      }
+
+      req.userId = user.id;
       next();
-    } catch (err) {
-      console.error('JWT Verify Error:', err);
+    } catch {
       next(new UnauthorizedError('Invalid or expired token'));
     }
   };

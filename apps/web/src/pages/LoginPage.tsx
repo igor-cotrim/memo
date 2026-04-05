@@ -98,6 +98,12 @@ export default function LoginPage() {
               autoComplete="current-password"
             />
             <FieldError message={fieldErrors.password} />
+            <Link
+              to="/forgot-password"
+              className="text-sm text-accent-primary hover:text-accent-secondary transition-colors self-end"
+            >
+              {t('login.forgotPassword')}
+            </Link>
           </div>
           <Button className="w-full stagger-3" size="lg" type="submit" disabled={loading}>
             {loading ? t('login.submitting') : t('login.submit')}

@@ -4,12 +4,9 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  passwordHash: string;
   createdAt: string;
   onboardingCompletedAt: string | null;
 }
-
-export type PublicUser = Omit<User, 'passwordHash'>;
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
@@ -25,12 +22,7 @@ export interface LoginRequest {
 }
 
 export interface AuthResponse {
-  user: PublicUser;
-  accessToken: string;
-}
-
-export interface RefreshTokenResponse {
-  accessToken: string;
+  user: User;
 }
 
 // ─── User Profile ───────────────────────────────────────────────────────────
@@ -45,7 +37,7 @@ export interface ChangePasswordRequest {
 }
 
 export interface UpdateProfileResponse {
-  user: PublicUser;
+  user: User;
 }
 
 // ─── Deck ────────────────────────────────────────────────────────────────────

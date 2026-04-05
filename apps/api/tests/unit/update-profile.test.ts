@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest';
 
-import { User } from '@flashcard-app/shared-types';
 import { UpdateProfileUseCase } from '../../src/usecases/UpdateProfileUseCase';
 import { IUserRepository } from '../../src/domain/repositories/IUserRepository';
 import { NotFoundError, ValidationError } from '../../src/shared/errors';
@@ -29,23 +28,23 @@ describe('UpdateProfileUseCase', () => {
     await expect(useCase.execute('user1', { name: 'New Name' })).rejects.toThrow(NotFoundError);
   });
 
-  it('updates and returns public user', async () => {
+  it('updates and returns user', async () => {
+    const dateStr = new Date().toISOString();
     userRepoMock.findById.mockResolvedValue({
       id: 'user1',
       name: 'Old Name',
       email: 'test@test.com',
-      passwordHash: 'hash123',
-      createdAt: new Date().toISOString(),
-    } as User);
+      createdAt: dateStr,
+      onboardingCompletedAt: null,
+    });
 
-    const dateStr = new Date().toISOString();
     userRepoMock.update.mockResolvedValue({
       id: 'user1',
       name: 'New Name Trimmed',
       email: 'test@test.com',
-      passwordHash: 'hash123',
       createdAt: dateStr,
-    } as User);
+      onboardingCompletedAt: null,
+    });
 
     const result = await useCase.execute('user1', {
       name: '  New Name Trimmed  ',
@@ -59,7 +58,7 @@ describe('UpdateProfileUseCase', () => {
       name: 'New Name Trimmed',
       email: 'test@test.com',
       createdAt: dateStr,
+      onboardingCompletedAt: null,
     });
-    expect((result as any).passwordHash).toBeUndefined();
   });
 });

@@ -1,19 +1,18 @@
 import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import pinoHttp from 'pino-http';
 import { sql } from 'drizzle-orm';
 import type { Logger } from 'pino';
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type * as schema from './infra/db/schema';
 import { PgUserRepository } from './infra/db/PgUserRepository';
 import { PgDeckRepository } from './infra/db/PgDeckRepository';
 import { PgCardRepository } from './infra/db/PgCardRepository';
 import { PgReviewLogRepository } from './infra/db/PgReviewLogRepository';
-import { PgRefreshTokenRepository } from './infra/db/PgRefreshTokenRepository';
 import { authMiddleware } from './infra/http/middleware/auth';
 import { errorHandler } from './infra/http/middleware/errorHandler';
 import { createAuthRoutes } from './infra/http/routes/auth.routes';
@@ -26,7 +25,7 @@ import { createImportRoutes } from './infra/http/routes/import.routes';
 
 export function createApp(
   db: PostgresJsDatabase<typeof schema>,
-  jwtSecret: string,
+  supabase: SupabaseClient,
   logger: Logger,
 ): express.Express {
   const app = express();
@@ -53,14 +52,12 @@ export function createApp(
 
   app.use(apiLimiter);
   app.use(express.json());
-  app.use(cookieParser());
 
   // Repositories
   const userRepo = new PgUserRepository(db);
   const deckRepo = new PgDeckRepository(db);
   const cardRepo = new PgCardRepository(db);
   const reviewLogRepo = new PgReviewLogRepository(db);
-  const refreshTokenRepo = new PgRefreshTokenRepository(db);
 
   // Health check
   app.get('/health', async (_req, res) => {
@@ -73,17 +70,17 @@ export function createApp(
     }
   });
 
-  // Auth (public)
-  app.use('/auth', createAuthRoutes(userRepo, refreshTokenRepo, jwtSecret));
+  // Auth (public — register requires Supabase token, me requires auth)
+  app.use('/auth', createAuthRoutes(userRepo, supabase));
 
   // Protected routes
-  const auth = authMiddleware(jwtSecret);
+  const auth = authMiddleware(supabase);
   app.use('/decks', auth, createImportRoutes(db));
   app.use('/decks', auth, createDeckRoutes(deckRepo));
   app.use('/decks/:deckId/cards', auth, createCardRoutes(cardRepo, deckRepo));
   app.use('/review', auth, createReviewRoutes(cardRepo, deckRepo, reviewLogRepo));
   app.use('/stats', auth, createStatsRoutes(reviewLogRepo, deckRepo));
-  app.use('/users', auth, createUserRoutes(userRepo));
+  app.use('/users', auth, createUserRoutes(userRepo, supabase));
 
   // Error handling
   app.use(errorHandler);

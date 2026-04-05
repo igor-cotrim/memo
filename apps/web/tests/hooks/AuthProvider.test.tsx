@@ -7,8 +7,27 @@ import { useAuth } from '../../src/hooks/useAuth';
 import * as api from '../../src/services/api';
 
 vi.mock('../../src/services/api');
+vi.mock('../../src/lib/supabase', () => {
+  const mockSubscription = { unsubscribe: vi.fn() };
+  return {
+    supabase: {
+      auth: {
+        getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
+        onAuthStateChange: vi.fn().mockReturnValue({
+          data: { subscription: mockSubscription },
+        }),
+        signInWithPassword: vi.fn(),
+        signUp: vi.fn(),
+        signOut: vi.fn(),
+      },
+    },
+  };
+});
+
+import { supabase } from '../../src/lib/supabase';
 
 const mockedApi = vi.mocked(api);
+const mockedSupabase = supabase as any;
 
 // A component that exposes auth state for testing
 function AuthConsumer() {
@@ -35,10 +54,16 @@ function renderAuth() {
 describe('AuthProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (localStorage.getItem as ReturnType<typeof vi.fn>).mockReturnValue(null);
+    mockedSupabase.auth.getSession.mockResolvedValue({
+      data: { session: null },
+      error: null,
+    } as any);
+    mockedSupabase.auth.onAuthStateChange.mockReturnValue({
+      data: { subscription: { unsubscribe: vi.fn() } },
+    } as any);
   });
 
-  it('sets isLoading=false and user=null when no token', async () => {
+  it('sets isLoading=false and user=null when no session', async () => {
     renderAuth();
 
     await waitFor(() => {
@@ -47,8 +72,11 @@ describe('AuthProvider', () => {
     expect(screen.getByTestId('user').textContent).toBe('none');
   });
 
-  it('calls getMe and sets user when token exists', async () => {
-    (localStorage.getItem as ReturnType<typeof vi.fn>).mockReturnValue('fake-token');
+  it('calls getMe and sets user when session exists', async () => {
+    mockedSupabase.auth.getSession.mockResolvedValue({
+      data: { session: { access_token: 'tok' } },
+      error: null,
+    } as any);
     mockedApi.getMe.mockResolvedValue({
       user: {
         id: '1',
@@ -67,22 +95,13 @@ describe('AuthProvider', () => {
     expect(screen.getByTestId('loading').textContent).toBe('false');
   });
 
-  it('removes token and finishes loading when getMe fails', async () => {
-    (localStorage.getItem as ReturnType<typeof vi.fn>).mockReturnValue('bad-token');
-    mockedApi.getMe.mockRejectedValue(new Error('Unauthorized'));
-
-    renderAuth();
-
-    await waitFor(() => {
-      expect(screen.getByTestId('loading').textContent).toBe('false');
-    });
-    expect(screen.getByTestId('user').textContent).toBe('none');
-    expect(localStorage.removeItem).toHaveBeenCalledWith('accessToken');
-  });
-
-  it('login calls api.login and sets user', async () => {
+  it('login calls supabase signIn and api.getMe', async () => {
     const user = userEvent.setup();
-    mockedApi.login.mockResolvedValue({
+    mockedSupabase.auth.signInWithPassword.mockResolvedValue({
+      data: { session: { access_token: 'tok' } },
+      error: null,
+    } as any);
+    mockedApi.getMe.mockResolvedValue({
       user: {
         id: '1',
         email: 'a@b.com',
@@ -90,7 +109,6 @@ describe('AuthProvider', () => {
         createdAt: new Date().toISOString(),
         onboardingCompletedAt: null,
       },
-      accessToken: 'tok',
     });
 
     renderAuth();
@@ -104,15 +122,19 @@ describe('AuthProvider', () => {
     await waitFor(() => {
       expect(screen.getByTestId('user').textContent).toBe('Jane');
     });
-    expect(mockedApi.login).toHaveBeenCalledWith({
+    expect(mockedSupabase.auth.signInWithPassword).toHaveBeenCalledWith({
       email: 'a@b.com',
       password: 'pass',
     });
   });
 
-  it('register calls api.register and sets user', async () => {
+  it('register calls supabase signUp and api.registerUser', async () => {
     const user = userEvent.setup();
-    mockedApi.register.mockResolvedValue({
+    mockedSupabase.auth.signUp.mockResolvedValue({
+      data: { session: { access_token: 'tok' } },
+      error: null,
+    } as any);
+    mockedApi.registerUser.mockResolvedValue({
       user: {
         id: '2',
         email: 'a@b.com',
@@ -120,7 +142,6 @@ describe('AuthProvider', () => {
         createdAt: '',
         onboardingCompletedAt: null,
       },
-      accessToken: 'tok',
     });
 
     renderAuth();
@@ -134,16 +155,19 @@ describe('AuthProvider', () => {
     await waitFor(() => {
       expect(screen.getByTestId('user').textContent).toBe('Test');
     });
-    expect(mockedApi.register).toHaveBeenCalledWith({
+    expect(mockedSupabase.auth.signUp).toHaveBeenCalledWith({
       email: 'a@b.com',
-      name: 'Test',
       password: 'pass',
     });
+    expect(mockedApi.registerUser).toHaveBeenCalledWith('Test');
   });
 
-  it('logout calls api.logout and sets user to null', async () => {
+  it('logout calls supabase signOut and clears user', async () => {
     const user = userEvent.setup();
-    (localStorage.getItem as ReturnType<typeof vi.fn>).mockReturnValue('fake-token');
+    mockedSupabase.auth.getSession.mockResolvedValue({
+      data: { session: { access_token: 'tok' } },
+      error: null,
+    } as any);
     mockedApi.getMe.mockResolvedValue({
       user: {
         id: '1',
@@ -153,7 +177,7 @@ describe('AuthProvider', () => {
         onboardingCompletedAt: null,
       },
     });
-    mockedApi.logout.mockResolvedValue(undefined);
+    mockedSupabase.auth.signOut.mockResolvedValue({ error: null } as any);
 
     renderAuth();
 
@@ -166,6 +190,6 @@ describe('AuthProvider', () => {
     await waitFor(() => {
       expect(screen.getByTestId('user').textContent).toBe('none');
     });
-    expect(mockedApi.logout).toHaveBeenCalled();
+    expect(mockedSupabase.auth.signOut).toHaveBeenCalled();
   });
 });

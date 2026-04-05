@@ -1,16 +1,17 @@
 import { Router } from 'express';
 import type { Response, NextFunction } from 'express';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { AuthRequest } from '../middleware/auth';
 import type { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UpdateProfileUseCase } from '../../../usecases/UpdateProfileUseCase';
 import { ChangePasswordUseCase } from '../../../usecases/ChangePasswordUseCase';
 
-export function createUserRoutes(userRepo: IUserRepository): Router {
+export function createUserRoutes(userRepo: IUserRepository, supabase: SupabaseClient): Router {
   const router = Router();
 
   const updateProfile = new UpdateProfileUseCase(userRepo);
-  const changePassword = new ChangePasswordUseCase(userRepo);
+  const changePassword = new ChangePasswordUseCase(supabase);
 
   router.put('/profile', async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
@@ -28,8 +29,7 @@ export function createUserRoutes(userRepo: IUserRepository): Router {
         const user = await userRepo.update(req.userId!, {
           onboardingCompletedAt: new Date().toISOString(),
         });
-        const { passwordHash, ...publicUser } = user;
-        res.json({ user: publicUser });
+        res.json({ user });
       } catch (err) {
         next(err);
       }

@@ -1,6 +1,17 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import axios from 'axios';
 
+// Mock supabase
+vi.mock('../../src/lib/supabase', () => ({
+  supabase: {
+    auth: {
+      getSession: vi.fn().mockResolvedValue({
+        data: { session: { access_token: 'test-token' } },
+      }),
+    },
+  },
+}));
+
 // Mock axios at module level
 vi.mock('axios', () => {
   const mockAxios = {
@@ -12,21 +23,16 @@ vi.mock('axios', () => {
     get: vi.fn(),
     post: vi.fn(),
     put: vi.fn(),
+    patch: vi.fn(),
     delete: vi.fn(),
   };
-  // create() returns the same mock instance so all calls are tracked
   mockAxios.create.mockReturnValue(mockAxios);
   return { default: mockAxios };
 });
 
-// Import AFTER mocking
 const mockedAxios = vi.mocked(axios);
 const api = mockedAxios.create();
 
-// We import the actual api module functions under test
-// But since they use the module-level axios instance, we need a different approach:
-// We'll test the functions by importing them and the mock that was injected.
-// Let's re-import the api module, which will use the mocked axios
 import * as apiModule from '../../src/services/api';
 
 describe('API Service', () => {
@@ -35,58 +41,18 @@ describe('API Service', () => {
   });
 
   describe('Auth endpoints', () => {
-    it('register calls POST /auth/register and stores token', async () => {
+    it('registerUser calls POST /auth/register', async () => {
       const response = {
         data: {
           user: { id: '1', email: 'a@b.com', name: 'Test' },
-          accessToken: 'token123',
         },
       };
       (api.post as ReturnType<typeof vi.fn>).mockResolvedValue(response);
 
-      const result = await apiModule.register({
-        email: 'a@b.com',
-        name: 'Test',
-        password: 'pass',
-      });
+      const result = await apiModule.registerUser('Test');
 
-      expect(api.post).toHaveBeenCalledWith('/auth/register', {
-        email: 'a@b.com',
-        name: 'Test',
-        password: 'pass',
-      });
+      expect(api.post).toHaveBeenCalledWith('/auth/register', { name: 'Test' });
       expect(result.user.email).toBe('a@b.com');
-      expect(localStorage.setItem).toHaveBeenCalledWith('accessToken', 'token123');
-    });
-
-    it('login calls POST /auth/login and stores token', async () => {
-      const response = {
-        data: {
-          user: { id: '1', email: 'a@b.com', name: 'Test' },
-          accessToken: 'token456',
-        },
-      };
-      (api.post as ReturnType<typeof vi.fn>).mockResolvedValue(response);
-
-      const result = await apiModule.login({
-        email: 'a@b.com',
-        password: 'pass',
-      });
-
-      expect(api.post).toHaveBeenCalledWith('/auth/login', {
-        email: 'a@b.com',
-        password: 'pass',
-      });
-      expect(result.accessToken).toBe('token456');
-    });
-
-    it('logout calls POST /auth/logout and removes token', async () => {
-      (api.post as ReturnType<typeof vi.fn>).mockResolvedValue({});
-
-      await apiModule.logout();
-
-      expect(api.post).toHaveBeenCalledWith('/auth/logout');
-      expect(localStorage.removeItem).toHaveBeenCalledWith('accessToken');
     });
 
     it('getMe calls GET /auth/me', async () => {

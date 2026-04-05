@@ -8,6 +8,7 @@ const monorepoRoot = path.resolve(__dirname, '../..');
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, monorepoRoot, '');
   return {
+    envDir: monorepoRoot,
     plugins: [react(), tailwindcss()],
     server: {
       port: 5173,

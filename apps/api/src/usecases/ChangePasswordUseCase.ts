@@ -1,30 +1,22 @@
-import bcrypt from 'bcrypt';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { ChangePasswordRequest } from '@flashcard-app/shared-types';
-import type { IUserRepository } from '../domain/repositories/IUserRepository';
-import { NotFoundError, UnauthorizedError, ValidationError } from '../shared/errors';
-
-const SALT_ROUNDS = 10;
+import { ValidationError } from '../shared/errors';
 
 export class ChangePasswordUseCase {
-  constructor(private readonly userRepo: IUserRepository) {}
+  constructor(private readonly supabase: SupabaseClient) {}
 
   async execute(userId: string, input: ChangePasswordRequest): Promise<void> {
     if (!input.newPassword || input.newPassword.length < 6) {
       throw new ValidationError('Password must be at least 6 characters');
     }
 
-    const user = await this.userRepo.findById(userId);
-    if (!user) {
-      throw new NotFoundError('User', userId);
-    }
+    const { error } = await this.supabase.auth.admin.updateUserById(userId, {
+      password: input.newPassword,
+    });
 
-    const passwordValid = await bcrypt.compare(input.currentPassword, user.passwordHash);
-    if (!passwordValid) {
-      throw new UnauthorizedError('Current password is incorrect');
+    if (error) {
+      throw new ValidationError(error.message);
     }
-
-    const passwordHash = await bcrypt.hash(input.newPassword, SALT_ROUNDS);
-    await this.userRepo.update(userId, { passwordHash });
   }
 }

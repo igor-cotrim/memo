@@ -1,6 +1,21 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
 
+// Mock Supabase client globally for all tests
+vi.mock('../src/lib/supabase', () => ({
+  supabase: {
+    auth: {
+      getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
+      onAuthStateChange: vi.fn().mockReturnValue({
+        data: { subscription: { unsubscribe: vi.fn() } },
+      }),
+      signInWithPassword: vi.fn(),
+      signUp: vi.fn(),
+      signOut: vi.fn(),
+    },
+  },
+}));
+
 // Mock window.confirm
 vi.stubGlobal(
   'confirm',

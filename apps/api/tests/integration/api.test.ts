@@ -7,7 +7,7 @@ import { createTestApp } from '../helpers/setup';
 describe('API Integration Tests', () => {
   let app: Express;
   let cleanup: () => Promise<void>;
-  let accessToken: string;
+  const accessToken = 'valid-supabase-token';
   let deckId: string;
   let cardId: string;
 
@@ -32,45 +32,41 @@ describe('API Integration Tests', () => {
   // ─── Auth ─────────────────────────────────────────────────────────────────
 
   describe('Auth', () => {
-    it('POST /auth/register should create user', async () => {
-      const res = await request(app).post('/auth/register').send({
-        email: 'test@example.com',
-        name: 'Test User',
-        password: 'SecurePass123!',
-      });
+    it('POST /auth/register should create user in local table', async () => {
+      const res = await request(app)
+        .post('/auth/register')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ name: 'Test User' });
       expect(res.status).toBe(201);
       expect(res.body.user.email).toBe('test@example.com');
-      expect(res.body.accessToken).toBeDefined();
-      expect(res.body.user.passwordHash).toBeUndefined();
+      expect(res.body.user.name).toBe('Test User');
     });
 
-    it('POST /auth/register should fail on duplicate email', async () => {
-      const res = await request(app).post('/auth/register').send({
-        email: 'test@example.com',
-        name: 'Another',
-        password: 'Pass123!',
-      });
+    it('POST /auth/register should fail on duplicate user', async () => {
+      const res = await request(app)
+        .post('/auth/register')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ name: 'Another' });
       expect(res.status).toBe(409);
     });
 
-    it('POST /auth/login should return token', async () => {
+    it('GET /auth/me should return user', async () => {
       const res = await request(app)
-        .post('/auth/login')
-        .send({ email: 'test@example.com', password: 'SecurePass123!' });
+        .get('/auth/me')
+        .set('Authorization', `Bearer ${accessToken}`);
       expect(res.status).toBe(200);
-      expect(res.body.accessToken).toBeDefined();
-      accessToken = res.body.accessToken;
-    });
-
-    it('POST /auth/login should fail with wrong password', async () => {
-      const res = await request(app)
-        .post('/auth/login')
-        .send({ email: 'test@example.com', password: 'WrongPassword' });
-      expect(res.status).toBe(401);
+      expect(res.body.user.name).toBe('Test User');
     });
 
     it('protected routes should reject without token', async () => {
       const res = await request(app).get('/decks');
+      expect(res.status).toBe(401);
+    });
+
+    it('protected routes should reject with invalid token', async () => {
+      const res = await request(app)
+        .get('/decks')
+        .set('Authorization', 'Bearer invalid-token');
       expect(res.status).toBe(401);
     });
   });

@@ -1,11 +1,11 @@
-import type { UpdateProfileRequest, PublicUser } from '@flashcard-app/shared-types';
+import type { UpdateProfileRequest, User } from '@flashcard-app/shared-types';
 import type { IUserRepository } from '../domain/repositories/IUserRepository';
 import { NotFoundError, ValidationError } from '../shared/errors';
 
 export class UpdateProfileUseCase {
   constructor(private readonly userRepo: IUserRepository) {}
 
-  async execute(userId: string, input: UpdateProfileRequest): Promise<PublicUser> {
+  async execute(userId: string, input: UpdateProfileRequest): Promise<User> {
     if (!input.name || input.name.trim().length === 0) {
       throw new ValidationError('Name is required');
     }
@@ -19,7 +19,6 @@ export class UpdateProfileUseCase {
       name: input.name.trim(),
     });
 
-    const { passwordHash: _, ...publicUser } = updated;
-    return publicUser;
+    return updated;
   }
 }

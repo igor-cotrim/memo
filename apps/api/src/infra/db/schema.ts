@@ -6,7 +6,6 @@ export const users = pgTable('users', {
   id: text('id').primaryKey(),
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
-  passwordHash: text('password_hash').notNull(),
   createdAt: text('created_at').notNull(),
   onboardingCompletedAt: text('onboarding_completed_at'),
 });
@@ -59,17 +58,4 @@ export const reviewLogs = pgTable('review_logs', {
     .references(() => users.id, { onDelete: 'cascade' }),
   quality: integer('quality').notNull(),
   reviewedAt: text('reviewed_at').notNull(),
-});
-
-// ─── Refresh Tokens ──────────────────────────────────────────────────────────
-
-export const refreshTokens = pgTable('refresh_tokens', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  token: text('token').notNull().unique(),
-  expiresAt: text('expires_at').notNull(),
-  createdAt: text('created_at').notNull(),
-  revokedAt: text('revoked_at'),
 });

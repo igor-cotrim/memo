@@ -6,7 +6,26 @@ import pino from 'pino';
 import * as schema from '../../src/infra/db/schema';
 import { createApp } from '../../src/app';
 
-export const TEST_JWT_SECRET = 'test-secret-key';
+export function createMockSupabase(userId = 'test-user-id') {
+  return {
+    auth: {
+      getUser: async (token: string) => {
+        if (token === 'invalid-token') {
+          return { data: { user: null }, error: new Error('Invalid token') };
+        }
+        return {
+          data: {
+            user: { id: userId, email: 'test@example.com' },
+          },
+          error: null,
+        };
+      },
+      admin: {
+        updateUserById: async () => ({ data: {}, error: null }),
+      },
+    },
+  } as any;
+}
 
 export async function createTestApp(): Promise<{
   app: Express;
@@ -20,7 +39,6 @@ export async function createTestApp(): Promise<{
     id TEXT PRIMARY KEY,
     email TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
-    password_hash TEXT NOT NULL,
     created_at TEXT NOT NULL,
     onboarding_completed_at TEXT
   )`);
@@ -60,17 +78,9 @@ export async function createTestApp(): Promise<{
     reviewed_at TEXT NOT NULL
   )`);
 
-  await db.execute(`CREATE TABLE refresh_tokens (
-    id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    token TEXT NOT NULL UNIQUE,
-    expires_at TEXT NOT NULL,
-    created_at TEXT NOT NULL,
-    revoked_at TEXT
-  )`);
-
   const logger = pino({ level: 'silent' });
-  const app = createApp(db as any, TEST_JWT_SECRET, logger);
+  const supabase = createMockSupabase();
+  const app = createApp(db as any, supabase, logger);
 
   return {
     app,

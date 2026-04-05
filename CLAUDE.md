@@ -70,7 +70,7 @@ Layered architecture:
 - `src/server.ts` — Entry point; connects to PostgreSQL via postgres.js and starts server
 - `src/app.ts` — Express setup: pino-http, helmet, CORS, rate limiting (100 req/15 min), cookie parser; registers all routes
 
-Auth uses JWT access tokens + refresh token rotation. Refresh tokens are stored in the database.
+Auth uses Supabase Auth. The frontend uses `@supabase/supabase-js` for signUp/signIn/signOut. The backend validates Supabase JWT tokens via `supabase.auth.getUser(token)` using the service role key. A local `users` table stores app-specific user data (name, onboarding state) keyed by the Supabase user ID.
 
 ### Frontend (`apps/web`)
 
@@ -81,7 +81,7 @@ Auth uses JWT access tokens + refresh token rotation. Refresh tokens are stored 
 - `src/services/api.ts` — Axios client; auto-attaches `Authorization: Bearer` header from localStorage; handles 401 → refresh → retry with race-condition coalescing
 - `src/locale/` — i18n strings for EN and PT-BR
 
-**State management**: Context API only (no Redux/Zustand). Auth state (user, token, login/logout) lives in `AuthContext`. Access token stored in localStorage; refresh token in httpOnly cookies.
+**State management**: Context API only (no Redux/Zustand). Auth state (user, login/logout) lives in `AuthContext`. Session management is handled by Supabase client (auto-refresh, token storage).
 
 ### Shared Types (`packages/shared-types`)
 
@@ -91,11 +91,14 @@ All API request/response types are defined here and imported by both apps, ensur
 
 Copy `.env.example` to `.env` at the repo root. Required variables:
 
-- `JWT_SECRET` — signing key for access tokens
-- `DATABASE_URL` — PostgreSQL connection string (e.g. Supabase)
+- `DATABASE_URL` — PostgreSQL connection string (Supabase)
+- `SUPABASE_URL` — Supabase project URL
+- `SUPABASE_SECRET_KEY` — Supabase service role key (secret, backend only)
 - `CLIENT_ORIGIN` — frontend origin for CORS
 - `PORT` — API port (default `3333`)
 - `VITE_API_URL` — frontend API base URL (dev proxy defaults to `http://localhost:3333`)
+- `VITE_SUPABASE_URL` — Supabase project URL (frontend)
+- `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY` — Supabase anon key (public, frontend)
 
 ## Key Dependencies
 

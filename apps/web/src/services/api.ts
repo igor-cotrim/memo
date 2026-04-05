@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import type {
   AuthResponse,
-  PublicUser,
+  User,
   Deck,
   Flashcard,
   ReviewSession,
@@ -12,8 +12,6 @@ import type {
   CreateCardRequest,
   UpdateCardRequest,
   ReviewResult,
-  LoginRequest,
-  RegisterRequest,
   UpdateProfileRequest,
   UpdateProfileResponse,
   ChangePasswordRequest,
@@ -22,6 +20,8 @@ import type {
   DueCountResponse,
 } from '@flashcard-app/shared-types';
 
+import { supabase } from '../lib/supabase';
+
 const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? undefined : '/api');
 if (!baseURL && import.meta.env.PROD) {
   throw new Error('VITE_API_URL is undefined in production');
@@ -29,82 +29,32 @@ if (!baseURL && import.meta.env.PROD) {
 
 const api = axios.create({
   baseURL,
-  withCredentials: true,
 });
 
-let refreshPromise: Promise<string> | null = null;
-
-// Interceptor: attach token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Interceptor: attach Supabase access token
+api.interceptors.request.use(async (config) => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    config.headers.Authorization = `Bearer ${session.access_token}`;
   }
   return config;
 });
 
-// Interceptor: handle 401 and refresh
-api.interceptors.response.use(
-  (res) => res,
-  async (error) => {
-    const original = error.config;
-    if (error.response?.status === 401 && !original._retry) {
-      if (
-        original.url?.includes('/auth/login') ||
-        original.url?.includes('/auth/register') ||
-        original.url?.includes('/auth/refresh')
-      ) {
-        return Promise.reject(error);
-      }
-      original._retry = true;
-      try {
-        if (!refreshPromise) {
-          refreshPromise = api
-            .post<{ accessToken: string }>('/auth/refresh')
-            .then((res) => res.data.accessToken)
-            .finally(() => {
-              refreshPromise = null;
-            });
-        }
-        const accessToken = await refreshPromise;
-        localStorage.setItem('accessToken', accessToken);
-        original.headers = original.headers ?? {};
-        original.headers.Authorization = `Bearer ${accessToken}`;
-        return api(original);
-      } catch {
-        localStorage.removeItem('accessToken');
-        window.location.href = '/login';
-      }
-    }
-    return Promise.reject(error);
-  },
-);
+// ─── Auth ──────────���──────────────────────────────────��──────────────────────
 
-// ─── Auth ────────────────────────────────────────────────────────────────────
-
-export async function register(data: RegisterRequest): Promise<AuthResponse> {
-  const res = await api.post<AuthResponse>('/auth/register', data);
-  localStorage.setItem('accessToken', res.data.accessToken);
+export async function registerUser(name: string): Promise<AuthResponse> {
+  const res = await api.post<AuthResponse>('/auth/register', { name });
   return res.data;
 }
 
-export async function login(data: LoginRequest): Promise<AuthResponse> {
-  const res = await api.post<AuthResponse>('/auth/login', data);
-  localStorage.setItem('accessToken', res.data.accessToken);
+export async function getMe(): Promise<{ user: User }> {
+  const res = await api.get<{ user: User }>('/auth/me');
   return res.data;
 }
 
-export async function logout(): Promise<void> {
-  await api.post('/auth/logout');
-  localStorage.removeItem('accessToken');
-}
-
-export async function getMe(): Promise<{ user: PublicUser }> {
-  const res = await api.get<{ user: PublicUser }>('/auth/me');
-  return res.data;
-}
-
-// ─── User Profile ───────────────────────────────────────────────────────────
+// ─── User Profile ──────────────��────────────────────────────────────────────
 
 export async function updateProfile(data: UpdateProfileRequest): Promise<UpdateProfileResponse> {
   const res = await api.put<UpdateProfileResponse>('/users/profile', data);
@@ -120,7 +70,7 @@ export async function completeOnboarding(): Promise<UpdateProfileResponse> {
   return res.data;
 }
 
-// ─── Decks ───────────────────────────────────────────────────────────────────
+// ─── Decks ───────────��───────────────────────────��───────────────────────────
 
 export async function getDecks(): Promise<Deck[]> {
   const res = await api.get<Deck[]>('/decks');
@@ -196,7 +146,7 @@ export async function importCards(deckId: string, file: File): Promise<ImportCar
   return res.data;
 }
 
-// ─── Review ──────────────────────────────────────────────────────────────────
+// ─── Review ────────────���─────────────────────────────────────────────────────
 
 export async function getDueCount(): Promise<DueCountResponse> {
   const res = await api.get<DueCountResponse>('/review/due-count');
@@ -213,7 +163,7 @@ export async function submitReview(data: ReviewResult): Promise<Flashcard> {
   return res.data;
 }
 
-// ─── Stats ───────────────────────────────────────────────────────────────────
+// ─── Stats ───────────���────────────────────────────���──────────────────────────
 
 export async function getStats(): Promise<ReviewStats> {
   const timezoneOffset = new Date().getTimezoneOffset();

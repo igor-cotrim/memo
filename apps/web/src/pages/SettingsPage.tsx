@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useLocale } from '../hooks/useLocale';
 import { useFormValidation } from '../hooks/useFormValidation';
 import * as api from '../services/api';
+import { supabase } from '../lib/supabase';
 import { getErrorMessage } from '../utils/error';
 
 export default function SettingsPage() {
@@ -75,6 +76,15 @@ export default function SettingsPage() {
 
     setPasswordLoading(true);
     try {
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: user!.email,
+        password: currentPassword,
+      });
+      if (verifyError) {
+        setPasswordError(t('settings.currentPasswordWrong'));
+        return;
+      }
+
       await api.changePassword({ currentPassword, newPassword });
       setCurrentPassword('');
       setNewPassword('');

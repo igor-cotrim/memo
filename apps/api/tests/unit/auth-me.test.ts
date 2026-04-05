@@ -17,7 +17,7 @@ function createMockUserRepo(users: User[] = []): IUserRepository {
       users.push(user);
       return user;
     },
-    async update(id: string, data: Partial<Pick<User, 'name' | 'passwordHash'>>) {
+    async update(id: string, data: Partial<Pick<User, 'name'>>) {
       const user = users.find((u) => u.id === id);
       if (!user) throw new Error('Not found');
       Object.assign(user, data);
@@ -33,7 +33,6 @@ describe('AuthMeUseCase', () => {
     id: 'user-1',
     email: 'test@example.com',
     name: 'Test User',
-    passwordHash: '$2b$10$hashvalue',
     createdAt: new Date().toISOString(),
     onboardingCompletedAt: null,
   };
@@ -43,13 +42,12 @@ describe('AuthMeUseCase', () => {
     useCase = new AuthMeUseCase(userRepo);
   });
 
-  it('returns public user data (without passwordHash)', async () => {
+  it('returns user data', async () => {
     const result = await useCase.execute('user-1');
 
     expect(result.user.id).toBe('user-1');
     expect(result.user.email).toBe('test@example.com');
     expect(result.user.name).toBe('Test User');
-    expect((result.user as Record<string, unknown>)['passwordHash']).toBeUndefined();
   });
 
   it('throws UnauthorizedError when user does not exist', async () => {

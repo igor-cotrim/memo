@@ -4,6 +4,7 @@ import pino from 'pino';
 
 import * as schema from './infra/db/schema';
 import { createApp } from './app';
+import { createSupabaseAdmin } from './infra/supabase';
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
@@ -20,7 +21,8 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 const DATABASE_URL = process.env.DATABASE_URL;
-const JWT_SECRET = process.env.JWT_SECRET;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
 const PORT = process.env.PORT || 3333;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -30,8 +32,13 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-if (!JWT_SECRET) {
-  logger.fatal('JWT_SECRET is not defined');
+if (!SUPABASE_URL) {
+  logger.fatal('SUPABASE_URL is not defined');
+  process.exit(1);
+}
+
+if (!SUPABASE_SECRET_KEY) {
+  logger.fatal('SUPABASE_SECRET_KEY is not defined');
   process.exit(1);
 }
 
@@ -42,8 +49,9 @@ if (NODE_ENV === 'production' && !CLIENT_ORIGIN) {
 
 const client = postgres(DATABASE_URL);
 const db = drizzle(client, { schema });
+const supabase = createSupabaseAdmin(SUPABASE_URL, SUPABASE_SECRET_KEY);
 
-const app = createApp(db, JWT_SECRET, logger);
+const app = createApp(db, supabase, logger);
 
 app.listen(PORT, () => {
   logger.info(`🚀 API server running on port ${PORT}`);

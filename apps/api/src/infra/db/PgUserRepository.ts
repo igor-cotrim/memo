@@ -11,12 +11,12 @@ export class PgUserRepository implements IUserRepository {
 
   async findById(id: string): Promise<User | null> {
     const rows = await this.db.select().from(schema.users).where(eq(schema.users.id, id));
-    return rows[0] ? this.toUser(rows[0]) : null;
+    return rows[0] ?? null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
     const rows = await this.db.select().from(schema.users).where(eq(schema.users.email, email));
-    return rows[0] ? this.toUser(rows[0]) : null;
+    return rows[0] ?? null;
   }
 
   async create(user: User): Promise<User> {
@@ -24,7 +24,6 @@ export class PgUserRepository implements IUserRepository {
       id: user.id,
       email: user.email,
       name: user.name,
-      passwordHash: user.passwordHash,
       createdAt: user.createdAt,
       onboardingCompletedAt: user.onboardingCompletedAt,
     });
@@ -33,7 +32,7 @@ export class PgUserRepository implements IUserRepository {
 
   async update(
     id: string,
-    data: Partial<Pick<User, 'name' | 'passwordHash' | 'onboardingCompletedAt'>>,
+    data: Partial<Pick<User, 'name' | 'onboardingCompletedAt'>>,
   ): Promise<User> {
     const rows = await this.db
       .update(schema.users)
@@ -45,17 +44,6 @@ export class PgUserRepository implements IUserRepository {
       throw new NotFoundError('User', id);
     }
 
-    return this.toUser(rows[0]);
-  }
-
-  private toUser(row: typeof schema.users.$inferSelect): User {
-    return {
-      id: row.id,
-      email: row.email,
-      name: row.name,
-      passwordHash: row.passwordHash,
-      createdAt: row.createdAt,
-      onboardingCompletedAt: row.onboardingCompletedAt,
-    };
+    return rows[0];
   }
 }

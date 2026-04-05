@@ -4,10 +4,12 @@ import userEvent from '@testing-library/user-event';
 
 import SettingsPage from '../../src/pages/SettingsPage';
 import * as api from '../../src/services/api';
+import { supabase } from '../../src/lib/supabase';
 import { renderWithProviders } from '../test-utils';
 
 vi.mock('../../src/services/api');
 const mockedApi = vi.mocked(api);
+const mockedSupabase = supabase as any;
 
 const testUser = {
   id: 'u-1',
@@ -110,6 +112,7 @@ describe('SettingsPage', () => {
 
   it('submits password form successfully', async () => {
     const user = userEvent.setup();
+    mockedSupabase.auth.signInWithPassword.mockResolvedValue({ error: null });
     mockedApi.changePassword.mockResolvedValue(undefined);
 
     renderWithProviders(<SettingsPage />, { auth: { user: testUser } });
@@ -169,6 +172,7 @@ describe('SettingsPage', () => {
 
   it('shows password change success message', async () => {
     const user = userEvent.setup();
+    mockedSupabase.auth.signInWithPassword.mockResolvedValue({ error: null });
     mockedApi.changePassword.mockResolvedValue(undefined);
 
     renderWithProviders(<SettingsPage />, { auth: { user: testUser } });
@@ -185,7 +189,9 @@ describe('SettingsPage', () => {
 
   it('shows error when password change fails', async () => {
     const user = userEvent.setup();
-    mockedApi.changePassword.mockRejectedValue(new Error('Current password is incorrect'));
+    mockedSupabase.auth.signInWithPassword.mockResolvedValue({
+      error: { message: 'Invalid login credentials' },
+    });
 
     renderWithProviders(<SettingsPage />, { auth: { user: testUser } });
 
