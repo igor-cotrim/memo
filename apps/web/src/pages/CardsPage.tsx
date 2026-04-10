@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import type { Deck, Flashcard } from '@flashcard-app/shared-types';
@@ -22,23 +22,23 @@ export default function CardsPage() {
   const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
   const [deletingCardId, setDeletingCardId] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadData = useCallback(async () => {
     if (!deckId) return;
-    loadData();
-  }, [deckId]);
-
-  async function loadData() {
     try {
       const [deckData, cardsData] = await Promise.all([
-        api.getDeck(deckId!),
-        api.getCards(deckId!),
+        api.getDeck(deckId),
+        api.getCards(deckId),
       ]);
       setDeck(deckData);
       setCards(cardsData);
     } finally {
       setLoading(false);
     }
-  }
+  }, [deckId]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   function openCreate() {
     setEditingCard(null);

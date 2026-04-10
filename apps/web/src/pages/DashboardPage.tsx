@@ -84,7 +84,7 @@ export default function DashboardPage() {
                 : t('dashboard.dueCardsBanner').replace('{count}', String(dueCount))}
             </p>
           </div>
-          <Button onClick={() => navigate('/decks')} className="shrink-0">
+          <Button onClick={() => navigate('/review/all')} className="shrink-0">
             {t('dashboard.startReview')}
           </Button>
         </div>

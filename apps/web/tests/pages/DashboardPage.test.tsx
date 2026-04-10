@@ -1,11 +1,22 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import DashboardPage from '../../src/pages/DashboardPage';
 import * as api from '../../src/services/api';
 import { renderWithProviders } from '../test-utils';
 
+const mockNavigate = vi.fn();
+
 vi.mock('../../src/services/api');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
 const mockedApi = vi.mocked(api);
 
 const baseStats = {
@@ -25,6 +36,7 @@ const baseStats = {
 describe('DashboardPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockNavigate.mockReset();
     mockedApi.getDueCount.mockResolvedValue({ totalDue: 0 });
   });
 
@@ -159,5 +171,21 @@ describe('DashboardPage', () => {
     });
 
     expect(screen.queryByText('Review Now')).not.toBeInTheDocument();
+  });
+
+  it('"Review Now" button navigates to /review/all', async () => {
+    const user = userEvent.setup();
+    mockedApi.getStats.mockResolvedValue(baseStats);
+    mockedApi.getDecks.mockResolvedValue([]);
+    mockedApi.getDueCount.mockResolvedValue({ totalDue: 5 });
+
+    renderWithProviders(<DashboardPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Review Now')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('Review Now'));
+    expect(mockNavigate).toHaveBeenCalledWith('/review/all');
   });
 });

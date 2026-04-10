@@ -6,12 +6,32 @@ import DecksPage from '../../src/pages/DecksPage';
 import * as api from '../../src/services/api';
 import { renderWithProviders } from '../test-utils';
 
+const mockNavigate = vi.fn();
+
 vi.mock('../../src/services/api');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
 const mockedApi = vi.mocked(api);
+
+const testDeck = {
+  id: 'd-1',
+  userId: 'u-1',
+  name: 'Spanish',
+  description: 'desc',
+  color: '#000',
+  createdAt: new Date().toISOString(),
+};
 
 describe('DecksPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockNavigate.mockReset();
   });
 
   it('shows loading spinner initially', () => {
@@ -91,6 +111,39 @@ describe('DecksPage', () => {
     await user.click(screen.getByText('Create Deck'));
 
     expect(mockedApi.createDeck).toHaveBeenCalledWith(expect.objectContaining({ name: 'German' }));
+  });
+
+  it('shows "Review All" button when decks exist', async () => {
+    mockedApi.getDecks.mockResolvedValue([testDeck]);
+    renderWithProviders(<DecksPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('▶ Review All')).toBeInTheDocument();
+    });
+  });
+
+  it('does not show "Review All" button when there are no decks', async () => {
+    mockedApi.getDecks.mockResolvedValue([]);
+    renderWithProviders(<DecksPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('No decks yet')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('▶ Review All')).not.toBeInTheDocument();
+  });
+
+  it('"Review All" button navigates to /review/all', async () => {
+    const user = userEvent.setup();
+    mockedApi.getDecks.mockResolvedValue([testDeck]);
+    renderWithProviders(<DecksPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('▶ Review All')).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText('▶ Review All'));
+    expect(mockNavigate).toHaveBeenCalledWith('/review/all');
   });
 
   it('deletes a deck with confirmation', async () => {

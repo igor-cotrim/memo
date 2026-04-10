@@ -59,7 +59,13 @@ const CardItem = memo(function CardItem({ card, index, onEdit, onDelete }: CardI
         </div>
       )}
       <div className="mt-4 text-sm text-text-muted">
-        {t('cards.nextReview')} {getRelativeTimeString(card.due, locale)}
+        {new Date(card.due) <= new Date() ? (
+          t('cards.dueNow')
+        ) : (
+          <>
+            {t('cards.nextReview')} {getRelativeTimeString(card.due, locale)}
+          </>
+        )}
       </div>
     </div>
   );

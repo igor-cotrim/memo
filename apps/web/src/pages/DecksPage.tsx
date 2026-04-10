@@ -82,6 +82,15 @@ export default function DecksPage() {
         subtitle={t('decks.subtitle')}
         action={
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            {decks.length > 0 && (
+              <Button
+                variant="secondary"
+                className="w-full sm:w-auto"
+                onClick={() => navigate('/review/all')}
+              >
+                {t('decks.reviewAll')}
+              </Button>
+            )}
             <Button
               variant="secondary"
               className="w-full sm:w-auto"

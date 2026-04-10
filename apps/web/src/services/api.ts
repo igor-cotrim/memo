@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import type {
+  AllDecksReviewSession,
   AuthResponse,
   User,
   Deck,
@@ -155,6 +156,11 @@ export async function getDueCount(): Promise<DueCountResponse> {
 
 export async function getDueCards(deckId: string): Promise<ReviewSession> {
   const res = await api.get<ReviewSession>(`/review/${deckId}`);
+  return res.data;
+}
+
+export async function getAllDueCards(): Promise<AllDecksReviewSession> {
+  const res = await api.get<AllDecksReviewSession>('/review/all');
   return res.data;
 }
 

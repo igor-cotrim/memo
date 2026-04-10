@@ -111,6 +111,12 @@ export interface ReviewSession {
   totalDue: number;
 }
 
+export interface AllDecksReviewSession {
+  cards: Flashcard[];
+  totalDue: number;
+  deckNames: Record<string, string>;
+}
+
 export interface DueCountResponse {
   totalDue: number;
 }

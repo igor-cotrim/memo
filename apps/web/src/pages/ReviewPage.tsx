@@ -13,7 +13,10 @@ export default function ReviewPage() {
   const { deckId } = useParams<{ deckId: string }>();
   const navigate = useNavigate();
   const { t } = useLocale();
+  const isAllMode = deckId === 'all';
+
   const [cards, setCards] = useState<Flashcard[]>([]);
+  const [deckNames, setDeckNames] = useState<Record<string, string>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -24,18 +27,22 @@ export default function ReviewPage() {
 
   useEffect(() => {
     if (!deckId) return;
-    loadDueCards();
-  }, [deckId]);
-
-  async function loadDueCards() {
-    try {
-      const session = await api.getDueCards(deckId!);
-      setCards(session.cards);
-      setTotalCards(session.totalDue);
-    } finally {
-      setLoading(false);
-    }
-  }
+    let cancelled = false;
+    const fetch = isAllMode ? api.getAllDueCards() : api.getDueCards(deckId);
+    fetch
+      .then((session) => {
+        if (cancelled) return;
+        setCards(session.cards);
+        setTotalCards(session.totalDue);
+        if ('deckNames' in session) setDeckNames(session.deckNames);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [deckId, isAllMode]);
 
   const handleFlip = useCallback(() => {
     setIsFlipped((f) => !f);
@@ -87,7 +94,7 @@ export default function ReviewPage() {
 
       if (e.key === 'Escape') {
         e.preventDefault();
-        navigate(`/decks/${deckId}`);
+        navigate(isAllMode ? '/decks' : `/decks/${deckId}`);
       } else if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
         handleFlip();
@@ -111,6 +118,7 @@ export default function ReviewPage() {
 
   const currentCard = cards[currentIndex];
   const isComplete = !currentCard || currentIndex >= cards.length;
+  const currentDeckName = currentCard ? deckNames[currentCard.deckId] : undefined;
 
   return (
     <div className="flex flex-col flex-1 bg-bg-primary max-w-2xl mx-auto w-full pt-8">
@@ -118,9 +126,9 @@ export default function ReviewPage() {
         variant="ghost"
         size="sm"
         className="mb-4 self-start"
-        onClick={() => navigate(`/decks/${deckId}`)}
+        onClick={() => navigate(isAllMode ? '/decks' : `/decks/${deckId}`)}
       >
-        {t('review.backToDeck')}
+        {isAllMode ? t('review.backToDecks') : t('review.backToDeck')}
       </Button>
 
       {cards.length === 0 ? (
@@ -181,6 +189,15 @@ export default function ReviewPage() {
               />
             </div>
           </div>
+
+          {isAllMode && currentDeckName && (
+            <div className="mb-3">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bg-card border border-border text-xs font-display font-semibold text-text-secondary">
+                <span aria-hidden="true">📂</span>
+                {currentDeckName}
+              </span>
+            </div>
+          )}
 
           <ReviewCard card={currentCard} isFlipped={isFlipped} onFlip={handleFlip} />
 

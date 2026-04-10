@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
+  AllDecksReviewSession,
   DueCountResponse,
   Flashcard,
   ReviewResult,
@@ -30,6 +31,32 @@ export class GetDueCardsUseCase {
       deckId,
       cards: dueCards,
       totalDue: dueCards.length,
+    };
+  }
+}
+
+export class GetAllDueCardsUseCase {
+  constructor(
+    private readonly cardRepo: ICardRepository,
+    private readonly deckRepo: IDeckRepository,
+  ) {}
+
+  async execute(userId: string): Promise<AllDecksReviewSession> {
+    const now = new Date().toISOString();
+    const [dueCards, decks] = await Promise.all([
+      this.cardRepo.findAllDueCardsByUserId(userId, now),
+      this.deckRepo.findAllByUserId(userId),
+    ]);
+
+    const deckNames: Record<string, string> = {};
+    for (const deck of decks) {
+      deckNames[deck.id] = deck.name;
+    }
+
+    return {
+      cards: dueCards,
+      totalDue: dueCards.length,
+      deckNames,
     };
   }
 }
