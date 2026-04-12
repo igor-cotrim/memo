@@ -31,7 +31,7 @@ const ReviewScoreButtons = memo(function ReviewScoreButtons({
       {qualityOptions.map(({ quality, label, emoji }) => (
         <button
           key={quality}
-          className={`relative flex flex-col items-center justify-center p-3 sm:p-4 border rounded-md bg-bg-card text-text-primary font-display cursor-pointer transition-all text-center hover:-translate-y-[3px] hover:shadow-md active:-translate-y-px ${
+          className={`relative flex flex-col items-center justify-center p-3 sm:p-4 border rounded-md bg-bg-card text-text-primary font-display cursor-pointer transition-all text-center hover:-translate-y-[3px] hover:shadow-md active:-translate-y-px disabled:opacity-45 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none ${
             quality === 1
               ? 'border-accent-danger hover:bg-accent-danger/10 text-accent-danger'
               : quality === 2

@@ -18,9 +18,9 @@ const ReviewCard = memo(function ReviewCard({ card, isFlipped, onFlip }: ReviewC
       onClick={onFlip}
     >
       <div
-        className={`w-full h-full relative transform-3d transition-transform duration-650 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isFlipped ? 'transform-[rotateY(180deg)]' : ''}`}
+        className={`w-full h-full relative transform-3d transition-transform duration-650 ease-[cubic-bezier(0.22,1,0.36,1)] ${isFlipped ? 'transform-[rotateY(180deg)]' : ''}`}
       >
-        <div className="absolute inset-0 backface-hidden flex flex-col p-6 sm:p-10 rounded-xl border border-border text-center shadow-lg bg-bg-card overflow-y-auto">
+        <div className={`absolute inset-0 backface-hidden flex flex-col p-6 sm:p-10 rounded-xl border border-border text-center shadow-lg bg-bg-card overflow-y-auto ${!isFlipped ? 'review-card-breathe' : ''}`}>
           <div className="w-full shrink-0 flex justify-start">
             <span className="font-display text-[0.7rem] font-semibold text-text-muted uppercase tracking-widest">
               {t('review.front')}

@@ -4,11 +4,21 @@ import { useNavigate } from 'react-router-dom';
 import type { ReviewStats, Deck } from '@flashcard-app/shared-types';
 import { useLocale } from '../hooks/useLocale';
 import { useAuth } from '../hooks/useAuth';
+import { useCountUp } from '../hooks/useCountUp';
 import * as api from '../services/api';
 import { Button, Spinner, PageHeader } from '../components/ui';
 import ActivityGraph from '../components/ActivityGraph';
 import EmptyState from '../components/EmptyState';
 import OnboardingWizard from '../components/OnboardingWizard';
+import type { TranslationKey } from '../hooks/useLocale';
+
+function getGreetingKey(): TranslationKey {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return 'dashboard.greetingMorning';
+  if (hour >= 12 && hour < 17) return 'dashboard.greetingAfternoon';
+  if (hour >= 17 && hour < 22) return 'dashboard.greetingEvening';
+  return 'dashboard.greetingNight';
+}
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -61,6 +71,15 @@ export default function DashboardPage() {
     [stats],
   );
 
+  const currentStreak = stats?.currentStreak ?? 0;
+  const streakAnimated = useCountUp(currentStreak);
+  const todayAnimated = useCountUp(todayCount);
+  const weekAnimated = useCountUp(weekTotal);
+  const decksAnimated = useCountUp(decks.length);
+
+  const firstName = user?.name?.split(' ')[0] ?? 'there';
+  const greeting = t(getGreetingKey()).replace('{name}', firstName);
+
   if (loading) {
     return <Spinner />;
   }
@@ -69,7 +88,7 @@ export default function DashboardPage() {
     <div>
       {showOnboarding && <OnboardingWizard onComplete={handleOnboardingComplete} />}
 
-      <PageHeader title={t('dashboard.title')} subtitle={t('dashboard.subtitle')} />
+      <PageHeader title={t('dashboard.title')} subtitle={greeting} />
 
       {/* Due Cards Banner */}
       {dueCount > 0 && (
@@ -92,33 +111,47 @@ export default function DashboardPage() {
 
       {/* Stats Overview */}
       <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-4">
-        <div className="text-center p-7 bg-bg-card border border-border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-1">
-          <div className="font-display text-[2.5rem] font-extrabold text-accent-primary leading-[1.2] tabular-nums tracking-tight">
-            {stats?.currentStreak ?? 0}
+        {/* Streak — warms to amber when active */}
+        <div
+          className={`text-center p-7 border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-1 ${
+            currentStreak > 0
+              ? 'bg-accent-warning/[0.06] border-accent-warning/20'
+              : 'bg-bg-card border-border'
+          }`}
+        >
+          <div
+            className={`font-display text-[2.5rem] font-extrabold leading-[1.2] tabular-nums tracking-tight transition-colors duration-500 ${
+              currentStreak > 0 ? 'text-accent-warning' : 'text-accent-primary'
+            }`}
+          >
+            {streakAnimated}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
             {t('dashboard.dayStreak')}
           </div>
         </div>
-        <div className="text-center p-7 bg-bg-card border border-border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-2">
+        {/* Today — cool blue */}
+        <div className="text-center p-7 bg-accent-primary/[0.05] border border-accent-primary/15 rounded-md transition-all hover:border-border-light hover:shadow-md stagger-2">
           <div className="font-display text-[2.5rem] font-extrabold text-accent-primary leading-[1.2] tabular-nums tracking-tight">
-            {todayCount}
+            {todayAnimated}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
             {t('dashboard.reviewedToday')}
           </div>
         </div>
-        <div className="text-center p-7 bg-bg-card border border-border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-3">
-          <div className="font-display text-[2.5rem] font-extrabold text-accent-primary leading-[1.2] tabular-nums tracking-tight">
-            {weekTotal}
+        {/* This week — teal */}
+        <div className="text-center p-7 bg-accent-secondary/[0.05] border border-accent-secondary/15 rounded-md transition-all hover:border-border-light hover:shadow-md stagger-3">
+          <div className="font-display text-[2.5rem] font-extrabold text-accent-secondary leading-[1.2] tabular-nums tracking-tight">
+            {weekAnimated}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
             {t('dashboard.thisWeek')}
           </div>
         </div>
+        {/* Total decks — neutral */}
         <div className="text-center p-7 bg-bg-card border border-border rounded-md transition-all hover:border-border-light hover:shadow-md stagger-4">
-          <div className="font-display text-[2.5rem] font-extrabold text-accent-primary leading-[1.2] tabular-nums tracking-tight">
-            {decks.length}
+          <div className="font-display text-[2.5rem] font-extrabold text-text-secondary leading-[1.2] tabular-nums tracking-tight">
+            {decksAnimated}
           </div>
           <div className="text-text-secondary font-display text-xs font-semibold uppercase tracking-widest mt-1.5">
             {t('dashboard.totalDecks')}

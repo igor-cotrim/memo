@@ -86,9 +86,78 @@
   .stagger-6 {
     animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
   }
+
+  .animate-progress-complete {
+    animation: progressComplete 0.7s ease-out forwards;
+  }
+  .animate-bounce-settle {
+    animation: bounceSettle 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-route-enter {
+    animation: routeEnter 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
 }
 
-/* Animations Keyframes */
+/* ─── Nav active sliding underline ───────────────────────────────────────── */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; /* flush with the nav's bottom border */
+  left: 6px;
+  right: 6px;
+  height: 2px;
+  background: var(--color-accent-primary);
+  border-radius: 1px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav-link.nav-active::after {
+  transform: scaleX(1);
+}
+
+/* ─── Deck card — personalized color glow on hover ───────────────────────── */
+/*
+ * The deck card sets --deck-color via inline style.
+ * On hover, we cast a soft shadow tinted to that color so each deck
+ * glows in its own palette rather than generic blue.
+ */
+.deck-card {
+  transition-property: transform, box-shadow, border-color;
+  transition-duration: 250ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+.deck-card:hover {
+  box-shadow:
+    0 8px 32px color-mix(in oklch, var(--deck-color, var(--color-accent-primary)) 28%, transparent),
+    var(--shadow-md);
+}
+
+/* ─── Review card — breathing border while unflipped ─────────────────────── */
+/*
+ * A slow breathing animation on the card's border signals
+ * "I'm waiting — tap me" without text or instructions.
+ */
+.review-card-breathe {
+  animation: cardBreathe 3s ease-in-out infinite;
+}
+
+/* ─── Reduced motion: collapse all animations ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Keyframes ──────────────────────────────────────────────────────────── */
 @keyframes bgDrift {
   0%,
   100% {
@@ -142,6 +211,58 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes routeEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardBreathe {
+  0%,
+  100% {
+    border-color: var(--color-border);
+    box-shadow: none;
+  }
+  50% {
+    border-color: var(--color-border-light);
+    box-shadow: 0 0 18px rgba(58, 166, 223, 0.06);
+  }
+}
+
+@keyframes progressComplete {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5);
+  }
+  60% {
+    box-shadow: 0 0 0 5px rgba(52, 211, 153, 0);
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
+@keyframes bounceSettle {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+  78% {
+    transform: scale(0.94);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 

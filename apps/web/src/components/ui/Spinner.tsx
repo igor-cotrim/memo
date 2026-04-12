@@ -5,9 +5,12 @@ interface SpinnerProps {
 
 function Spinner({ className, fullPage = true }: SpinnerProps) {
   const spinner = (
-    <div
-      className={`w-8 h-8 border-4 border-accent-primary border-t-transparent rounded-full animate-spin ${className ?? ''}`}
-    />
+    <div role="status" aria-label="Loading">
+      <div
+        className={`w-8 h-8 border-4 border-accent-primary border-t-transparent rounded-full animate-spin ${className ?? ''}`}
+      />
+      <span className="sr-only">Loading…</span>
+    </div>
   );
 
   if (fullPage) {

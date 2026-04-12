@@ -145,6 +145,7 @@ export default function ReviewPage() {
       ) : isComplete ? (
         <EmptyState
           icon="🏆"
+          celebratory
           title={t('review.sessionCompleteTitle')}
           description={`${t('review.youReviewed')} ${completed} ${completed !== 1 ? t('review.cards') : t('review.card')}`}
           action={
@@ -184,7 +185,11 @@ export default function ReviewPage() {
             </div>
             <div className="w-full h-1.5 bg-bg-card rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full bg-accent-primary transition-[width] duration-500"
+                className={`h-full rounded-full transition-[width,background-color] duration-500 ${
+                  completed === totalCards
+                    ? 'bg-accent-success animate-progress-complete'
+                    : 'bg-accent-primary'
+                }`}
                 style={{ width: `${(completed / totalCards) * 100}%` }}
               />
             </div>

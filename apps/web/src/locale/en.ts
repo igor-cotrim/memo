@@ -29,7 +29,7 @@ export const en = {
   },
   forgotPassword: {
     title: 'Reset your password',
-    subtitle: 'Enter your email and we\'ll send you a link to reset your password',
+    subtitle: "Enter your email and we'll send you a link to reset your password",
     emailLabel: 'Email',
     emailPlaceholder: 'you@example.com',
     submit: 'Send Reset Link',
@@ -82,6 +82,10 @@ export const en = {
     dueCardsBanner: 'You have {count} cards ready for review!',
     dueCardsBannerSingular: 'You have 1 card ready for review!',
     startReview: 'Review Now',
+    greetingMorning: 'Good morning, {name} — ready to study?',
+    greetingAfternoon: 'Good afternoon, {name} — keep the streak going.',
+    greetingEvening: 'Good evening, {name} — one more session?',
+    greetingNight: 'Burning the midnight oil, {name}?',
   },
   decks: {
     title: 'My Decks',
@@ -167,7 +171,7 @@ export const en = {
     backToDeck: '← Back to Deck',
     allCaughtUpTitle: 'All caught up!',
     allCaughtUpText: 'No cards are due for review right now',
-    backToDecks: 'Back to Decks',
+    backToDecks: '←  Back to Decks',
     sessionCompleteTitle: 'Session complete!',
     youReviewed: 'You reviewed',
     card: 'card',

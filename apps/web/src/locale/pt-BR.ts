@@ -84,6 +84,10 @@ export const ptBR: Translations = {
     dueCardsBanner: 'Você tem {count} cartões prontos para revisão!',
     dueCardsBannerSingular: 'Você tem 1 cartão pronto para revisão!',
     startReview: 'Revisar Agora',
+    greetingMorning: 'Bom dia, {name} — pronto para estudar?',
+    greetingAfternoon: 'Boa tarde, {name} — continue a sequência.',
+    greetingEvening: 'Boa noite, {name} — mais uma sessão?',
+    greetingNight: 'Estudando de madrugada, {name}?',
   },
   decks: {
     title: 'Meus Baralhos',

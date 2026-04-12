@@ -55,7 +55,7 @@ export default function Layout() {
               <li>
                 <Link
                   to="/"
-                  className={`px-4 py-2 max-sm:px-2.5 max-sm:py-1.5 rounded-sm font-medium text-sm font-display transition-colors ${isActive('/') && location.pathname === '/' ? 'text-accent-primary bg-accent-primary/10' : 'text-text-secondary hover:text-text-primary hover:bg-white/5'}`}
+                  className={`nav-link px-4 py-2 max-sm:px-2.5 max-sm:py-1.5 rounded-sm font-medium text-sm font-display transition-colors ${isActive('/') && location.pathname === '/' ? 'nav-active text-accent-primary bg-accent-primary/10' : 'text-text-secondary hover:text-text-primary hover:bg-white/5'}`}
                 >
                   {t('layout.dashboard')}
                 </Link>
@@ -63,7 +63,7 @@ export default function Layout() {
               <li>
                 <Link
                   to="/decks"
-                  className={`px-4 py-2 max-sm:px-2.5 max-sm:py-1.5 rounded-sm font-medium text-sm font-display transition-colors ${isActive('/decks') ? 'text-accent-primary bg-accent-primary/10' : 'text-text-secondary hover:text-text-primary hover:bg-white/5'}`}
+                  className={`nav-link px-4 py-2 max-sm:px-2.5 max-sm:py-1.5 rounded-sm font-medium text-sm font-display transition-colors ${isActive('/decks') ? 'nav-active text-accent-primary bg-accent-primary/10' : 'text-text-secondary hover:text-text-primary hover:bg-white/5'}`}
                 >
                   {t('layout.decks')}
                 </Link>
@@ -129,7 +129,8 @@ export default function Layout() {
         </ul>
       </nav>
       <main
-        className="flex-1 py-10 px-8 w-full max-w-[1200px] mx-auto max-md:py-5 max-md:px-4"
+        key={location.pathname}
+        className="flex-1 py-10 px-8 w-full max-w-[1200px] mx-auto max-md:py-5 max-md:px-4 animate-route-enter"
         id="main-content"
       >
         <Outlet />
