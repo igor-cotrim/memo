@@ -2,13 +2,14 @@
 FROM node:22-alpine AS deps
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY packages/shared-types/package.json ./packages/shared-types/
 COPY apps/api/package.json ./apps/api/
 RUN pnpm install --frozen-lockfile --filter api... --filter shared-types
 
 # ── Stage 2: build ─────────────────────────────────────────────
 FROM deps AS builder
+COPY tsconfig.base.json ./
 COPY packages/shared-types ./packages/shared-types
 COPY apps/api ./apps/api
 RUN pnpm --filter shared-types run build
