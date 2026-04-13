@@ -22,9 +22,7 @@ PrismLight.registerLanguage('sql', sql);
 PrismLight.registerLanguage('json', json);
 PrismLight.registerLanguage('css', css);
 
-type Segment =
-  | { type: 'text'; content: string }
-  | { type: 'code'; lang: string; content: string };
+type Segment = { type: 'text'; content: string } | { type: 'code'; lang: string; content: string };
 
 function parseSegments(text: string): Segment[] {
   const segments: Segment[] = [];
@@ -36,7 +34,7 @@ function parseSegments(text: string): Segment[] {
     if (match.index > lastIndex) {
       segments.push({ type: 'text', content: text.slice(lastIndex, match.index) });
     }
-    segments.push({ type: 'code', lang: match[1] || 'text', content: match[2] });
+    segments.push({ type: 'code', lang: match[1] || 'text', content: match[2] || '' });
     lastIndex = regex.lastIndex;
   }
 
