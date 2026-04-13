@@ -166,6 +166,7 @@ export const en = {
     importErrorFormat: 'Unsupported format. Use .json or .csv',
     importErrorParse: 'Could not parse the file',
     importRowErrors: 'Some rows had errors:',
+    codeHint: 'Tip: use ```js ... ``` fences for syntax-highlighted code blocks',
   },
   review: {
     backToDeck: '← Back to Deck',

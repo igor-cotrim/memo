@@ -65,11 +65,10 @@ describe('ConfirmDialog', () => {
     const user = userEvent.setup();
     const onCancel = vi.fn();
 
-    const { container } = renderWithProviders(
-      <ConfirmDialog {...defaultProps} onCancel={onCancel} />,
-    );
+    renderWithProviders(<ConfirmDialog {...defaultProps} onCancel={onCancel} />);
 
-    const backdrop = container.querySelector('.fixed.inset-0')!;
+    // Portal renders into document.body
+    const backdrop = document.querySelector('.fixed.inset-0')!;
     await user.click(backdrop);
     expect(onCancel).toHaveBeenCalledOnce();
   });

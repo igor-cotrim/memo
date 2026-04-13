@@ -168,6 +168,7 @@ export const ptBR: Translations = {
     importErrorFormat: 'Formato não suportado. Use .json ou .csv',
     importErrorParse: 'Não foi possível ler o arquivo',
     importRowErrors: 'Algumas linhas tiveram erros:',
+    codeHint: 'Dica: use ```js ... ``` para blocos de código com realce de sintaxe',
   },
   review: {
     backToDeck: '← Voltar ao Baralho',

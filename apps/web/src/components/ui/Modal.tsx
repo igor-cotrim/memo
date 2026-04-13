@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ModalProps {
   children: ReactNode;
@@ -61,27 +62,32 @@ function Modal({ children, onClose, ariaLabelledBy }: ModalProps) {
 
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent) => {
-      if (e.target === overlayRef.current) onClose();
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        onClose();
+      }
     },
     [onClose],
   );
 
-  return (
+  return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-1000 p-8 animate-fade-in overscroll-contain"
+      className="fixed inset-0 bg-black/70 backdrop-blur-md z-1000 overflow-y-auto animate-fade-in"
       onClick={handleOverlayClick}
     >
-      <div
-        ref={panelRef}
-        className="bg-bg-secondary border border-border rounded-lg w-full max-w-[500px] max-h-[90vh] overflow-y-auto p-8 shadow-lg animate-modal-slide-up"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={ariaLabelledBy}
-      >
-        {children}
+      <div className="flex min-h-full items-center justify-center p-6">
+        <div
+          ref={panelRef}
+          className="bg-bg-secondary border border-border rounded-lg w-full max-w-[500px] p-8 shadow-lg animate-modal-slide-up"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={ariaLabelledBy}
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

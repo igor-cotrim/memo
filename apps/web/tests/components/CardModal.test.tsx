@@ -114,10 +114,10 @@ describe('CardModal', () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
 
-    const { container } = renderWithProviders(<CardModal onClose={onClose} onSave={vi.fn()} />);
+    renderWithProviders(<CardModal onClose={onClose} onSave={vi.fn()} />);
 
-    // Click the outer backdrop div
-    const backdrop = container.querySelector('.fixed.inset-0')!;
+    // Portal renders into document.body
+    const backdrop = document.querySelector('.fixed.inset-0')!;
     await user.click(backdrop);
     expect(onClose).toHaveBeenCalled();
   });

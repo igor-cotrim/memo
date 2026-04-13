@@ -14,13 +14,13 @@ const JSON_EXAMPLE = `{
   "description": "Common words",
   "cards": [
     { "front": "Hola", "back": "Hello", "notes": "Greeting" },
-    { "front": "Adiós", "back": "Goodbye" }
+    { "front": "Fix the bug", "back": "\`\`\`js\\nconst x = 1;\\n\`\`\`" }
   ]
 }`;
 
 const CSV_EXAMPLE = `front,back,notes
 "Hola","Hello","Greeting"
-"Adiós","Goodbye",`;
+"Fix the bug","\`\`\`js const x = 1;\`\`\`",`;
 
 type ImportDeckModalProps = {
   onClose: () => void;

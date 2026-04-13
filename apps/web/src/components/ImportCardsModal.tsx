@@ -6,17 +6,18 @@ import * as api from '../services/api';
 import { getErrorMessage } from '../utils/error';
 import { parsePreview, MAX_FILE_SIZE } from '../utils/importParser';
 import { Modal, Button, Label, Alert } from './ui';
+import CardContent from './CardContent';
 
 const PREVIEW_LIMIT = 5;
 
 const JSON_EXAMPLE = `[
   { "front": "Hola", "back": "Hello", "notes": "Greeting" },
-  { "front": "Adiós", "back": "Goodbye" }
+  { "front": "Fix the bug", "back": "\`\`\`js\\nconst x = 1;\\n\`\`\`" }
 ]`;
 
 const CSV_EXAMPLE = `front,back,notes
 "Hola","Hello","Greeting"
-"Adiós","Goodbye",`;
+"Fix the bug","\`\`\`js const x = 1;\`\`\`",`;
 
 type ImportCardsModalProps = {
   deckId: string;
@@ -196,11 +197,11 @@ export default function ImportCardsModal({ deckId, onClose, onSuccess }: ImportC
                   <tbody>
                     {previewCards.map((card, i) => (
                       <tr key={i} className="border-t border-border">
-                        <td className="px-3 py-2 text-text-primary truncate max-w-[200px]">
-                          {card.front}
+                        <td className="px-3 py-2 text-text-primary overflow-hidden max-w-[200px] align-top">
+                          <CardContent text={card.front} />
                         </td>
-                        <td className="px-3 py-2 text-text-primary truncate max-w-[200px]">
-                          {card.back}
+                        <td className="px-3 py-2 text-text-primary overflow-hidden max-w-[200px] align-top">
+                          <CardContent text={card.back} />
                         </td>
                       </tr>
                     ))}

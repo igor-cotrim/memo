@@ -4,6 +4,7 @@ import type { Flashcard } from '@flashcard-app/shared-types';
 import { useLocale } from '../hooks/useLocale';
 import { getRelativeTimeString } from '../utils/date';
 import { Button } from './ui';
+import CardContent from './CardContent';
 
 type CardItemProps = {
   card: Flashcard;
@@ -47,15 +48,19 @@ const CardItem = memo(function CardItem({ card, index, onEdit, onDelete }: CardI
       </div>
       <div className="mb-2">
         <div className="text-sm text-text-muted mb-2">{t('cards.front')}</div>
-        <div className="font-bold whitespace-pre-wrap wrap-break-word">{card.front}</div>
+        <div className="font-bold wrap-break-word">
+          <CardContent text={card.front} />
+        </div>
       </div>
       <div>
         <div className="text-sm text-text-muted mb-2">{t('cards.back')}</div>
-        <div className="whitespace-pre-wrap wrap-break-word">{card.back}</div>
+        <div className="wrap-break-word">
+          <CardContent text={card.back} />
+        </div>
       </div>
       {card.notes && (
-        <div className="mt-2 text-sm text-text-muted whitespace-pre-wrap wrap-break-word italic">
-          📝 {card.notes}
+        <div className="mt-2 text-sm text-text-muted wrap-break-word italic">
+          📝 <CardContent text={card.notes} />
         </div>
       )}
       <div className="mt-4 text-sm text-text-muted">

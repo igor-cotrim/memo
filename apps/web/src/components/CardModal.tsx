@@ -82,6 +82,7 @@ export default function CardModal({ card, onClose, onSave }: CardModalProps) {
               autoComplete="off"
             />
             <FieldError message={errors.back} />
+            <p className="text-xs text-text-muted mt-1">{t('cards.codeHint')}</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="card-notes">{t('cards.notesLabel')}</Label>

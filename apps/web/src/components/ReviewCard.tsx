@@ -2,6 +2,7 @@ import { memo } from 'react';
 
 import type { Flashcard } from '@flashcard-app/shared-types';
 import { useLocale } from '../hooks/useLocale';
+import CardContent from './CardContent';
 
 type ReviewCardProps = {
   card: Flashcard;
@@ -27,8 +28,8 @@ const ReviewCard = memo(function ReviewCard({ card, isFlipped, onFlip }: ReviewC
             </span>
           </div>
           <div className="flex-1 flex flex-col w-full py-6">
-            <div className="w-full font-display text-xl sm:text-[1.5rem] font-semibold leading-snug tracking-tight text-balance wrap-break-word whitespace-pre-wrap my-auto">
-              {card.front}
+            <div className="w-full font-display text-xl sm:text-[1.5rem] font-semibold leading-snug tracking-tight text-balance wrap-break-word my-auto">
+              <CardContent text={card.front} />
             </div>
           </div>
           <div className="w-full shrink-0 flex justify-center mt-auto">
@@ -42,12 +43,12 @@ const ReviewCard = memo(function ReviewCard({ card, isFlipped, onFlip }: ReviewC
             </span>
           </div>
           <div className="flex-1 flex flex-col w-full py-6">
-            <div className="w-full font-display text-xl sm:text-[1.5rem] font-semibold leading-snug tracking-tight text-balance wrap-break-word whitespace-pre-wrap my-auto">
-              {card.back}
+            <div className="w-full font-display text-xl sm:text-[1.5rem] font-semibold leading-snug tracking-tight text-balance wrap-break-word my-auto">
+              <CardContent text={card.back} />
             </div>
             {card.notes && (
               <div className="text-xs text-text-secondary wrap-break-word max-w-[80%] mt-6 opacity-80 mx-auto">
-                📝 {card.notes}
+                📝 <CardContent text={card.notes} />
               </div>
             )}
           </div>
