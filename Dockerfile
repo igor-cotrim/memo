@@ -29,4 +29,4 @@ COPY --from=builder /app/apps/api/dist ./apps/api/dist
 
 ENV NODE_ENV=production
 EXPOSE 8080
-CMD ["node", "apps/api/dist/server.js"]
+CMD ["node", "apps/api/dist/src/server.js"]
